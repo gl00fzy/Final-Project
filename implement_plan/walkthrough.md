@@ -1,29 +1,30 @@
-# Tailwind CSS UI/UX Revamp Complete 🎨
+# Advanced Grading Engine - Epic Completed 🏆
 
-The massive UI/UX refactoring is now complete! We have successfully migrated the entire Multiple Choice Grading System from custom CSS to a robust, modern, and highly accessible **Tailwind CSS** design system.
+The final piece of the ZipGrade-like Advanced Engine is now online.
 
-## 🎯 Key Achievements
+## Phase 5: Scan to Set Key (`scanner.php`)
+Professors can now use their mobile device's camera to instantly build Answer Keys.
 
-### 1. Unified Emerald Green Theme
-* Adopted a consistent `emerald-600` primary color across all screens.
-* Enhanced contrast ratios for text and backgrounds to ensure readability for older professors.
-* Replaced sharp corners with modern rounded elements (`rounded-xl`, `rounded-2xl`).
+### 1. Dual-Mode UI
+- Added a segmented toggle switch at the top center of the scanner screen: **[ สแกนนิสิต ]** (Scan Student) and **[ สแกนเฉลย ]** (Scan Key).
+- The UI dynamically changes colors based on the mode: Green/Dark for grading students, and a distinct **Blue** theme for scanning answer keys to prevent accidental mis-scans.
 
-### 2. Layout & Responsiveness
-* Eradicated all `position: absolute` overlapping text issues on normal pages.
-* Implemented flexible CSS Grids and Flexbox for seamless adaptation to both desktop and mobile screens.
-* Upgraded all Modals (Create Exam, Share Exam, Manual Entry, Image View) to use a sleek full-screen `backdrop-blur-sm` overlay effect.
+### 2. Intelligent Data Parsing (`api/scan_key.php`)
+- When in "Scan Key" mode, the camera bypasses student grading entirely.
+- It detects the filled bubbles and sends them to the new `scan_key.php` endpoint.
+- The API automatically translates these raw bubbles into the complex Advanced JSON configuration, defaulting to:
+  - `Points`: 1
+  - `Penalty`: 0
+  - `Logic`: OR
+  - `Ignore`: False
+- It merges this newly scanned key precisely into the selected Exam Set (A, B, or C) without deleting other sets.
 
-### 3. Page-by-Page Enhancements
+### 3. The Ultimate Synergy
+- Because we built a unified `grading_engine.php` in Phase 3, the exact moment the camera scans and saves the new Answer Key, the backend triggers the Auto-Regrade script.
+- **Result:** You can point your camera at an Answer Key sheet, wait for the *beep*, and instantly, your entire classroom's grades are recalculated against that new physical key.
 
-* **Login (`index.php`)**: Re-centered the login card with improved input focus states and a beautiful SVG icon.
-* **Dashboard (`dashboard.php`)**: Transformed the flat exam list into structured grid cards. Each card now prominently features primary actions (Scan) and secondary actions (Stats, Keys, CSV) clearly separated.
-* **Roster (`roster.php`)**: Styled the CSV file upload area to look like a modern dropzone and completely revamped the student table for better scannability.
-* **Key Editor (`key_editor.php`)**: Modernized the A-E bubble selectors. Active states now clearly highlight in Emerald Green instead of generic colors.
-* **Scanner (`scanner.php`)**: Kept the essential camera logic untouched but added a massive, highly visible "Success" card overlay with blurred backgrounds. The manual entry button is now pinned cleanly to the bottom.
-* **Analytics (`view_results.php`)**: Overhauled the statistics dashboard. The Item Analysis and Student lists are now perfectly styled with responsive grid layouts.
+---
 
-## 🛠️ Verification
-All PHP endpoints, database queries, and the core OpenCV.js scanning logic were strictly preserved. Only the HTML structure and CSS classes were modified.
-
-You can now test the brand-new interface on your local server: `http://localhost:8000`
+> [!SUCCESS]
+> **Epic Feature Request Completed!** 
+> The system has successfully transformed from a basic OMR string-matcher into a full-fledged, commercial-grade evaluation engine supporting Negative Scoring, Multi-Select Bubbles, Ignore Rules, Automated Regrading, and Camera-Based Key Capture.

@@ -46,7 +46,28 @@ try {
 
         $stmt = $pdo->prepare("UPDATE exams SET answer_key = ? WHERE exam_id = ?");
         $stmt->execute([$answer_key, $exam_id]);
-        echo json_encode(['status' => 'success']);
+
+        // Auto-Regrade Phase 3
+        require_once 'grading_engine.php';
+        
+        $scoreStmt = $pdo->prepare("SELECT score_id, raw_answers, exam_set FROM student_scores WHERE exam_id = ? AND raw_answers IS NOT NULL");
+        $scoreStmt->execute([$exam_id]);
+        $all_scores = $scoreStmt->fetchAll();
+
+        $updateScoreStmt = $pdo->prepare("UPDATE student_scores SET score = ? WHERE score_id = ?");
+
+        $regraded_count = 0;
+        foreach ($all_scores as $s) {
+            $raw = $s['raw_answers'];
+            $set = $s['exam_set'] ?? 'A';
+            
+            $new_score = calculate_score($raw, $answer_key, $set, 0);
+            
+            $updateScoreStmt->execute([$new_score, $s['score_id']]);
+            $regraded_count++;
+        }
+
+        echo json_encode(['status' => 'success', 'regraded_count' => $regraded_count]);
 
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);

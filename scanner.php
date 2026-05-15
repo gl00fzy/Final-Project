@@ -54,11 +54,21 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
     <div id="scanner-container" class="relative w-full h-[calc(100vh-64px)] flex flex-col items-center justify-center overflow-hidden">
         
-        <select id="examSetScanner" class="absolute top-4 right-4 z-50 px-4 py-2 rounded-xl bg-white/90 text-emerald-700 font-bold border-2 border-emerald-600 focus:outline-none backdrop-blur-sm shadow-lg">
-            <option value="A">ชุดข้อสอบ A</option>
-            <option value="B">ชุดข้อสอบ B</option>
-            <option value="C">ชุดข้อสอบ C</option>
-        </select>
+        <!-- Top Control Bar -->
+        <div class="absolute top-4 w-full flex justify-between items-center px-4 z-50 pointer-events-none">
+            <!-- Mode Toggle -->
+            <div class="bg-black/50 backdrop-blur-md p-1 rounded-xl flex gap-1 pointer-events-auto border border-white/20">
+                <button id="modeStudentBtn" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm" onclick="setScanMode('student')">สแกนนิสิต</button>
+                <button id="modeKeyBtn" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors text-gray-900 hover:bg-black/10" onclick="setScanMode('key')">สแกนเฉลย</button>
+            </div>
+            
+            <!-- Set Selector -->
+            <select id="examSetScanner" class="px-4 py-2 rounded-xl bg-white/90 text-yellow-700 font-bold border-2 border-yellow-500 focus:outline-none backdrop-blur-sm shadow-lg pointer-events-auto">
+                <option value="A">ชุดข้อสอบ A</option>
+                <option value="B">ชุดข้อสอบ B</option>
+                <option value="C">ชุดข้อสอบ C</option>
+            </select>
+        </div>
 
         <div id="statusIndicator" class="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-6 py-3 rounded-full text-base font-bold shadow-lg z-50 text-white border border-white/10 whitespace-nowrap">กำลังโหลด OpenCV.js...</div>
         
@@ -72,14 +82,14 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
         <!-- Massive Success Result Card -->
         <div id="scanResultCard" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl z-[100] text-center border border-white/20 w-[90%] max-w-[400px]">
-            <h2 class="text-emerald-500 text-4xl font-bold mb-2 flex items-center justify-center gap-2">
+            <h2 class="text-yellow-600 text-4xl font-bold mb-2 flex items-center justify-center gap-2">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                 สำเร็จ!
             </h2>
             <p class="text-xl text-gray-500 mb-1 mt-6">รหัสนิสิต</p>
             <p id="resStudentId" class="text-4xl font-black mb-6 text-gray-900 tracking-wider"></p>
             <p class="text-xl text-gray-500 mb-1">คะแนนที่ได้</p>
-            <p id="resScore" class="text-6xl font-black text-emerald-600 mb-2 leading-none"></p>
+            <p id="resScore" class="text-6xl font-black text-yellow-600 mb-2 leading-none"></p>
         </div>
 
         <div class="absolute bottom-8 w-full flex justify-center px-4 z-40">
@@ -99,15 +109,15 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 <input type="hidden" id="examId" name="exam_id" value="<?= htmlspecialchars($exam_id) ?>">
                 <div>
                     <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">รหัสนิสิต (11 หลัก)</label>
-                    <input type="text" id="studentId" name="student_id" required pattern="\d{11}" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-lg text-center tracking-widest">
+                    <input type="text" id="studentId" name="student_id" required pattern="\d{11}" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 font-mono text-lg text-center tracking-widest">
                 </div>
                 <div>
                     <label for="score" class="block text-sm font-medium text-gray-700 mb-1">คะแนนที่ได้</label>
-                    <input type="number" id="score" name="score" required min="0" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-2xl text-center text-emerald-600">
+                    <input type="number" id="score" name="score" required min="0" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 font-bold text-2xl text-center text-yellow-600">
                 </div>
                 <div class="flex gap-3 mt-6">
                     <button type="button" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors" id="btnCancelManual">ยกเลิก</button>
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm">บันทึกคะแนน</button>
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm">บันทึกคะแนน</button>
                 </div>
             </form>
         </div>

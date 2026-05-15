@@ -1,49 +1,38 @@
-# Implement Exam Deletion Feature
+# Implementation Plan: Phase 4 Advanced Key Editor UI
 
-This plan outlines the steps to securely add the capability for users to delete their exams and all associated data, following the requirements provided in the prompt.
-
-## User Review Required
-
-Please review the cascade deletion logic and UI placement below.
-> [!IMPORTANT]
-> The deletion will permanently remove all physical image files uploaded by scanners, all `student_scores` for that exam, any `exam_shares` linking other professors, and the main `exams` record. This action cannot be undone.
+This phase focuses on completely revamping the Key Editor UI to allow professors to visually configure the new advanced JSON parameters (Multiple answers, Points, Penalties, Logic, and Ignore).
 
 ## Proposed Changes
 
----
+### [MODIFY] [key_editor.php](file:///c:/Final%20Project/key_editor.php)
 
-### Backend API
+#### 1. Data Structure Migration & Initialization
+When loading the key from the database, the PHP script will need to adapt to the new structure.
+- Old structure: `{"A": {"1": "B"}}`
+- New structure: `{"A": {"1": {"answers": ["B"], "logic": "OR", "points": 1, "penalty": 0, "ignore": false}}}`
+- The script will initialize missing configurations with defaults `(points: 1, logic: 'OR')` to prevent JS errors.
 
-#### [NEW] [delete_exam.php](file:///c:/Final%20Project/api/delete_exam.php)
-Create a new PHP script that handles `POST` requests to delete an exam.
-- **Security**: Verifies that `$_SESSION['user_id']` matches the `owner_id` of the `exam_id` in the `exams` table.
-- **File System cleanup**: Queries all `image_path` entries in `student_scores` for this exam and runs `unlink()` to physically remove the image files from the server.
-- **Database Transaction**:
-  1. `DELETE FROM exam_shares WHERE exam_id = ?`
-  2. `DELETE FROM student_scores WHERE exam_id = ?`
-  3. `DELETE FROM exams WHERE exam_id = ?`
-- Returns a JSON response with status success/error.
+#### 2. UI Layout Overhaul
+- **Multi-select Bubbles:** Modify the A/B/C/D/E buttons to act as toggles (checkboxes) instead of radio buttons, allowing multiple correct answers.
+- **Settings Collapse/Modal per Question:** Add a "gear" settings button next to each question. Clicking it will reveal a Tailwind dropdown or inline form below the bubbles containing:
+  - `Points` (Number input, default 1)
+  - `Penalty` (Number input, default 0)
+  - `Logic` (Dropdown: `OR (Any match)` / `AND (Exact match)`)
+  - `Ignore` (Toggle switch to ignore the question)
 
----
+#### 3. JavaScript Logic Rewrite
+- Rewrite `renderKey()` to parse the new object format. It will highlight multiple bubbles and populate the settings dropdown correctly.
+- Update click listeners so clicking a bubble toggles it in the `answerKey[currentSet][q].answers` array rather than replacing it.
+- Bind `change` events on the settings inputs to update their respective keys in the `answerKey` object instantly.
+- The "Save" button will `JSON.stringify` the new complex object and send it to `api/exams.php`, which will then naturally trigger the Auto-Regrade hook we built in Phase 3.
 
-### Frontend Dashboard
-
-#### [MODIFY] [dashboard.php](file:///c:/Final%20Project/dashboard.php)
-- **UI Update - Exam Card**: Add a subtle, text-based delete button (`text-rose-600 hover:bg-rose-50`) at the bottom of the card's action group.
-- **UI Update - Modal**: Append a new hidden confirmation modal with Tailwind's `backdrop-blur-sm` styling at the end of the `<body>`.
-  - Includes a warning message and "Confirm Delete" / "Cancel" buttons.
-- **JS Logic Update**: 
-  - Add `openDeleteModal(examId)` function to display the confirmation dialog.
-  - Implement an event listener on the confirmation form to `fetch('api/delete_exam.php')` using a `FormData` payload.
-  - On success, close the modal and call `loadExams()` to refresh the dashboard seamlessly.
+## User Review Required
+> [!IMPORTANT]
+> The UI for per-question settings can get cluttered. I plan to use an **inline collapsible section** (hidden by default) that expands when the user clicks a "Settings" gear icon for that specific question. This keeps the initial view clean. Do you approve this inline collapsible design?
 
 ## Verification Plan
-
-### Automated Tests
-I will manually write a quick PHP CLI test script to:
-1. Create a mock exam and mock student score with a dummy image file.
-2. Call the `delete_exam.php` logic programmatically.
-3. Assert that the image file is deleted from the disk and the DB records no longer exist.
-
-### Manual Verification
-Reviewing the UI visually via the browser subagent or requesting you to refresh the dashboard, click the "Delete" button, and verify the modal appearance and functionality.
+1. Open the Key Editor for an exam.
+2. Select multiple bubbles for a question.
+3. Open the gear menu, change Points to 2 and Logic to AND.
+4. Hit Save.
+5. Reload the page and verify the state persists correctly.

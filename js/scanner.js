@@ -230,8 +230,12 @@ function processVideo() {
                 
                 // Simulate successful scan extraction
                 if (!isSubmitting) {
-                     // Example dummy student ID for PoC. In production, this comes from OCR.
-                     submitScore('64010000001', 45, JSON.stringify(mockAnswers), base64Image); 
+                     if (scanMode === 'key') {
+                         submitKey(JSON.stringify(mockAnswers));
+                     } else {
+                         // Example dummy student ID for PoC. In production, this comes from OCR.
+                         submitScore('64010000001', 45, JSON.stringify(mockAnswers), base64Image); 
+                     }
                 }
             } finally {
                 if (srcTri) srcTri.delete();
@@ -267,6 +271,64 @@ function processVideo() {
 let scannedStudentIds = new Set();
 let isSubmitting = false;
 let examId = document.getElementById('examId')?.value || document.querySelector('input[name="exam_id"]')?.value || 1;
+let scanMode = 'student'; // 'student' | 'key'
+
+// UI Mode Switcher
+window.setScanMode = function(mode) {
+    scanMode = mode;
+    const btnStudent = document.getElementById('modeStudentBtn');
+    const btnKey = document.getElementById('modeKeyBtn');
+    
+    if (mode === 'student') {
+        btnStudent.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm";
+        btnKey.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors text-gray-900 hover:bg-black/10";
+        statusIndicator.textContent = 'โหมดตรวจกระดาษคำตอบ';
+        statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    } else {
+        btnKey.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors bg-blue-600 text-white shadow-sm";
+        btnStudent.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors text-gray-900 hover:bg-black/10";
+        statusIndicator.textContent = 'โหมดสร้างเฉลย (Scan as Key)';
+        statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)'; // Blue
+    }
+};
+
+async function submitKey(rawAnswers) {
+    if (isSubmitting) return;
+    isSubmitting = true;
+    
+    statusIndicator.textContent = 'กำลังบันทึกเฉลย...';
+    statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)'; // Blue
+    let examSet = document.getElementById('examSetScanner')?.value || 'A';
+
+    const formData = new FormData();
+    formData.append('exam_id', examId);
+    formData.append('exam_set', examSet);
+    formData.append('raw_answers', rawAnswers);
+
+    try {
+        const response = await fetch('api/scan_key.php', { method: 'POST', body: formData });
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            playBeep();
+            statusIndicator.textContent = `✅ บันทึกเฉลยชุด ${examSet} และตรวจใหม่ ${data.regraded_count} คน`;
+            statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // Green
+            videoWrapper.style.borderColor = '#2563EB'; // Blue border for Key Mode success
+        } else {
+            statusIndicator.textContent = '⚠️ Error: ' + data.message;
+            statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)'; // Red
+        }
+    } catch (error) {
+        statusIndicator.textContent = '⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้';
+        statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+    }
+
+    setTimeout(() => {
+        isSubmitting = false;
+        setScanMode('key'); // Reset UI to key mode visuals
+        videoWrapper.style.borderColor = 'var(--border-color)';
+    }, 4000);
+}
 
 async function submitScore(studentId, score, rawAnswers = '{}', imageBase64 = '') {
     if (isSubmitting) return;

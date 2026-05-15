@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="item-card ${item.is_hard ? 'hard' : ''}">
                     <div class="flex justify-between items-center mb-2">
                         <strong class="text-gray-900">ข้อ ${item.question}</strong>
-                        <span class="${item.is_hard ? 'text-red-600' : 'text-emerald-600'} font-bold">
+                        <span class="${item.is_hard ? 'text-red-600' : 'text-yellow-600'} font-bold">
                             ตอบถูก ${item.correct_pct}%
                         </span>
                     </div>
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <tr class="hover:bg-gray-50 transition-colors">
                 <td class="py-3 px-6 font-semibold text-gray-900">${s.student_id}</td>
                 <td class="py-3 px-6"><span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-bold border border-gray-200">${s.exam_set || 'A'}</span></td>
-                <td class="py-3 px-6"><span class="text-xl font-black text-emerald-600">${s.score}</span></td>
+                <td class="py-3 px-6"><span class="text-xl font-black text-yellow-600">${s.score}</span></td>
                 <td class="py-3 px-6 text-sm text-gray-500">${new Date(s.scanned_at).toLocaleString('th-TH')}</td>
                 <td class="py-3 px-6 text-center">
                     ${s.image_path ? 

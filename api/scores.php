@@ -44,26 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $exam_set = $_POST['exam_set'] ?? 'A';
 
     // Calculate actual score from raw_answers
-    $actual_score = 0;
+    $actual_score = $score; // Fallback
     if ($raw_answers) {
         $stmtKey = $pdo->prepare("SELECT answer_key FROM exams WHERE exam_id = ?");
         $stmtKey->execute([$exam_id]);
         $exam_data = $stmtKey->fetch();
         if ($exam_data) {
-            $all_keys = json_decode($exam_data['answer_key'], true);
-            $answer_key = isset($all_keys['A']) ? ($all_keys[$exam_set] ?? []) : $all_keys;
-            
-            $raw_arr = json_decode($raw_answers, true);
-            if (is_array($raw_arr)) {
-                foreach ($raw_arr as $q => $ans) {
-                    if (isset($answer_key[$q]) && $answer_key[$q] === $ans) {
-                        $actual_score++;
-                    }
-                }
-            }
+            require_once 'grading_engine.php';
+            $actual_score = calculate_score($raw_answers, $exam_data['answer_key'], $exam_set, $score);
         }
-    } else {
-        $actual_score = $score; // Fallback to provided score if no raw answers
     }
 
     try {

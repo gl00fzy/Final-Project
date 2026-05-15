@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id'])) {
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
-    <nav class="bg-emerald-600 text-white shadow-md">
+    <nav class="bg-gray-800 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">
@@ -24,9 +24,9 @@ if (!isset($_SESSION['user_id'])) {
                     OMR System
                 </a>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <a href="roster.php" class="text-emerald-100 hover:text-white hover:bg-emerald-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">รายชื่อนิสิต</a>
+                    <a href="roster.php" class="text-gray-300 hover:text-white hover:bg-yellow-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">รายชื่อนิสิต</a>
                     <span class="text-sm hidden sm:block font-medium">สวัสดี, <?= htmlspecialchars($_SESSION['name']) ?></span>
-                    <a href="api/auth.php?logout=1" class="bg-emerald-700 hover:bg-emerald-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกระบบ</a>
+                    <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกระบบ</a>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@ if (!isset($_SESSION['user_id'])) {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <h2 class="text-2xl font-bold text-gray-900">จัดการข้อสอบ</h2>
-            <button id="btnCreateExam" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-sm transition-colors w-full sm:w-auto flex justify-center items-center gap-2">
+            <button id="btnCreateExam" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-xl shadow-sm transition-colors w-full sm:w-auto flex justify-center items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 สร้างชุดข้อสอบ
             </button>
@@ -43,7 +43,7 @@ if (!isset($_SESSION['user_id'])) {
 
         <div id="examList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="col-span-full flex justify-center py-12">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
             </div>
         </div>
     </div>
@@ -56,22 +56,22 @@ if (!isset($_SESSION['user_id'])) {
                 <input type="hidden" name="action" value="create">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อวิชา</label>
-                    <input type="text" name="exam_title" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="text" name="exam_title" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">รหัสวิชา</label>
-                    <input type="text" name="exam_code" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="text" name="exam_code" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">จำนวนข้อ</label>
-                    <select name="question_count" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                    <select name="question_count" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white">
                         <option value="50">50 ข้อ</option>
                         <option value="100">100 ข้อ</option>
                         <option value="150">150 ข้อ</option>
                     </select>
                 </div>
                 <div class="mt-4 flex flex-col gap-3">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">บันทึก</button>
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-colors">บันทึก</button>
                     <button type="button" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors" onclick="document.getElementById('createExamModal').classList.remove('flex'); document.getElementById('createExamModal').classList.add('hidden');">ยกเลิก</button>
                 </div>
             </form>
@@ -86,10 +86,10 @@ if (!isset($_SESSION['user_id'])) {
                 <input type="hidden" name="exam_id" id="shareExamId">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Username ของผู้ที่ต้องการแชร์ให้</label>
-                    <input type="text" name="username" required placeholder="เช่น teacher_demo" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="text" name="username" required placeholder="เช่น teacher_demo" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500">
                 </div>
                 <div class="mt-4 flex flex-col gap-3">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">แชร์ข้อสอบ</button>
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-colors">แชร์ข้อสอบ</button>
                     <button type="button" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors" onclick="document.getElementById('shareExamModal').classList.remove('flex'); document.getElementById('shareExamModal').classList.add('hidden');">ยกเลิก</button>
                 </div>
             </form>
@@ -205,16 +205,16 @@ if (!isset($_SESSION['user_id'])) {
                     
                     list.innerHTML = data.data.map(exam => `
                         <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full">
-                            <h3 class="text-xl font-bold text-gray-900 mb-1">${escapeHtml(exam.exam_title)} ${exam.exam_code ? `<span class="text-emerald-600 text-lg">(${escapeHtml(exam.exam_code)})</span>` : ''}</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">${escapeHtml(exam.exam_title)} ${exam.exam_code ? `<span class="text-yellow-600 text-lg">(${escapeHtml(exam.exam_code)})</span>` : ''}</h3>
                             <p class="text-gray-500 mb-6 flex-grow">จำนวน ${exam.question_count} ข้อ</p>
                             
                             <div class="flex flex-col gap-3">
                                 <div class="grid grid-cols-2 gap-3">
-                                    <a href="scanner.php?exam_id=${exam.exam_id}" class="bg-emerald-600 hover:bg-emerald-700 text-white text-center font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-1">
+                                    <a href="scanner.php?exam_id=${exam.exam_id}" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-center font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                         สแกน
                                     </a>
-                                    <a href="view_results.php?exam_id=${exam.exam_id}" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-center font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-1">
+                                    <a href="view_results.php?exam_id=${exam.exam_id}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border border-yellow-200 text-center font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                                         สถิติ
                                     </a>

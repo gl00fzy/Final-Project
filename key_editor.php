@@ -22,16 +22,43 @@ if (!$exam) {
 $question_count = (int)$exam['question_count'];
 $raw_key = json_decode($exam['answer_key'] ?? '{}', true);
 
-// Migrate old flat structure to Set-based structure if needed
-if (!isset($raw_key['A'])) {
-    if (empty($raw_key)) {
-        $answer_key = ['A' => [], 'B' => [], 'C' => []];
-    } else {
-        $answer_key = ['A' => $raw_key, 'B' => [], 'C' => []];
+// Normalize old flat structure to new Advanced JSON structure
+if (empty($raw_key)) $raw_key = [];
+$normalized_key = ['A' => [], 'B' => [], 'C' => []];
+
+foreach (['A', 'B', 'C'] as $set) {
+    $set_data = $raw_key[$set] ?? (isset($raw_key['1']) && $set === 'A' ? $raw_key : []);
+    
+    for ($i = 1; $i <= $question_count; $i++) {
+        $q_str = (string)$i;
+        if (isset($set_data[$q_str])) {
+            $val = $set_data[$q_str];
+            if (is_string($val)) {
+                // Migrate legacy format
+                $normalized_key[$set][$q_str] = [
+                    'answers' => [$val],
+                    'logic' => 'OR',
+                    'points' => 1,
+                    'penalty' => 0,
+                    'ignore' => false
+                ];
+            } else {
+                // Already new format
+                $normalized_key[$set][$q_str] = $val;
+            }
+        } else {
+            // Default new initialization
+            $normalized_key[$set][$q_str] = [
+                'answers' => [],
+                'logic' => 'OR',
+                'points' => 1,
+                'penalty' => 0,
+                'ignore' => false
+            ];
+        }
     }
-} else {
-    $answer_key = $raw_key;
 }
+$answer_key = $normalized_key;
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -44,10 +71,10 @@ if (!isset($raw_key['A'])) {
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
-    <nav class="bg-emerald-600 text-white shadow-md sticky top-0 z-10">
+    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="dashboard.php" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
+                <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
                     &larr; กลับ
                 </a>
                 <div class="font-bold text-lg hidden sm:block truncate px-4">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
@@ -64,26 +91,56 @@ if (!isset($raw_key['A'])) {
                     <p class="text-gray-500">จำนวน <strong class="text-gray-900"><?= $question_count ?></strong> ข้อ</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-medium text-gray-700">
+                    <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white font-medium text-gray-700">
                         <option value="A">ชุดข้อสอบ A</option>
                         <option value="B">ชุดข้อสอบ B</option>
                         <option value="C">ชุดข้อสอบ C</option>
                     </select>
-                    <button class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm" id="btnSaveKey">บันทึกเฉลย</button>
+                    <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4" id="keyContainer">
                 <?php for($i = 1; $i <= $question_count; $i++): ?>
-                    <?php 
-                        $options = ['A', 'B', 'C', 'D', 'E'];
-                    ?>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-emerald-200 transition-colors">
-                        <span class="font-bold text-gray-700 w-8"><?= $i ?>.</span>
-                        <div class="flex gap-1.5 options" data-q="<?= $i ?>">
-                            <?php foreach($options as $opt): ?>
-                                <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-emerald-500 transition-all opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
-                            <?php endforeach; ?>
+                    <?php $options = ['A', 'B', 'C', 'D', 'E']; ?>
+                    <div class="flex flex-col p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-yellow-300 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-gray-700 w-8"><?= $i ?>.</span>
+                            <div class="flex gap-1.5 options" data-q="<?= $i ?>">
+                                <?php foreach($options as $opt): ?>
+                                    <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-yellow-500 transition-all opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
+                                <?php endforeach; ?>
+                            </div>
+                            
+                            <!-- Settings Gear Button -->
+                            <button type="button" title="ตั้งค่าข้อนี้" class="ml-2 p-1.5 text-gray-400 hover:text-yellow-600 transition-colors focus:outline-none gear-btn" data-q="<?= $i ?>">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Collapsible Settings Panel -->
+                        <div class="hidden mt-3 pt-3 border-t border-gray-200 settings-panel" data-q="<?= $i ?>">
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <label class="block text-gray-500 mb-1 text-xs">คะแนน (Points)</label>
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-points" data-q="<?= $i ?>" value="1">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 mb-1 text-xs">หักคะแนน (Penalty)</label>
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 setting-penalty" data-q="<?= $i ?>" value="0">
+                                </div>
+                                <div class="col-span-2 mt-1">
+                                    <label class="block text-gray-500 mb-1 text-xs">เงื่อนไข (Logic)</label>
+                                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-logic" data-q="<?= $i ?>">
+                                        <option value="OR">OR (ถูกวงใดวงหนึ่งได้คะแนน)</option>
+                                        <option value="AND">AND (ต้องถูกทุกวงเท่านั้น)</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-2 mt-1 flex items-center gap-2 bg-rose-50 px-2 py-1.5 rounded border border-rose-100">
+                                    <input type="checkbox" id="ignore_<?= $i ?>" class="w-4 h-4 text-rose-600 rounded focus:ring-rose-500 setting-ignore" data-q="<?= $i ?>">
+                                    <label for="ignore_<?= $i ?>" class="text-xs text-rose-700 cursor-pointer font-medium">Ignore (ข้าม/ไม่คิดคะแนนข้อนี้)</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 <?php endfor; ?>
@@ -93,44 +150,100 @@ if (!isset($raw_key['A'])) {
 
     <script>
         let answerKey = <?= json_encode($answer_key) ?>;
-        if (!answerKey['A']) answerKey['A'] = {};
-        if (!answerKey['B']) answerKey['B'] = {};
-        if (!answerKey['C']) answerKey['C'] = {};
-        
         const examId = <?= $exam_id ?>;
         let currentSet = 'A';
 
         function renderKey() {
+            // Update bubbles
             document.querySelectorAll('.options').forEach(group => {
                 const q = group.getAttribute('data-q');
+                const config = answerKey[currentSet][q];
+                const answers = config.answers || [];
+                
                 group.querySelectorAll('.opt-btn').forEach(btn => {
-                    btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+                    const val = btn.getAttribute('data-val');
+                    btn.classList.remove('bg-yellow-400', 'text-gray-900', 'border-yellow-500');
                     btn.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
-                    if (answerKey[currentSet][q] === btn.getAttribute('data-val')) {
+                    
+                    if (answers.includes(val)) {
                         btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
-                        btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+                        btn.classList.add('bg-yellow-400', 'text-gray-900', 'border-yellow-500');
                     }
                 });
+            });
+
+            // Update settings panels
+            document.querySelectorAll('.settings-panel').forEach(panel => {
+                const q = panel.getAttribute('data-q');
+                const config = answerKey[currentSet][q];
+                
+                panel.querySelector('.setting-points').value = config.points;
+                panel.querySelector('.setting-penalty').value = config.penalty;
+                panel.querySelector('.setting-logic').value = config.logic;
+                panel.querySelector('.setting-ignore').checked = config.ignore;
             });
         }
 
         document.getElementById('examSetSelector').addEventListener('change', (e) => {
             currentSet = e.target.value;
             renderKey();
+            // Close all open setting panels when switching sets to avoid confusion
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
         });
 
-        document.querySelectorAll('.options').forEach(group => {
-            const q = group.getAttribute('data-q');
-            group.querySelectorAll('.opt-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    group.querySelectorAll('.opt-btn').forEach(b => {
-                        b.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
-                        b.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
-                    });
-                    btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
-                    btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
-                    answerKey[currentSet][q] = btn.getAttribute('data-val');
-                });
+        // Bubble Toggle Logic (Multiple Select)
+        document.querySelectorAll('.opt-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const group = e.target.closest('.options');
+                const q = group.getAttribute('data-q');
+                const val = btn.getAttribute('data-val');
+                const answers = answerKey[currentSet][q].answers;
+                
+                const index = answers.indexOf(val);
+                if (index > -1) {
+                    answers.splice(index, 1); // Remove if already selected
+                } else {
+                    answers.push(val); // Add if not selected
+                }
+                renderKey(); // Re-render to reflect changes visually
+            });
+        });
+
+        // Gear Icon Toggle
+        document.querySelectorAll('.gear-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const q = e.currentTarget.getAttribute('data-q');
+                const panel = document.querySelector(`.settings-panel[data-q="${q}"]`);
+                panel.classList.toggle('hidden');
+            });
+        });
+
+        // Setup real-time listeners for Settings inputs
+        document.querySelectorAll('.setting-points').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const q = e.target.getAttribute('data-q');
+                answerKey[currentSet][q].points = parseFloat(e.target.value) || 0;
+            });
+        });
+
+        document.querySelectorAll('.setting-penalty').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const q = e.target.getAttribute('data-q');
+                answerKey[currentSet][q].penalty = parseFloat(e.target.value) || 0;
+            });
+        });
+
+        document.querySelectorAll('.setting-logic').forEach(select => {
+            select.addEventListener('change', (e) => {
+                const q = e.target.getAttribute('data-q');
+                answerKey[currentSet][q].logic = e.target.value;
+            });
+        });
+
+        document.querySelectorAll('.setting-ignore').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const q = e.target.getAttribute('data-q');
+                answerKey[currentSet][q].ignore = e.target.checked;
             });
         });
 
@@ -140,7 +253,7 @@ if (!isset($raw_key['A'])) {
         document.getElementById('btnSaveKey').addEventListener('click', async () => {
             const btn = document.getElementById('btnSaveKey');
             const originalText = btn.textContent;
-            btn.textContent = 'กำลังบันทึก...';
+            btn.textContent = 'กำลังบันทึกและตรวจใหม่...';
             btn.disabled = true;
 
             const formData = new FormData();
@@ -155,7 +268,7 @@ if (!isset($raw_key['A'])) {
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    alert('บันทึกเฉลยเรียบร้อยแล้ว');
+                    alert('บันทึกเฉลยเรียบร้อยแล้ว!\nระบบได้ทำการอัปเดตคะแนนนิสิตอัตโนมัติ จำนวน ' + (data.regraded_count || 0) + ' คน');
                 } else {
                     alert('Error: ' + data.message);
                 }

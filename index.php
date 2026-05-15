@@ -19,7 +19,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="min-h-screen flex flex-col justify-center items-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-100">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 mb-4">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">OMR System</h1>
@@ -31,18 +31,18 @@ if (isset($_SESSION['user_id'])) {
             <form id="loginForm" class="flex flex-col gap-5">
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ใช้งาน</label>
-                    <input type="text" id="username" name="username" required placeholder="เช่น teacher_demo" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                    <input type="text" id="username" name="username" required placeholder="เช่น teacher_demo" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors">
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-1">รหัสผ่าน</label>
-                    <input type="password" id="password" name="password" required placeholder="รหัสผ่าน (password123)" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                    <input type="password" id="password" name="password" required placeholder="รหัสผ่าน (password123)" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors">
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors mt-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">เข้าสู่ระบบ</button>
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-colors mt-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">เข้าสู่ระบบ</button>
             </form>
         </div>
         
         <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">ยังไม่มีบัญชีผู้ใช้งาน? <a href="register.php" class="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors">สมัครสมาชิก</a></p>
+            <p class="text-sm text-gray-600">ยังไม่มีบัญชีผู้ใช้งาน? <a href="register.php" class="text-yellow-600 font-semibold hover:text-yellow-700 hover:underline transition-colors">สมัครสมาชิก</a></p>
         </div>
         
         <p class="mt-8 text-sm text-gray-400">Powered by Advanced Agentic AI</p>

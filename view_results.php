@@ -33,7 +33,7 @@ $exam_id = (int)$_GET['exam_id'];
         .stat-value {
             font-size: 2.25rem;
             font-weight: 800;
-            color: #059669; /* emerald-600 */
+            color: #d97706; /* emerald-600 */
         }
         .item-card {
             background: #fff;
@@ -48,7 +48,7 @@ $exam_id = (int)$_GET['exam_id'];
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
-    <nav class="bg-emerald-600 text-white shadow-md">
+    <nav class="bg-gray-800 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">
@@ -57,7 +57,7 @@ $exam_id = (int)$_GET['exam_id'];
                 </a>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <span class="text-sm hidden sm:block font-medium"><?= htmlspecialchars($_SESSION['name']) ?></span>
-                    <a href="api/auth.php?logout=1" class="bg-emerald-700 hover:bg-emerald-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกจากระบบ</a>
+                    <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกจากระบบ</a>
                 </div>
             </div>
         </div>

@@ -21,7 +21,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
-    <nav class="bg-emerald-600 text-white shadow-md">
+    <nav class="bg-gray-800 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">
@@ -30,7 +30,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </a>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <span class="text-sm hidden sm:block font-medium"><?= htmlspecialchars($_SESSION['name']) ?></span>
-                    <a href="api/auth.php?logout=1" class="bg-emerald-700 hover:bg-emerald-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกจากระบบ</a>
+                    <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกจากระบบ</a>
                 </div>
             </div>
         </div>
@@ -47,8 +47,8 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-gray-500 mb-6">รองรับไฟล์ .csv โดยคอลัมน์แรกคือ "รหัสนิสิต" และคอลัมน์ที่สองคือ "ชื่อ-นามสกุล"</p>
             
             <form id="uploadForm" class="flex flex-col sm:flex-row gap-4 items-center">
-                <input type="file" id="csvFile" accept=".csv" required class="w-full sm:flex-1 px-4 py-3 border border-dashed border-emerald-300 rounded-xl bg-emerald-50/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                <button type="submit" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-xl transition-colors shadow-sm whitespace-nowrap" id="uploadBtn">อัปโหลดรายชื่อ</button>
+                <input type="file" id="csvFile" accept=".csv" required class="w-full sm:flex-1 px-4 py-3 border border-dashed border-yellow-300 rounded-xl bg-yellow-50/50 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100">
+                <button type="submit" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-8 rounded-xl transition-colors shadow-sm whitespace-nowrap" id="uploadBtn">อัปโหลดรายชื่อ</button>
             </form>
             <div id="uploadStatus" class="mt-4 font-medium text-sm hidden"></div>
         </div>
@@ -108,7 +108,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 if (data.status === 'success') {
                     statusDiv.textContent = '✅ ' + data.message;
-                    statusDiv.className = 'mt-4 font-medium text-sm text-emerald-600 block';
+                    statusDiv.className = 'mt-4 font-medium text-sm text-yellow-600 block';
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
                     statusDiv.textContent = '❌ ' + data.message;
