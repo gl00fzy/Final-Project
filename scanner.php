@@ -19,6 +19,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>สแกนกระดาษคำตอบ - OMR System</title>
+    <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,7 +44,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         }
     </style>
 </head>
-<body class="bg-black text-white m-0 p-0 overflow-hidden font-['Inter']">
+<body class="bg-black text-white m-0 p-0 h-screen flex flex-col overflow-hidden font-['Inter']">
     <nav class="bg-[#111] border-b border-[#333] flex items-center justify-between px-4 h-16">
         <a href="dashboard.php" class="bg-transparent hover:bg-white/10 text-white border border-white font-medium py-1.5 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
             &larr; กลับ
@@ -52,23 +53,25 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         <div class="w-[74px]"></div> <!-- Spacer -->
     </nav>
 
-    <div id="scanner-container" class="relative w-full h-[calc(100vh-64px)] flex flex-col items-center justify-center overflow-hidden">
-        
-        <!-- Top Control Bar -->
-        <div class="absolute top-4 w-full flex justify-between items-center px-4 z-50 pointer-events-none">
+    <!-- Top Control Bar (Solid Block for Mobile Support) -->
+    <div class="bg-white shadow-md p-4 w-full z-50 relative border-b border-gray-200">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <!-- Mode Toggle -->
-            <div class="bg-black/50 backdrop-blur-md p-1 rounded-xl flex gap-1 pointer-events-auto border border-white/20">
-                <button id="modeStudentBtn" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm" onclick="setScanMode('student')">สแกนนิสิต</button>
-                <button id="modeKeyBtn" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors text-gray-900 hover:bg-black/10" onclick="setScanMode('key')">สแกนเฉลย</button>
+            <div class="bg-gray-100 p-1 rounded-lg flex gap-1 border border-gray-200 w-full md:w-auto">
+                <button id="modeStudentBtn" class="flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm" onclick="setScanMode('student')">สแกนนิสิต</button>
+                <button id="modeKeyBtn" class="flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-200" onclick="setScanMode('key')">สแกนเฉลย</button>
             </div>
             
             <!-- Set Selector -->
-            <select id="examSetScanner" class="px-4 py-2 rounded-xl bg-white/90 text-yellow-700 font-bold border-2 border-yellow-500 focus:outline-none backdrop-blur-sm shadow-lg pointer-events-auto">
+            <select id="examSetScanner" class="w-full md:w-auto px-6 py-2.5 rounded-lg bg-white text-yellow-700 font-bold border-2 border-yellow-500 focus:outline-none shadow-sm">
                 <option value="A">ชุดข้อสอบ A</option>
                 <option value="B">ชุดข้อสอบ B</option>
                 <option value="C">ชุดข้อสอบ C</option>
             </select>
         </div>
+    </div>
+
+    <div id="scanner-container" class="relative w-full flex-1 flex flex-col items-center justify-center overflow-hidden py-4">
 
         <div id="statusIndicator" class="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-6 py-3 rounded-full text-base font-bold shadow-lg z-50 text-white border border-white/10 whitespace-nowrap">กำลังโหลด OpenCV.js...</div>
         

@@ -280,13 +280,13 @@ window.setScanMode = function(mode) {
     const btnKey = document.getElementById('modeKeyBtn');
     
     if (mode === 'student') {
-        btnStudent.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm";
-        btnKey.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors text-gray-900 hover:bg-black/10";
+        btnStudent.className = "flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm";
+        btnKey.className = "flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-200";
         statusIndicator.textContent = 'โหมดตรวจกระดาษคำตอบ';
         statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
     } else {
-        btnKey.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors bg-blue-600 text-white shadow-sm";
-        btnStudent.className = "px-4 py-2 rounded-lg text-sm font-bold transition-colors text-gray-900 hover:bg-black/10";
+        btnKey.className = "flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors bg-blue-600 text-white shadow-sm";
+        btnStudent.className = "flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-200";
         statusIndicator.textContent = 'โหมดสร้างเฉลย (Scan as Key)';
         statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)'; // Blue
     }
