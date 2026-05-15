@@ -29,6 +29,12 @@ function onOpenCvReady() {
 }
 
 function startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        statusIndicator.textContent = "เบราว์เซอร์ไม่รองรับการเปิดกล้อง (ตรวจสอบ HTTPS)";
+        videoWrapper.classList.add('error');
+        return;
+    }
+
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
         .then(function(stream) {
             video.srcObject = stream;
@@ -135,74 +141,106 @@ function processVideo() {
             let width = 600;
             let height = 848;
             
-            let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-                tl.x, tl.y, tr.x, tr.y, br.x, br.y, bl.x, bl.y
-            ]);
-            let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-                0, 0, width, 0, width, height, 0, height
-            ]);
+            let srcTri = null, dstTri = null, M = null, warped = null, warpedGray = null, binary = null;
 
-            let M = cv.getPerspectiveTransform(srcTri, dstTri);
-            let warped = new cv.Mat();
-            cv.warpPerspective(src, warped, M, new cv.Size(width, height), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
-            
-            // --- Basic Bubble Detection ---
-            // 1. Convert warped image to grayscale & binary inverse
-            let warpedGray = new cv.Mat();
-            cv.cvtColor(warped, warpedGray, cv.COLOR_RGBA2GRAY);
-            let binary = new cv.Mat();
-            // Inverse threshold so filled bubbles (black ink) become white pixels
-            cv.threshold(warpedGray, binary, 100, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+            try {
+                srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+                    tl.x, tl.y, tr.x, tr.y, br.x, br.y, bl.x, bl.y
+                ]);
+                dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+                    0, 0, width, 0, width, height, 0, height
+                ]);
 
-            // For PoC, let's just define a bounding box where Question 1 (A-E) might be.
-            // Say it starts at x=100, y=200, bubble width=30, height=30, gap=15.
-            let startX = 100, startY = 200, bSize = 30, gap = 15;
-            let options = ['A', 'B', 'C', 'D', 'E'];
-            let maxPixels = 0;
-            let selectedOption = null;
-
-            for (let i = 0; i < 5; i++) {
-                let bx = startX + i * (bSize + gap);
-                let by = startY;
+                M = cv.getPerspectiveTransform(srcTri, dstTri);
+                warped = new cv.Mat();
+                cv.warpPerspective(src, warped, M, new cv.Size(width, height), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
                 
-                // Ensure ROI is within bounds
-                if (bx + bSize < width && by + bSize < height) {
-                    let rect = new cv.Rect(bx, by, bSize, bSize);
-                    let roi = binary.roi(rect);
-                    let filledPixels = cv.countNonZero(roi);
+                // --- Basic Bubble Detection ---
+                // 1. Convert warped image to grayscale & binary inverse
+                warpedGray = new cv.Mat();
+                cv.cvtColor(warped, warpedGray, cv.COLOR_RGBA2GRAY);
+                binary = new cv.Mat();
+                // Inverse threshold so filled bubbles (black ink) become white pixels
+                cv.threshold(warpedGray, binary, 100, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+
+                // For PoC, let's just define a bounding box where Question 1 (A-E) might be.
+                // Say it starts at x=100, y=200, bubble width=30, height=30, gap=15.
+                let startX = 100, startY = 200, bSize = 30, gap = 15;
+                let options = ['A', 'B', 'C', 'D', 'E'];
+                let maxPixels = 0;
+                let selectedOption = null;
+
+                for (let i = 0; i < 5; i++) {
+                    let bx = startX + i * (bSize + gap);
+                    let by = startY;
                     
-                    // Draw a blue box on the color warped image to visualize
-                    let point1 = new cv.Point(bx, by);
-                    let point2 = new cv.Point(bx + bSize, by + bSize);
-                    let color = new cv.Scalar(255, 0, 0, 255); // Blue
-                    cv.rectangle(warped, point1, point2, color, 2);
+                    // Ensure ROI is within bounds
+                    if (bx + bSize < width && by + bSize < height) {
+                        let rect = new cv.Rect(bx, by, bSize, bSize);
+                        let roi = binary.roi(rect);
+                        let filledPixels = cv.countNonZero(roi);
+                        
+                        // Draw a blue box on the color warped image to visualize
+                        let point1 = new cv.Point(bx, by);
+                        let point2 = new cv.Point(bx + bSize, by + bSize);
+                        let color = new cv.Scalar(255, 0, 0, 255); // Blue
+                        cv.rectangle(warped, point1, point2, color, 2);
 
-                    if (filledPixels > maxPixels && filledPixels > (bSize * bSize * 0.4)) { // 40% filled
-                        maxPixels = filledPixels;
-                        selectedOption = options[i];
+                        if (filledPixels > maxPixels && filledPixels > (bSize * bSize * 0.4)) { // 40% filled
+                            maxPixels = filledPixels;
+                            selectedOption = options[i];
+                        }
+                        roi.delete();
                     }
-                    roi.delete();
                 }
-            }
 
-            if (selectedOption) {
-                // Draw text showing detected option
-                cv.putText(warped, "Q1: " + selectedOption, new cv.Point(startX, startY - 10), cv.FONT_HERSHEY_SIMPLEX, 1, new cv.Scalar(0, 255, 0, 255), 2);
-            }
+                if (selectedOption) {
+                    // Draw text showing detected option
+                    cv.putText(warped, "Q1: " + selectedOption, new cv.Point(startX, startY - 10), cv.FONT_HERSHEY_SIMPLEX, 1, new cv.Scalar(0, 255, 0, 255), 2);
+                }
 
-            // Display warped image to debug canvas (which is hidden/small by default but can be made visible for debugging)
-            debugCanvas.style.display = 'block';
-            cv.imshow('debug-canvas', warped);
-            
-            // Simulate successful scan extraction (Wait a bit before submitting to avoid spamming)
-            // In a real scenario, this would be the actual calculated score and OCR'd student ID
-            if (!isSubmitting) {
-                 // Example dummy student ID for PoC. In production, this comes from the scanned bubbles.
-                 submitScore('64010000001', 45); 
+                // === MOCK PHASE 2 LOGIC ===
+                // Generate mock raw answers for Item Analysis
+                let mockAnswers = {};
+                for(let q=1; q<=50; q++) {
+                    // Skew distribution so it's not totally uniform
+                    let r = Math.random();
+                    if(r < 0.4) mockAnswers[q] = 'A';
+                    else if(r < 0.7) mockAnswers[q] = 'B';
+                    else if(r < 0.85) mockAnswers[q] = 'C';
+                    else if(r < 0.95) mockAnswers[q] = 'D';
+                    else mockAnswers[q] = 'E';
+                }
+                
+                // Draw mock overlay circles on warped mat
+                for(let q=1; q<=50; q++) {
+                    let rx = 50 + ((q-1)%5)*100;
+                    let ry = 50 + Math.floor((q-1)/5)*70;
+                    let isCorrect = Math.random() > 0.3; // 70% correct rate
+                    let color = isCorrect ? new cv.Scalar(0, 255, 0, 255) : new cv.Scalar(255, 0, 0, 255);
+                    cv.circle(warped, new cv.Point(rx, ry), 15, color, 3);
+                }
+
+                // Display warped image to debug canvas (which is hidden/small by default but can be made visible for debugging)
+                debugCanvas.style.display = 'block';
+                cv.imshow('debug-canvas', warped);
+                
+                // Capture the image as JPEG base64
+                let base64Image = debugCanvas.toDataURL('image/jpeg', 0.7);
+                
+                // Simulate successful scan extraction
+                if (!isSubmitting) {
+                     // Example dummy student ID for PoC. In production, this comes from OCR.
+                     submitScore('64010000001', 45, JSON.stringify(mockAnswers), base64Image); 
+                }
+            } finally {
+                if (srcTri) srcTri.delete();
+                if (dstTri) dstTri.delete();
+                if (M) M.delete();
+                if (warped) warped.delete();
+                if (warpedGray) warpedGray.delete();
+                if (binary) binary.delete();
             }
-            
-            srcTri.delete(); dstTri.delete(); M.delete(); warped.delete();
-            warpedGray.delete(); binary.delete();
         } else {
             videoWrapper.classList.add('error');
             videoWrapper.classList.remove('success');
@@ -230,7 +268,7 @@ let scannedStudentIds = new Set();
 let isSubmitting = false;
 let examId = document.getElementById('examId')?.value || document.querySelector('input[name="exam_id"]')?.value || 1;
 
-async function submitScore(studentId, score) {
+async function submitScore(studentId, score, rawAnswers = '{}', imageBase64 = '') {
     if (isSubmitting) return;
     if (scannedStudentIds.has(studentId)) {
         statusIndicator.textContent = '❌ รหัสนิสิตนี้ตรวจไปแล้วครับ (สแกนซ้ำ)';
@@ -241,10 +279,15 @@ async function submitScore(studentId, score) {
     isSubmitting = true;
     statusIndicator.textContent = 'กำลังบันทึกคะแนน...';
     
+    let examSet = document.getElementById('examSetScanner')?.value || 'A';
+
     const formData = new FormData();
     formData.append('exam_id', examId);
     formData.append('student_id', studentId);
-    formData.append('score', score);
+    formData.append('score', score); // Ignored by backend now
+    formData.append('exam_set', examSet);
+    formData.append('raw_answers', rawAnswers);
+    formData.append('image', imageBase64);
 
     try {
         const response = await fetch('api/scores.php', { method: 'POST', body: formData });
@@ -261,8 +304,15 @@ async function submitScore(studentId, score) {
             
             const resultCard = document.getElementById('scanResultCard');
             if(resultCard) {
-                document.getElementById('resStudentId').textContent = studentId;
-                document.getElementById('resScore').textContent = score;
+                let studentName = typeof studentDirectory !== 'undefined' && studentDirectory[studentId] ? studentDirectory[studentId] : 'ไม่มีชื่อในระบบ';
+                
+                function escapeHtml(text) {
+                    var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                    return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+                }
+
+                document.getElementById('resStudentId').innerHTML = `${escapeHtml(studentId)}<br><span style="font-size: 1.5rem; color: #4B5563;">${escapeHtml(studentName)}</span>`;
+                document.getElementById('resScore').textContent = data.calculated_score !== undefined ? data.calculated_score : score;
                 resultCard.style.display = 'block';
             }
         } else if (data.status === 'duplicate') {

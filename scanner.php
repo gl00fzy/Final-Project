@@ -5,6 +5,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 $exam_id = $_GET['exam_id'] ?? 1; // Default to 1 for PoC
+
+require_once 'config/database.php';
+$stmt = $pdo->query("SELECT student_id, name FROM students");
+$students = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $students[$row['student_id']] = $row['name'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -128,6 +135,12 @@ $exam_id = $_GET['exam_id'] ?? 1; // Default to 1 for PoC
     </nav>
 
     <div id="scanner-container">
+        <select id="examSetScanner" style="position: absolute; top: 15px; right: 15px; z-index: 100; padding: 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.9); font-weight: bold; border: 2px solid var(--primary-color); color: var(--primary-color);">
+            <option value="A">ชุดข้อสอบ A</option>
+            <option value="B">ชุดข้อสอบ B</option>
+            <option value="C">ชุดข้อสอบ C</option>
+        </select>
+
         <div id="statusIndicator" class="status-badge">กำลังโหลด OpenCV.js...</div>
         
         <div id="video-wrapper">
@@ -178,6 +191,9 @@ $exam_id = $_GET['exam_id'] ?? 1; // Default to 1 for PoC
     </div>
 
     <!-- Load OpenCV.js -->
+    <script>
+        const studentDirectory = <?= json_encode($students) ?>;
+    </script>
     <script async src="https://docs.opencv.org/4.8.0/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
     <!-- Scanner Logic -->
     <script src="js/scanner.js"></script>

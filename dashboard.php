@@ -34,8 +34,9 @@ if (!isset($_SESSION['user_id'])) {
 <body>
     <nav class="navbar">
         <a href="dashboard.php" class="navbar-brand">OMR System</a>
-        <div>
-            <span>สวัสดี, <?= htmlspecialchars($_SESSION['name']) ?></span>
+        <div style="display: flex; align-items: center;">
+            <a href="roster.php" class="btn btn-outline" style="padding: 0.25rem 0.75rem; border: none; background: transparent; font-size: 0.875rem;">รายชื่อนิสิต</a>
+            <span style="margin-left: 1rem;">สวัสดี, <?= htmlspecialchars($_SESSION['name']) ?></span>
             <a href="api/auth.php?logout=1" class="btn btn-outline" style="padding: 0.25rem 0.75rem; margin-left: 1rem; font-size: 0.875rem;">ออกระบบ</a>
         </div>
     </nav>
@@ -75,7 +76,25 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div style="margin-top: 1rem;">
                     <button type="submit" class="btn btn-primary w-full mb-2">บันทึก</button>
-                    <button type="button" class="btn btn-outline w-full" id="btnCancelCreate">ยกเลิก</button>
+                    <button type="button" class="btn btn-outline w-full" onclick="document.getElementById('createExamModal').style.display='none'">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Share Exam Modal -->
+    <div id="shareExamModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card p-6" style="width: 90%; max-width: 400px; margin: 0;">
+            <h2 class="mb-4">แชร์ข้อสอบให้อาจารย์ท่านอื่น</h2>
+            <form id="shareExamForm" class="flex-col">
+                <input type="hidden" name="exam_id" id="shareExamId">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Username ของผู้ที่ต้องการแชร์ให้</label>
+                    <input type="text" name="username" required placeholder="เช่น teacher_demo">
+                </div>
+                <div style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary w-full mb-2">แชร์ข้อสอบ</button>
+                    <button type="button" class="btn btn-outline w-full" onclick="document.getElementById('shareExamModal').style.display='none'">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -84,7 +103,6 @@ if (!isset($_SESSION['user_id'])) {
     <script>
         const modal = document.getElementById('createExamModal');
         document.getElementById('btnCreateExam').onclick = () => modal.style.display = 'flex';
-        document.getElementById('btnCancelCreate').onclick = () => modal.style.display = 'none';
 
         document.getElementById('createExamForm').onsubmit = async (e) => {
             e.preventDefault();
@@ -100,6 +118,27 @@ if (!isset($_SESSION['user_id'])) {
                     alert(data.message);
                 }
             } catch (err) { alert('Error creating exam'); }
+        };
+
+        function openShareModal(examId) {
+            document.getElementById('shareExamId').value = examId;
+            document.getElementById('shareExamModal').style.display = 'flex';
+        }
+
+        document.getElementById('shareExamForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            try {
+                const res = await fetch('api/share_manager.php', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert('แชร์ข้อสอบสำเร็จ');
+                    document.getElementById('shareExamModal').style.display = 'none';
+                    e.target.reset();
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) { alert('Error sharing exam'); }
         };
 
         async function loadExams() {
@@ -120,7 +159,14 @@ if (!isset($_SESSION['user_id'])) {
                             <p>จำนวน ${exam.question_count} ข้อ</p>
                             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                                 <a href="scanner.php?exam_id=${exam.exam_id}" class="btn btn-primary w-full">สแกนตรวจ</a>
+                                <a href="view_results.php?exam_id=${exam.exam_id}" class="btn btn-outline w-full" style="background: #ECFDF5; color: var(--primary-color); border-color: var(--primary-color);">ดูสถิติ (Analytics)</a>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                                 <a href="key_editor.php?exam_id=${exam.exam_id}" class="btn btn-outline w-full">จัดการเฉลย</a>
+                                <a href="api/export_csv.php?exam_id=${exam.exam_id}" class="btn btn-outline w-full" style="background: var(--bg-color);">ดาวน์โหลด CSV</a>
+                            </div>
+                            <div style="margin-top: 0.5rem;">
+                                <button onclick="openShareModal(${exam.exam_id})" class="btn w-full" style="background: #EEF2FF; color: #4F46E5; border: 1px solid #C7D2FE;">แชร์ข้อสอบ</button>
                             </div>
                         </div>
                     `).join('');

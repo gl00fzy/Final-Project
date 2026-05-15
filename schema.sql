@@ -25,11 +25,19 @@ CREATE TABLE IF NOT EXISTS exam_shares (
     FOREIGN KEY (shared_to_user_id) REFERENCES users(user_id)
 );
 
+CREATE TABLE IF NOT EXISTS students (
+    student_id TEXT PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS student_scores (
     score_id INTEGER PRIMARY KEY AUTOINCREMENT,
     exam_id INTEGER NOT NULL,
     student_id TEXT NOT NULL,
+    exam_set TEXT DEFAULT 'A',
     score INTEGER NOT NULL,
+    image_path TEXT,
+    raw_answers TEXT,
     scanned_by INTEGER NOT NULL,
     scanned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (exam_id) REFERENCES exams(exam_id),

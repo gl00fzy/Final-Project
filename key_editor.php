@@ -20,7 +20,18 @@ if (!$exam) {
 }
 
 $question_count = (int)$exam['question_count'];
-$answer_key = json_decode($exam['answer_key'] ?? '{}', true);
+$raw_key = json_decode($exam['answer_key'] ?? '{}', true);
+
+// Migrate old flat structure to Set-based structure if needed
+if (!isset($raw_key['A'])) {
+    if (empty($raw_key)) {
+        $answer_key = ['A' => [], 'B' => [], 'C' => []];
+    } else {
+        $answer_key = ['A' => $raw_key, 'B' => [], 'C' => []];
+    }
+} else {
+    $answer_key = $raw_key;
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -80,20 +91,26 @@ $answer_key = json_decode($exam['answer_key'] ?? '{}', true);
         <div class="card">
             <div class="header-actions mb-4">
                 <p>จำนวน <strong><?= $question_count ?></strong> ข้อ</p>
-                <button class="btn btn-primary" style="width: auto;" id="btnSaveKey">บันทึกเฉลย</button>
+                <div>
+                    <select id="examSetSelector" style="padding: 0.5rem; margin-right: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                        <option value="A">ชุดข้อสอบ A</option>
+                        <option value="B">ชุดข้อสอบ B</option>
+                        <option value="C">ชุดข้อสอบ C</option>
+                    </select>
+                    <button class="btn btn-primary" style="width: auto;" id="btnSaveKey">บันทึกเฉลย</button>
+                </div>
             </div>
 
             <div class="key-grid" id="keyContainer">
                 <?php for($i = 1; $i <= $question_count; $i++): ?>
                     <?php 
-                        $current_ans = $answer_key[$i] ?? ''; 
                         $options = ['A', 'B', 'C', 'D', 'E'];
                     ?>
                     <div class="question-row">
                         <span style="font-weight: 600; width: 30px;"><?= $i ?>.</span>
                         <div class="options" data-q="<?= $i ?>">
                             <?php foreach($options as $opt): ?>
-                                <button type="button" class="opt-btn <?= ($current_ans === $opt) ? 'active' : '' ?>" data-val="<?= $opt ?>"><?= $opt ?></button>
+                                <button type="button" class="opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -103,22 +120,44 @@ $answer_key = json_decode($exam['answer_key'] ?? '{}', true);
     </div>
 
     <script>
-        const answerKey = <?= json_encode($answer_key) ?>;
+        let answerKey = <?= json_encode($answer_key) ?>;
+        if (!answerKey['A']) answerKey['A'] = {};
+        if (!answerKey['B']) answerKey['B'] = {};
+        if (!answerKey['C']) answerKey['C'] = {};
+        
         const examId = <?= $exam_id ?>;
+        let currentSet = 'A';
+
+        function renderKey() {
+            document.querySelectorAll('.options').forEach(group => {
+                const q = group.getAttribute('data-q');
+                group.querySelectorAll('.opt-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (answerKey[currentSet][q] === btn.getAttribute('data-val')) {
+                        btn.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        document.getElementById('examSetSelector').addEventListener('change', (e) => {
+            currentSet = e.target.value;
+            renderKey();
+        });
 
         document.querySelectorAll('.options').forEach(group => {
             const q = group.getAttribute('data-q');
             group.querySelectorAll('.opt-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // Remove active from all in this group
                     group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-                    // Add active to clicked
                     btn.classList.add('active');
-                    // Save to object
-                    answerKey[q] = btn.getAttribute('data-val');
+                    answerKey[currentSet][q] = btn.getAttribute('data-val');
                 });
             });
         });
+
+        // Initial render
+        renderKey();
 
         document.getElementById('btnSaveKey').addEventListener('click', async () => {
             const btn = document.getElementById('btnSaveKey');

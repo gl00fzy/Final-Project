@@ -19,11 +19,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    $raw_answers = $_POST['raw_answers'] ?? null;
+    $image_base64 = $_POST['image'] ?? null;
+    $image_path = null;
+
+    if (!empty($image_base64)) {
+        // Handle Base64 string
+        if (preg_match('/^data:image\/(\w+);base64,/', $image_base64, $type)) {
+            $image_base64 = substr($image_base64, strpos($image_base64, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, etc.
+            $image_base64 = str_replace(' ', '+', $image_base64);
+            $data = base64_decode($image_base64);
+
+            if ($data !== false) {
+                $filename = "exam_{$exam_id}_student_{$student_id}_" . time() . ".jpg";
+                $filepath = "../uploads/exams/" . $filename;
+                if (file_put_contents($filepath, $data)) {
+                    $image_path = "uploads/exams/" . $filename;
+                }
+            }
+        }
+    }
+
+    $exam_set = $_POST['exam_set'] ?? 'A';
+
+    // Calculate actual score from raw_answers
+    $actual_score = 0;
+    if ($raw_answers) {
+        $stmtKey = $pdo->prepare("SELECT answer_key FROM exams WHERE exam_id = ?");
+        $stmtKey->execute([$exam_id]);
+        $exam_data = $stmtKey->fetch();
+        if ($exam_data) {
+            $all_keys = json_decode($exam_data['answer_key'], true);
+            $answer_key = isset($all_keys['A']) ? ($all_keys[$exam_set] ?? []) : $all_keys;
+            
+            $raw_arr = json_decode($raw_answers, true);
+            if (is_array($raw_arr)) {
+                foreach ($raw_arr as $q => $ans) {
+                    if (isset($answer_key[$q]) && $answer_key[$q] === $ans) {
+                        $actual_score++;
+                    }
+                }
+            }
+        }
+    } else {
+        $actual_score = $score; // Fallback to provided score if no raw answers
+    }
+
     try {
-        $stmt = $pdo->prepare("INSERT INTO student_scores (exam_id, student_id, score, scanned_by) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$exam_id, $student_id, $score, $user_id]);
+        $stmt = $pdo->prepare("INSERT INTO student_scores (exam_id, student_id, score, raw_answers, image_path, exam_set, scanned_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$exam_id, $student_id, $actual_score, $raw_answers, $image_path, $exam_set, $user_id]);
         
-        echo json_encode(['status' => 'success', 'message' => 'บันทึกคะแนนเรียบร้อย']);
+        echo json_encode(['status' => 'success', 'message' => 'บันทึกคะแนนเรียบร้อย', 'calculated_score' => $actual_score]);
     } catch (PDOException $e) {
         // SQLite constraint violation for UNIQUE(exam_id, student_id)
         if ($e->getCode() == 23000) {
