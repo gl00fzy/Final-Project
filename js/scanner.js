@@ -313,7 +313,7 @@ async function submitScore(studentId, score, rawAnswers = '{}', imageBase64 = ''
 
                 document.getElementById('resStudentId').innerHTML = `${escapeHtml(studentId)}<br><span style="font-size: 1.5rem; color: #4B5563;">${escapeHtml(studentName)}</span>`;
                 document.getElementById('resScore').textContent = data.calculated_score !== undefined ? data.calculated_score : score;
-                resultCard.style.display = 'block';
+                resultCard.classList.remove('hidden');
             }
         } else if (data.status === 'duplicate') {
             scannedStudentIds.add(studentId); // Add to local set to prevent further hits
@@ -333,7 +333,7 @@ async function submitScore(studentId, score, rawAnswers = '{}', imageBase64 = ''
         statusIndicator.textContent = 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
         videoWrapper.style.borderColor = 'var(--border-color)';
         const resultCard = document.getElementById('scanResultCard');
-        if(resultCard) resultCard.style.display = 'none';
+        if(resultCard) resultCard.classList.add('hidden');
     }, 3000);
 }
 
@@ -343,15 +343,22 @@ const btnManual = document.getElementById('btnManual');
 const btnCancelManual = document.getElementById('btnCancelManual');
 const manualForm = document.getElementById('manualForm');
 
-btnManual.addEventListener('click', () => manualModal.classList.add('active'));
-btnCancelManual.addEventListener('click', () => manualModal.classList.remove('active'));
+btnManual.addEventListener('click', () => {
+    manualModal.classList.remove('hidden');
+    manualModal.classList.add('flex');
+});
+btnCancelManual.addEventListener('click', () => {
+    manualModal.classList.remove('flex');
+    manualModal.classList.add('hidden');
+});
 
 manualForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const studentId = document.getElementById('studentId').value;
     const score = document.getElementById('score').value;
     
-    manualModal.classList.remove('active');
+    manualModal.classList.remove('flex');
+    manualModal.classList.add('hidden');
     await submitScore(studentId, score);
     manualForm.reset();
 });

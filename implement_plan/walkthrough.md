@@ -1,56 +1,29 @@
-# ระบบตรวจข้อสอบแบบปรนัย (OMR Web Application)
+# Tailwind CSS UI/UX Revamp Complete 🎨
 
-ระบบสแกนและตรวจข้อสอบปรนัยผ่านกล้องสมาร์ทโฟนด้วยเทคโนโลยี WebRTC, OpenCV.js และ PHP ได้รับการพัฒนาเสร็จสมบูรณ์แล้วตามโครงสร้างที่ออกแบบไว้
+The massive UI/UX refactoring is now complete! We have successfully migrated the entire Multiple Choice Grading System from custom CSS to a robust, modern, and highly accessible **Tailwind CSS** design system.
 
-## ภาพรวมของระบบ (System Overview)
+## 🎯 Key Achievements
 
-ระบบถูกออกแบบมาให้เป็น **Mobile-First** และไม่ต้องติดตั้งฐานข้อมูลแยก (ใช้ SQLite สำหรับ PoC) โดยมี 4 ส่วนหลักดังนี้:
+### 1. Unified Emerald Green Theme
+* Adopted a consistent `emerald-600` primary color across all screens.
+* Enhanced contrast ratios for text and backgrounds to ensure readability for older professors.
+* Replaced sharp corners with modern rounded elements (`rounded-xl`, `rounded-2xl`).
 
-### 1. ระบบ Authentication & Dashboard
-- **เข้าสู่ระบบ (`index.php`)**: รองรับการ Login ด้วย PHP Session 
-- **หน้าจัดการข้อสอบ (`dashboard.php`)**: อาจารย์สามารถสร้างรายวิชาใหม่ กำหนดรหัสวิชา และเลือกจำนวนข้อสอบ (50, 100, 150 ข้อ) ระบบจะแสดงรายการเป็นรูปแบบการ์ดที่ใช้งานง่าย
+### 2. Layout & Responsiveness
+* Eradicated all `position: absolute` overlapping text issues on normal pages.
+* Implemented flexible CSS Grids and Flexbox for seamless adaptation to both desktop and mobile screens.
+* Upgraded all Modals (Create Exam, Share Exam, Manual Entry, Image View) to use a sleek full-screen `backdrop-blur-sm` overlay effect.
 
-### 2. ระบบจัดการเฉลย (Key Editor)
-- **`key_editor.php`**: หน้า UI สำหรับเลือกเฉลยที่ถูกต้อง (A, B, C, D, E) ตามจำนวนข้อที่ตั้งไว้ และจะถูกบันทึกในฐานข้อมูลในรูปแบบ JSON
+### 3. Page-by-Page Enhancements
 
-### 3. ระบบสแกนกระดาษคำตอบด้วยกล้อง (Scanner & OpenCV.js)
-- **`scanner.php`**: ใช้ HTML5 `getUserMedia` เพื่อดึงภาพจากกล้องหลังของมือถือ
-- **OMR Engine (`js/scanner.js`)**: 
-  - ทำการแปลงภาพเป็น Grayscale, Blur, และทำ Edge Detection
-  - ค้นหาสี่เหลี่ยมจัตุรัส 4 มุมที่เป็นจุดอ้างอิง (Fiducial Markers)
-  - **Error Feedback**: หากหาไม่ครบ 4 มุม ขอบจอจะแสดงเส้นสีแดง หากหาครบจะเปลี่ยนเป็นสีเขียว
-  - **Perspective Transformation**: เมื่อเจอครบ 4 มุม ระบบจะทำการ Crop และดึงภาพ (Warp) ให้ออกมาตรงเหมือนกระดาษที่ถูกสแกน
-  - **Bubble Detection (PoC)**: ทดสอบแปลงภาพเป็น ขาว-ดำ (Binary) และคำนวณหาจำนวนพิกเซลสีดำเพื่อพิจารณาว่าฝนตัวเลือกใด
+* **Login (`index.php`)**: Re-centered the login card with improved input focus states and a beautiful SVG icon.
+* **Dashboard (`dashboard.php`)**: Transformed the flat exam list into structured grid cards. Each card now prominently features primary actions (Scan) and secondary actions (Stats, Keys, CSV) clearly separated.
+* **Roster (`roster.php`)**: Styled the CSV file upload area to look like a modern dropzone and completely revamped the student table for better scannability.
+* **Key Editor (`key_editor.php`)**: Modernized the A-E bubble selectors. Active states now clearly highlight in Emerald Green instead of generic colors.
+* **Scanner (`scanner.php`)**: Kept the essential camera logic untouched but added a massive, highly visible "Success" card overlay with blurred backgrounds. The manual entry button is now pinned cleanly to the bottom.
+* **Analytics (`view_results.php`)**: Overhauled the statistics dashboard. The Item Analysis and Student lists are now perfectly styled with responsive grid layouts.
 
-### 4. ระบบบันทึกคะแนนและป้องกันการส่งซ้ำ
-- **Duplicate Prevention**: ทั้งในฝั่ง Client (`scanner.js`) ที่ป้องกันการยิง API รัวๆ และฝั่ง Server (`api/scores.php`) ที่ใช้ Constraint ของ SQLite `UNIQUE(exam_id, student_id)` 
-- **Manual Override**: หากกล้องเสียหรือแสงไม่พอ อาจารย์สามารถกดปุ่ม "กรอกคะแนนด้วยตนเอง" เพื่อคีย์คะแนนเข้าฐานข้อมูลได้ทันที
+## 🛠️ Verification
+All PHP endpoints, database queries, and the core OpenCV.js scanning logic were strictly preserved. Only the HTML structure and CSS classes were modified.
 
----
-
-## โครงสร้างไฟล์ในโปรเจกต์
-```
-C:\Final Project
-├── api/
-│   ├── auth.php        # API ล็อกอิน/ล็อกเอาท์
-│   ├── exams.php       # API จัดการข้อสอบและเฉลย
-│   └── scores.php      # API บันทึกคะแนน
-├── config/
-│   └── database.php    # ตั้งค่าฐานข้อมูล SQLite
-├── css/
-│   └── styles.css      # Premium Light UI Theme
-├── js/
-│   └── scanner.js      # ระบบ OpenCV สำหรับกล้องและ OMR
-├── dashboard.php       # หน้าแรกจัดการข้อสอบ
-├── index.php           # หน้าล็อกอิน
-├── key_editor.php      # หน้าตั้งค่าเฉลย
-├── scanner.php         # หน้าสแกนข้อสอบผ่านกล้อง
-└── schema.sql          # สคริปต์ฐานข้อมูล
-```
-
-## วิธีการทดสอบระบบ
-1. ในโฟลเดอร์โปรเจกต์ `C:\Final Project` ให้เปิด Command Prompt หรือ PowerShell
-2. รันคำสั่ง `php -S localhost:8000`
-3. เปิด Browser ไปที่ `http://localhost:8000`
-4. ล็อกอินด้วย `teacher_demo` / `password123`
-5. ทดลองสร้างข้อสอบ ตั้งค่าเฉลย และเข้าไปที่หน้าสแกนกระดาษคำตอบ
+You can now test the brand-new interface on your local server: `http://localhost:8000`

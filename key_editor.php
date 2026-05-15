@@ -41,76 +41,48 @@ if (!isset($raw_key['A'])) {
     <title>จัดการเฉลย - <?= htmlspecialchars($exam['exam_title']) ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .key-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-        .question-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.5rem;
-            background: var(--bg-color);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-        .question-row select {
-            width: auto;
-            padding: 0.25rem 0.5rem;
-        }
-        .options {
-            display: flex;
-            gap: 0.25rem;
-        }
-        .opt-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 1px solid var(--border-color);
-            background: #fff;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .opt-btn.active {
-            background: var(--primary-color);
-            color: #fff;
-            border-color: var(--primary-color);
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <nav class="navbar">
-        <a href="dashboard.php" class="btn btn-outline" style="width: auto; padding: 0.25rem 0.75rem;">&larr; กลับ</a>
-        <div style="font-weight: 600;">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
-        <div style="width: 60px;"></div>
+<body class="bg-gray-50 text-gray-800 font-['Inter']">
+    <nav class="bg-emerald-600 text-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.php" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
+                    &larr; กลับ
+                </a>
+                <div class="font-bold text-lg hidden sm:block truncate px-4">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
+                <div class="w-16"></div> <!-- spacer -->
+            </div>
+        </div>
     </nav>
 
-    <div class="container mt-4">
-        <div class="card">
-            <div class="header-actions mb-4">
-                <p>จำนวน <strong><?= $question_count ?></strong> ข้อ</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-100 pb-6">
                 <div>
-                    <select id="examSetSelector" style="padding: 0.5rem; margin-right: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-1 sm:hidden"><?= htmlspecialchars($exam['exam_title']) ?></h2>
+                    <p class="text-gray-500">จำนวน <strong class="text-gray-900"><?= $question_count ?></strong> ข้อ</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-medium text-gray-700">
                         <option value="A">ชุดข้อสอบ A</option>
                         <option value="B">ชุดข้อสอบ B</option>
                         <option value="C">ชุดข้อสอบ C</option>
                     </select>
-                    <button class="btn btn-primary" style="width: auto;" id="btnSaveKey">บันทึกเฉลย</button>
+                    <button class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm" id="btnSaveKey">บันทึกเฉลย</button>
                 </div>
             </div>
 
-            <div class="key-grid" id="keyContainer">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4" id="keyContainer">
                 <?php for($i = 1; $i <= $question_count; $i++): ?>
                     <?php 
                         $options = ['A', 'B', 'C', 'D', 'E'];
                     ?>
-                    <div class="question-row">
-                        <span style="font-weight: 600; width: 30px;"><?= $i ?>.</span>
-                        <div class="options" data-q="<?= $i ?>">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-emerald-200 transition-colors">
+                        <span class="font-bold text-gray-700 w-8"><?= $i ?>.</span>
+                        <div class="flex gap-1.5 options" data-q="<?= $i ?>">
                             <?php foreach($options as $opt): ?>
-                                <button type="button" class="opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
+                                <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-emerald-500 transition-all opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -132,9 +104,11 @@ if (!isset($raw_key['A'])) {
             document.querySelectorAll('.options').forEach(group => {
                 const q = group.getAttribute('data-q');
                 group.querySelectorAll('.opt-btn').forEach(btn => {
-                    btn.classList.remove('active');
+                    btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+                    btn.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
                     if (answerKey[currentSet][q] === btn.getAttribute('data-val')) {
-                        btn.classList.add('active');
+                        btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
+                        btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
                     }
                 });
             });
@@ -149,8 +123,12 @@ if (!isset($raw_key['A'])) {
             const q = group.getAttribute('data-q');
             group.querySelectorAll('.opt-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+                    group.querySelectorAll('.opt-btn').forEach(b => {
+                        b.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+                        b.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
+                    });
+                    btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
+                    btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
                     answerKey[currentSet][q] = btn.getAttribute('data-val');
                 });
             });
@@ -161,6 +139,7 @@ if (!isset($raw_key['A'])) {
 
         document.getElementById('btnSaveKey').addEventListener('click', async () => {
             const btn = document.getElementById('btnSaveKey');
+            const originalText = btn.textContent;
             btn.textContent = 'กำลังบันทึก...';
             btn.disabled = true;
 
@@ -184,7 +163,7 @@ if (!isset($raw_key['A'])) {
                 alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
             }
             
-            btn.textContent = 'บันทึกเฉลย';
+            btn.textContent = originalText;
             btn.disabled = false;
         });
     </script>

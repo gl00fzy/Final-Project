@@ -21,51 +21,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     <title>สแกนกระดาษคำตอบ - OMR System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #000; color: #fff; margin: 0; padding: 0; overflow: hidden; }
-        .navbar { background: #111; border-bottom: 1px solid #333; }
-        .navbar-brand { color: #fff; }
-        
-        #scanner-container {
-            position: relative;
-            width: 100vw;
-            height: calc(100vh - 64px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
         #video-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            aspect-ratio: 3/4;
-            background: #222;
-            border: 4px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s ease;
         }
-
-        #video-wrapper.error { border-color: var(--error-color); }
-        #video-wrapper.success { border-color: var(--success-color); }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
+        #video-wrapper.error { border-color: #EF4444 !important; }
+        #video-wrapper.success { border-color: #10B981 !important; }
 
         /* Debug canvas to show the warped perspective */
         #debug-canvas {
@@ -79,118 +41,78 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             background: #000;
             z-index: 100;
         }
-
-        .controls {
-            position: absolute;
-            bottom: 2rem;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            padding: 0 1rem;
-            z-index: 10;
-        }
-
-        .status-badge {
-            position: absolute;
-            top: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            padding: 0.75rem 1.5rem;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            backdrop-filter: blur(4px);
-        }
-
-        /* Modal for Manual Entry */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: #fff;
-            color: #000;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-        }
     </style>
 </head>
-<body>
-    <nav class="navbar">
-        <a href="dashboard.php" class="btn btn-outline" style="width: auto; padding: 0.25rem 0.75rem; color: #fff; border-color: #fff;">&larr; กลับ</a>
-        <div style="font-weight: 600;">โหมดสแกน (Exam ID: <?= htmlspecialchars($exam_id) ?>)</div>
-        <div style="width: 60px;"></div> <!-- Spacer -->
+<body class="bg-black text-white m-0 p-0 overflow-hidden font-['Inter']">
+    <nav class="bg-[#111] border-b border-[#333] flex items-center justify-between px-4 h-16">
+        <a href="dashboard.php" class="bg-transparent hover:bg-white/10 text-white border border-white font-medium py-1.5 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
+            &larr; กลับ
+        </a>
+        <div class="font-bold text-lg truncate px-4">โหมดสแกน (Exam ID: <?= htmlspecialchars($exam_id) ?>)</div>
+        <div class="w-[74px]"></div> <!-- Spacer -->
     </nav>
 
-    <div id="scanner-container">
-        <select id="examSetScanner" style="position: absolute; top: 15px; right: 15px; z-index: 100; padding: 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.9); font-weight: bold; border: 2px solid var(--primary-color); color: var(--primary-color);">
+    <div id="scanner-container" class="relative w-full h-[calc(100vh-64px)] flex flex-col items-center justify-center overflow-hidden">
+        
+        <select id="examSetScanner" class="absolute top-4 right-4 z-50 px-4 py-2 rounded-xl bg-white/90 text-emerald-700 font-bold border-2 border-emerald-600 focus:outline-none backdrop-blur-sm shadow-lg">
             <option value="A">ชุดข้อสอบ A</option>
             <option value="B">ชุดข้อสอบ B</option>
             <option value="C">ชุดข้อสอบ C</option>
         </select>
 
-        <div id="statusIndicator" class="status-badge">กำลังโหลด OpenCV.js...</div>
+        <div id="statusIndicator" class="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-6 py-3 rounded-full text-base font-bold shadow-lg z-50 text-white border border-white/10 whitespace-nowrap">กำลังโหลด OpenCV.js...</div>
         
-        <div id="video-wrapper">
-            <video id="video" autoplay playsinline></video>
-            <canvas id="canvasOutput"></canvas>
-            <div class="scanner-overlay-guide"></div>
+        <div id="video-wrapper" class="relative w-full max-w-[600px] aspect-[3/4] bg-[#222] border-4 border-gray-700 rounded-2xl overflow-hidden mx-4 shadow-2xl">
+            <video id="video" autoplay playsinline class="w-full h-full object-cover"></video>
+            <canvas id="canvasOutput" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
+            <div class="scanner-overlay-guide absolute inset-8 border-2 border-dashed border-white/50 rounded-lg pointer-events-none"></div>
         </div>
 
         <canvas id="debug-canvas"></canvas>
 
         <!-- Massive Success Result Card -->
-        <div id="scanResultCard" class="scan-result-card" style="display: none;">
-            <h2 style="color: var(--success-color); font-size: 2.5rem; margin-bottom: 0.5rem;">✅ สำเร็จ!</h2>
-            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 0.5rem;">รหัสนิสิต</p>
-            <p id="resStudentId" style="font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main);"></p>
-            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 0.5rem;">คะแนนที่ได้</p>
-            <p id="resScore" style="font-size: 3rem; font-weight: 800; color: var(--primary-color); margin-bottom: 0; line-height: 1;"></p>
+        <div id="scanResultCard" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl z-[100] text-center border border-white/20 w-[90%] max-w-[400px]">
+            <h2 class="text-emerald-500 text-4xl font-bold mb-2 flex items-center justify-center gap-2">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                สำเร็จ!
+            </h2>
+            <p class="text-xl text-gray-500 mb-1 mt-6">รหัสนิสิต</p>
+            <p id="resStudentId" class="text-4xl font-black mb-6 text-gray-900 tracking-wider"></p>
+            <p class="text-xl text-gray-500 mb-1">คะแนนที่ได้</p>
+            <p id="resScore" class="text-6xl font-black text-emerald-600 mb-2 leading-none"></p>
         </div>
 
-        <div class="controls">
-            <button id="btnManual" class="btn btn-outline w-full" style="background: rgba(0,0,0,0.6); color: #fff; border: 2px solid #fff;">
+        <div class="absolute bottom-8 w-full flex justify-center px-4 z-40">
+            <button id="btnManual" class="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border-2 border-white/50 font-semibold py-3 px-8 rounded-xl transition-all shadow-lg max-w-[300px] w-full flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 กรอกคะแนนด้วยตนเอง
             </button>
         </div>
     </div>
 
     <!-- Manual Entry Modal -->
-    <div id="manualModal" class="modal">
-        <div class="modal-content">
-            <h2 style="color: var(--error-color); margin-bottom: 1rem; text-align: center;">กรอกคะแนนด้วยตนเอง</h2>
-            <p style="text-align: center; margin-bottom: 1.5rem;">ใช้ในกรณีที่กล้องสแกนไม่ติด หรือมีปัญหาแสงสว่าง</p>
-            <form id="manualForm">
+    <div id="manualModal" class="hidden fixed inset-0 bg-black/80 z-[1000] items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 border border-gray-100 text-gray-900">
+            <h2 class="text-2xl font-bold text-red-600 mb-4 text-center">กรอกคะแนนด้วยตนเอง</h2>
+            <p class="text-center text-gray-500 mb-6">ใช้ในกรณีที่กล้องสแกนไม่ติด หรือมีปัญหาแสงสว่าง</p>
+            <form id="manualForm" class="flex flex-col gap-4">
                 <input type="hidden" id="examId" name="exam_id" value="<?= htmlspecialchars($exam_id) ?>">
-                <div class="form-group">
-                    <label for="studentId">รหัสนิสิต (11 หลัก)</label>
-                    <input type="text" id="studentId" name="student_id" required pattern="\d{11}">
+                <div>
+                    <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">รหัสนิสิต (11 หลัก)</label>
+                    <input type="text" id="studentId" name="student_id" required pattern="\d{11}" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-lg text-center tracking-widest">
                 </div>
-                <div class="form-group">
-                    <label for="score">คะแนนที่ได้</label>
-                    <input type="number" id="score" name="score" required min="0">
+                <div>
+                    <label for="score" class="block text-sm font-medium text-gray-700 mb-1">คะแนนที่ได้</label>
+                    <input type="number" id="score" name="score" required min="0" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-2xl text-center text-emerald-600">
                 </div>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn btn-outline" id="btnCancelManual">ยกเลิก</button>
-                    <button type="submit" class="btn btn-primary">บันทึกคะแนน</button>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors" id="btnCancelManual">ยกเลิก</button>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm">บันทึกคะแนน</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Load OpenCV.js -->
     <script>
         const studentDirectory = <?= json_encode($students) ?>;
     </script>
