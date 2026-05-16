@@ -24,17 +24,14 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        #video-wrapper {
-            transition: border-color 0.3s ease;
-        }
-        #video-wrapper.error { border-color: #EF4444 !important; }
-        #video-wrapper.success { border-color: #10B981 !important; }
+        #video-wrapper.error { border: 4px solid #EF4444 !important; }
+        #video-wrapper.success { border: 8px solid #10B981 !important; }
 
         /* Debug canvas to show the warped perspective */
         #debug-canvas {
             display: none; 
             position: absolute;
-            bottom: 10px;
+            bottom: 120px;
             right: 10px;
             width: 120px;
             height: 160px;
@@ -44,67 +41,94 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         }
     </style>
 </head>
-<body class="bg-black text-white m-0 p-0 h-screen flex flex-col overflow-hidden font-['Inter']">
-    <nav class="bg-[#111] border-b border-[#333] flex items-center justify-between px-4 h-16">
-        <a href="dashboard.php" class="bg-transparent hover:bg-white/10 text-white border border-white font-medium py-1.5 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
-            &larr; กลับ
-        </a>
-        <div class="font-bold text-lg truncate px-4">โหมดสแกน (Exam ID: <?= htmlspecialchars($exam_id) ?>)</div>
-        <div class="w-[74px]"></div> <!-- Spacer -->
-    </nav>
+<body class="bg-black text-white m-0 p-0 w-screen h-[100dvh] overflow-hidden relative font-['Inter']">
 
-    <!-- Top Control Bar (Solid Block for Mobile Support) -->
-    <div class="bg-white shadow-md p-4 w-full z-50 relative border-b border-gray-200">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <!-- Mode Toggle -->
-            <div class="bg-gray-100 p-1 rounded-lg flex gap-1 border border-gray-200 w-full md:w-auto">
-                <button id="modeStudentBtn" class="flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors bg-white text-gray-900 shadow-sm" onclick="setScanMode('student')">สแกนนิสิต</button>
-                <button id="modeKeyBtn" class="flex-1 md:flex-none px-6 py-2.5 rounded-md text-sm font-bold transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-200" onclick="setScanMode('key')">สแกนเฉลย</button>
+    <!-- CAMERA LAYER (Bottom Most) -->
+    <div id="video-wrapper" class="absolute inset-0 w-full h-full z-0 flex items-center justify-center box-border transition-colors duration-300">
+        <video id="video" autoplay playsinline class="absolute inset-0 w-full h-full object-contain"></video>
+        <canvas id="canvasOutput" class="absolute inset-0 w-full h-full pointer-events-none object-contain"></canvas>
+        
+        <!-- Viewfinder Reticle Overlay (A4 Aspect Ratio) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div class="relative w-[85%] max-w-[360px] aspect-[1/1.4]">
+                <!-- Top Left -->
+                <div class="absolute top-0 left-0 w-12 h-12 border-t-[3px] border-l-[3px] border-yellow-500 rounded-tl-xl drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]"></div>
+                <!-- Top Right -->
+                <div class="absolute top-0 right-0 w-12 h-12 border-t-[3px] border-r-[3px] border-yellow-500 rounded-tr-xl drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]"></div>
+                <!-- Bottom Left -->
+                <div class="absolute bottom-0 left-0 w-12 h-12 border-b-[3px] border-l-[3px] border-yellow-500 rounded-bl-xl drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]"></div>
+                <!-- Bottom Right -->
+                <div class="absolute bottom-0 right-0 w-12 h-12 border-b-[3px] border-r-[3px] border-yellow-500 rounded-br-xl drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]"></div>
             </div>
-            
-            <!-- Set Selector -->
-            <select id="examSetScanner" class="w-full md:w-auto px-6 py-2.5 rounded-lg bg-white text-yellow-700 font-bold border-2 border-yellow-500 focus:outline-none shadow-sm">
-                <option value="A">ชุดข้อสอบ A</option>
-                <option value="B">ชุดข้อสอบ B</option>
-                <option value="C">ชุดข้อสอบ C</option>
-            </select>
         </div>
     </div>
 
-    <div id="scanner-container" class="relative w-full flex-1 flex flex-col items-center justify-center overflow-hidden py-4">
-
-        <div id="statusIndicator" class="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-6 py-3 rounded-full text-base font-bold shadow-lg z-50 text-white border border-white/10 whitespace-nowrap">กำลังโหลด OpenCV.js...</div>
+    <!-- HUD LAYER -->
+    
+    <!-- TOP BAR -->
+    <div class="absolute top-0 left-0 w-full z-20 flex justify-between items-start p-4 bg-gradient-to-b from-black/80 to-transparent pb-16 pointer-events-none">
+        <!-- Back Button -->
+        <a href="dashboard.php" class="bg-black/50 hover:bg-black/70 backdrop-blur-md text-white border border-white/20 font-medium py-2 px-4 rounded-xl transition-colors text-sm flex items-center gap-2 shadow-lg pointer-events-auto">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            กลับ
+        </a>
         
-        <div id="video-wrapper" class="relative w-full max-w-[600px] aspect-[3/4] bg-[#222] border-4 border-gray-700 rounded-2xl overflow-hidden mx-4 shadow-2xl">
-            <video id="video" autoplay playsinline class="w-full h-full object-cover"></video>
-            <canvas id="canvasOutput" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
-            <div class="scanner-overlay-guide absolute inset-8 border-2 border-dashed border-white/50 rounded-lg pointer-events-none"></div>
+        <!-- Exam Select -->
+        <div class="pointer-events-auto relative">
+            <select id="examSetScanner" class="bg-black/60 backdrop-blur-md text-yellow-500 font-bold border border-yellow-500/50 focus:outline-none focus:border-yellow-500 rounded-xl pl-4 pr-10 py-2 shadow-lg appearance-none cursor-pointer">
+                <option value="A" class="bg-gray-900 text-white">ชุดข้อสอบ A</option>
+                <option value="B" class="bg-gray-900 text-white">ชุดข้อสอบ B</option>
+                <option value="C" class="bg-gray-900 text-white">ชุดข้อสอบ C</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- GUIDANCE TEXT (Top Center) -->
+    <div class="absolute top-24 left-0 w-full flex justify-center z-20 pointer-events-none">
+        <div class="bg-black/70 backdrop-blur-md px-6 py-2.5 rounded-full shadow-lg border border-white/10 flex flex-col items-center gap-1">
+            <span class="text-white text-sm font-medium tracking-wide">เล็งกรอบสี่เหลี่ยมบนกระดาษให้ตรงกับมุมทั้ง 4 ด้าน</span>
+        </div>
+    </div>
+
+    <!-- System Status Indicator (Loads OpenCV) -->
+    <div id="statusIndicator" class="fixed top-36 left-1/2 -translate-x-1/2 bg-gray-900/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold shadow-lg z-50 text-white border border-gray-700 whitespace-nowrap">กำลังโหลด OpenCV.js...</div>
+
+    <!-- BOTTOM BAR -->
+    <div class="absolute bottom-0 left-0 w-full z-20 flex flex-col items-center gap-5 p-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-20 pointer-events-none">
+        
+        <!-- Mode Toggle -->
+        <div class="bg-black/60 backdrop-blur-md p-1.5 rounded-full flex gap-1 border border-white/20 shadow-xl pointer-events-auto w-full max-w-[300px]">
+            <button id="modeStudentBtn" class="flex-1 px-6 py-3 rounded-full text-sm font-bold transition-all bg-yellow-500 text-gray-900 shadow-md transform scale-100" onclick="setScanMode('student')">สแกนนิสิต</button>
+            <button id="modeKeyBtn" class="flex-1 px-6 py-3 rounded-full text-sm font-bold transition-all text-gray-300 hover:text-white hover:bg-white/10" onclick="setScanMode('key')">สแกนเฉลย</button>
         </div>
 
-        <canvas id="debug-canvas"></canvas>
+        <!-- Manual Entry Button (Outlined/Text Style) -->
+        <button id="btnManual" class="text-gray-300 hover:text-yellow-400 font-medium text-sm flex items-center gap-2 px-6 py-2 rounded-full border border-gray-600 hover:border-yellow-500 transition-colors pointer-events-auto bg-black/40 backdrop-blur-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            กรอกคะแนนด้วยตนเอง
+        </button>
+        
+    </div>
 
-        <!-- Massive Success Result Card -->
-        <div id="scanResultCard" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl z-[100] text-center border border-white/20 w-[90%] max-w-[400px]">
-            <h2 class="text-yellow-600 text-4xl font-bold mb-2 flex items-center justify-center gap-2">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                สำเร็จ!
-            </h2>
-            <p class="text-xl text-gray-500 mb-1 mt-6">รหัสนิสิต</p>
-            <p id="resStudentId" class="text-4xl font-black mb-6 text-gray-900 tracking-wider"></p>
-            <p class="text-xl text-gray-500 mb-1">คะแนนที่ได้</p>
-            <p id="resScore" class="text-6xl font-black text-yellow-600 mb-2 leading-none"></p>
-        </div>
+    <canvas id="debug-canvas"></canvas>
 
-        <div class="absolute bottom-8 w-full flex justify-center px-4 z-40">
-            <button id="btnManual" class="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border-2 border-white/50 font-semibold py-3 px-8 rounded-xl transition-all shadow-lg max-w-[300px] w-full flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                กรอกคะแนนด้วยตนเอง
-            </button>
-        </div>
+    <!-- Massive Success Result Card -->
+    <div id="scanResultCard" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl z-[100] text-center border border-white/20 w-[90%] max-w-[400px]">
+        <h2 class="text-yellow-600 text-4xl font-bold mb-2 flex items-center justify-center gap-2">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            สำเร็จ!
+        </h2>
+        <p class="text-xl text-gray-500 mb-1 mt-6">รหัสนิสิต</p>
+        <p id="resStudentId" class="text-4xl font-black mb-6 text-gray-900 tracking-wider"></p>
+        <p class="text-xl text-gray-500 mb-1">คะแนนที่ได้</p>
+        <p id="resScore" class="text-7xl font-black text-yellow-600 mb-2 leading-none"></p>
     </div>
 
     <!-- Manual Entry Modal -->
-    <div id="manualModal" class="hidden fixed inset-0 bg-black/80 z-[1000] items-center justify-center p-4 backdrop-blur-sm">
+    <div id="manualModal" class="hidden fixed inset-0 bg-black/80 z-[1000] items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 border border-gray-100 text-gray-900">
             <h2 class="text-2xl font-bold text-red-600 mb-4 text-center">กรอกคะแนนด้วยตนเอง</h2>
             <p class="text-center text-gray-500 mb-6">ใช้ในกรณีที่กล้องสแกนไม่ติด หรือมีปัญหาแสงสว่าง</p>
