@@ -79,7 +79,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 <span class="absolute bottom-0 right-0 w-10 h-10 border-b-[3px] border-r-[3px] border-yellow-400 rounded-br-lg"></span>
 
                 <!-- Helper text centered inside box -->
-                <div class="absolute bottom-[-3rem] w-full flex justify-center">
+                <div class="absolute bottom-[-2.35rem] w-full flex justify-center">
                     <span class="bg-black/60 backdrop-blur-sm text-white/90 text-xs font-medium px-4 py-1.5 rounded-full border border-white/10">
                         เล็งกรอบให้อยู่ในหน้าจอ
                     </span>
@@ -147,7 +147,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         </div>
 
         <!-- [HUD] BOTTOM FOOTER: Manual Entry pill -->
-        <div class="absolute bottom-2 left-0 w-full px-4 z-20 flex justify-center">
+        <div class="absolute bottom-4 left-0 w-full px-4 z-20 flex justify-center">
             <button id="btnManual"
                     class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md
                            text-gray-900 font-semibold text-xs md:text-sm px-4 py-2 rounded-full shadow-xl
