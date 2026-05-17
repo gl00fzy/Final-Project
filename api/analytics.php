@@ -16,7 +16,7 @@ if (!$exam_id) {
 }
 
 try {
-    // Get Exam details and answer key
+    // --- Exam details & answer key ---
     $stmt = $pdo->prepare("SELECT exam_title, question_count, answer_key FROM exams WHERE exam_id = ?");
     $stmt->execute([$exam_id]);
     $exam = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -26,121 +26,211 @@ try {
         exit;
     }
 
-    $answer_key = json_decode($exam['answer_key'], true) ?: [];
+    // Parse key (multi-set format: {A:{...}, B:{...}, C:{...}})
+    $all_keys = json_decode($exam['answer_key'] ?? '{}', true) ?: [];
 
-    // Get all scores for this exam
-    $stmt = $pdo->prepare("SELECT student_id, exam_set, score, raw_answers, image_path, scanned_at FROM student_scores WHERE exam_id = ?");
+    // --- All scores for this exam ---
+    $stmt = $pdo->prepare(
+        "SELECT student_id, exam_set, score, raw_answers, image_path, scanned_at FROM student_scores WHERE exam_id = ?"
+    );
     $stmt->execute([$exam_id]);
     $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $total_students = count($scores);
-    
+
     if ($total_students === 0) {
         echo json_encode([
-            'status' => 'success', 
-            'data' => [
-                'summary' => ['avg' => 0, 'max' => 0, 'min' => 0, 'std_dev' => 0, 'total' => 0],
-                'histogram' => [],
+            'status' => 'success',
+            'data'   => [
+                'exam_title'    => $exam['exam_title'],
+                'summary'       => ['avg' => 0, 'max' => 0, 'min' => 0, 'std_dev' => 0, 'total' => 0],
+                'histogram'     => ['labels' => [], 'data' => []],
                 'item_analysis' => [],
-                'students' => []
+                'students'      => [],
             ]
         ]);
         exit;
     }
 
+    // =========================================================
     // 1. Summary Stats
-    $sum = 0;
-    $max = -1;
-    $min = 999999;
-    $score_array = [];
+    // =========================================================
+    $score_array = array_column($scores, 'score');
+    $sum  = array_sum($score_array);
+    $max  = max($score_array);
+    $min  = min($score_array);
+    $avg  = $sum / $total_students;
 
-    foreach ($scores as $s) {
-        $val = (int)$s['score'];
-        $sum += $val;
-        if ($val > $max) $max = $val;
-        if ($val < $min) $min = $val;
-        $score_array[] = $val;
-    }
-
-    $avg = $sum / $total_students;
-    
-    // Std Dev
     $variance = 0;
-    foreach ($score_array as $val) {
-        $variance += pow($val - $avg, 2);
-    }
-    $std_dev = sqrt($variance / $total_students);
+    foreach ($score_array as $val) { $variance += pow($val - $avg, 2); }
+    $std_dev  = sqrt($variance / $total_students);
 
-    // 2. Histogram (bins of 10, assuming max score 150)
-    $histogram = array_fill(0, ceil(max(50, $max) / 10), 0); 
+    // =========================================================
+    // 2. Histogram (bins of 10)
+    // =========================================================
+    $bin_count  = max(5, (int)ceil(max(50, $max) / 10));
+    $histogram  = array_fill(0, $bin_count, 0);
     foreach ($score_array as $val) {
-        $bin = min(floor($val / 10), count($histogram) - 1);
+        $bin = min((int)floor($val / 10), $bin_count - 1);
         $histogram[$bin]++;
     }
-    
     $hist_labels = [];
-    $hist_data = [];
+    $hist_data   = [];
     foreach ($histogram as $bin => $count) {
-        $start = $bin * 10;
-        $end = $start + 9;
-        $hist_labels[] = "$start-$end";
-        $hist_data[] = $count;
+        $hist_labels[] = ($bin * 10) . '-' . ($bin * 10 + 9);
+        $hist_data[]   = $count;
     }
 
-    // 3. Item Analysis
-    $item_analysis = [];
-    $options = ['A', 'B', 'C', 'D', 'E'];
-    for ($q = 1; $q <= $exam['question_count']; $q++) {
-        $item_analysis[$q] = ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'E' => 0, 'missing' => 0, 'correct' => 0, 'correct_ans' => $answer_key[$q] ?? null];
+    // =========================================================
+    // 3. Item Analysis — per question, per set
+    // =========================================================
+    $options      = ['A', 'B', 'C', 'D', 'E'];
+    $q_count      = (int)$exam['question_count'];
+
+    // Accumulators: item_data[q][option_count], correct_count, respondents
+    $item_data = [];
+    for ($q = 1; $q <= $q_count; $q++) {
+        $item_data[$q] = [
+            'A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'E' => 0,
+            'blank'   => 0,
+            'correct' => 0,
+            'total'   => 0,     // students who attempted this question
+        ];
     }
 
     foreach ($scores as $s) {
-        $raw = json_decode($s['raw_answers'], true) ?: [];
-        for ($q = 1; $q <= $exam['question_count']; $q++) {
-            $ans = $raw[$q] ?? null;
-            if (in_array($ans, $options)) {
-                $item_analysis[$q][$ans]++;
-                if ($ans === $item_analysis[$q]['correct_ans']) {
-                    $item_analysis[$q]['correct']++;
-                }
+        $raw  = json_decode($s['raw_answers'] ?? '{}', true) ?: [];
+        $set  = strtoupper($s['exam_set'] ?? 'A');
+
+        // Get correct answer for this student's set
+        $set_key = isset($all_keys['A']) ? ($all_keys[$set] ?? []) : $all_keys;
+
+        for ($q = 1; $q <= $q_count; $q++) {
+            $q_str    = (string)$q;
+            $ans_raw  = $raw[$q] ?? $raw[$q_str] ?? null;
+
+            // Normalise answer to array
+            if (is_array($ans_raw)) {
+                $chosen = $ans_raw;
+            } elseif (is_string($ans_raw) && $ans_raw !== '') {
+                $chosen = [$ans_raw];
             } else {
-                $item_analysis[$q]['missing']++;
+                $chosen = [];
+            }
+
+            $item_data[$q]['total']++;
+
+            if (empty($chosen)) {
+                $item_data[$q]['blank']++;
+            } else {
+                foreach ($chosen as $ch) {
+                    if (in_array($ch, $options)) {
+                        $item_data[$q][$ch]++;
+                    }
+                }
+            }
+
+            // Determine correctness
+            $key_data = $set_key[$q_str] ?? null;
+            if ($key_data !== null) {
+                $is_correct = false;
+                if (is_string($key_data)) {
+                    $is_correct = in_array($key_data, $chosen);
+                } elseif (is_array($key_data)) {
+                    if (!empty($key_data['ignore'])) {
+                        continue; // skip ignored question
+                    }
+                    $correct_answers = $key_data['answers'] ?? [];
+                    $logic           = strtoupper($key_data['logic'] ?? 'OR');
+
+                    if ($logic === 'AND') {
+                        $sc = $chosen; $ca = $correct_answers;
+                        sort($sc); sort($ca);
+                        $is_correct = ($sc === $ca) && count($ca) > 0;
+                    } else {
+                        $is_correct = count(array_intersect($chosen, $correct_answers)) > 0;
+                    }
+                }
+                if ($is_correct) {
+                    $item_data[$q]['correct']++;
+                }
             }
         }
     }
 
-    // Format item analysis for frontend
+    // Build formatted item_analysis for frontend
     $formatted_analysis = [];
-    foreach ($item_analysis as $q => $data) {
-        $correct_pct = $total_students > 0 ? round(($data['correct'] / $total_students) * 100) : 0;
+    for ($q = 1; $q <= $q_count; $q++) {
+        $d         = $item_data[$q];
+        $attempted = $d['total'] > 0 ? $d['total'] : 1; // avoid /0
+
+        // P-value = proportion who answered correctly
+        $p_value       = round($d['correct'] / $attempted, 4);
+        $correct_pct   = round($p_value * 100, 1);
+
+        // Per-option percentages
+        $dist_pct = [];
+        foreach ($options as $opt) {
+            $dist_pct[$opt] = [
+                'count' => $d[$opt],
+                'pct'   => round(($d[$opt] / $attempted) * 100, 1),
+            ];
+        }
+        $dist_pct['blank'] = [
+            'count' => $d['blank'],
+            'pct'   => round(($d['blank'] / $attempted) * 100, 1),
+        ];
+
+        // Derive correct answer label for display (use set A as reference)
+        $ref_set_key = isset($all_keys['A']) ? ($all_keys['A'] ?? []) : $all_keys;
+        $key_data    = $ref_set_key[(string)$q] ?? null;
+        $correct_ans_label = null;
+        if (is_string($key_data)) {
+            $correct_ans_label = $key_data;
+        } elseif (is_array($key_data) && !empty($key_data['answers'])) {
+            $correct_ans_label = implode('+', $key_data['answers']);
+        }
+
+        // Quality badges
+        $quality_flag = null;
+        if ($correct_ans_label !== null) {  // only flag if key is set
+            if ($p_value > 0.8) {
+                $quality_flag = 'easy';   // ข้อสอบง่ายมาก
+            } elseif ($p_value < 0.2) {
+                $quality_flag = 'hard';   // ข้อสอบยากเกินไป
+            }
+        }
+
         $formatted_analysis[] = [
-            'question' => $q,
-            'correct_ans' => $data['correct_ans'],
-            'correct_pct' => $correct_pct,
-            'is_hard' => $correct_pct < 50, // Highlight if < 50% got it right
-            'distribution' => [
-                'A' => $data['A'], 'B' => $data['B'], 'C' => $data['C'], 'D' => $data['D'], 'E' => $data['E']
-            ]
+            'question'          => $q,
+            'correct_ans'       => $correct_ans_label,
+            'correct_count'     => $d['correct'],
+            'correct_pct'       => $correct_pct,
+            'p_value'           => $p_value,
+            'quality_flag'      => $quality_flag,
+            'is_hard'           => $correct_pct < 50,   // kept for backward compat
+            'distribution'      => [                    // kept simple (counts)
+                'A' => $d['A'], 'B' => $d['B'], 'C' => $d['C'], 'D' => $d['D'], 'E' => $d['E'],
+            ],
+            'distribution_pct'  => $dist_pct,          // new: with percentages
+            'total_respondents' => $d['total'],
         ];
     }
 
     echo json_encode([
         'status' => 'success',
-        'data' => [
-            'exam_title' => $exam['exam_title'],
-            'summary' => [
-                'avg' => round($avg, 2),
-                'max' => $max,
-                'min' => $min,
+        'data'   => [
+            'exam_title'    => $exam['exam_title'],
+            'summary'       => [
+                'avg'     => round($avg, 2),
+                'max'     => $max,
+                'min'     => $min,
                 'std_dev' => round($std_dev, 2),
-                'total' => $total_students
+                'total'   => $total_students,
             ],
-            'histogram' => [
-                'labels' => $hist_labels,
-                'data' => $hist_data
-            ],
+            'histogram'     => ['labels' => $hist_labels, 'data' => $hist_data],
             'item_analysis' => $formatted_analysis,
-            'students' => $scores // Sending raw scores for the table
+            'students'      => $scores,
         ]
     ]);
 

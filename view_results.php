@@ -43,8 +43,18 @@ $exam_id = (int)$_GET['exam_id'];
             border: 1px solid #E5E7EB;
         }
         .item-card.hard {
-            border-left: 4px solid #EF4444; /* red-500 */
-            background: #FEF2F2; /* red-50 */
+            border-left: 4px solid #EF4444;
+            background: #FEF2F2;
+        }
+        .item-card.easy {
+            border-left: 4px solid #F59E0B;
+            background: #FFFBEB;
+        }
+        /* Tab active underline */
+        .tab-btn.active {
+            color: #1F2937;
+            border-bottom: 3px solid #EAB308;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -74,41 +84,80 @@ $exam_id = (int)$_GET['exam_id'];
             <!-- Populated via JS -->
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">การกระจายตัวของคะแนน (Score Distribution)</h3>
-            <canvas id="histogramChart" class="w-full max-h-[300px]"></canvas>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">การวิเคราะห์ข้อสอบ (Item Analysis)</h3>
-            <p class="text-gray-500 text-sm mb-6 flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span> 
-                ข้อที่มีแถบสีแดง หมายถึงนิสิตตอบถูกน้อยกว่า 50%
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="itemAnalysisGrid">
-                <!-- Populated via JS -->
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
+            <div class="flex border-b border-gray-100 px-6 pt-4 gap-6 overflow-x-auto">
+                <button class="tab-btn active pb-3 text-sm text-gray-500 whitespace-nowrap" data-tab="tab-histogram">📊 กราฟคะแนน</button>
+                <button class="tab-btn pb-3 text-sm text-gray-500 whitespace-nowrap" data-tab="tab-item">🔬 วิเคราะห์ข้อสอบ (Item Analysis)</button>
+                <button class="tab-btn pb-3 text-sm text-gray-500 whitespace-nowrap" data-tab="tab-students">📋 รายชื่อผู้เข้าสอบ</button>
             </div>
-        </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-0 overflow-hidden">
-            <div class="p-6 border-b border-gray-100">
-                <h3 class="text-xl font-bold text-gray-900">รายชื่อผู้เข้าสอบ</h3>
+            <!-- Tab: Score Distribution -->
+            <div id="tab-histogram" class="tab-content p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">การกระจายตัวของคะแนน</h3>
+                <canvas id="histogramChart" class="w-full max-h-[300px]"></canvas>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-50 text-gray-700 text-sm">
-                        <tr>
-                            <th class="py-4 px-6 font-semibold border-b border-gray-200">รหัสนิสิต</th>
-                            <th class="py-4 px-6 font-semibold border-b border-gray-200">ชุด</th>
-                            <th class="py-4 px-6 font-semibold border-b border-gray-200">คะแนน</th>
-                            <th class="py-4 px-6 font-semibold border-b border-gray-200">เวลาที่สแกน</th>
-                            <th class="py-4 px-6 font-semibold border-b border-gray-200 text-center">กระดาษคำตอบ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody" class="divide-y divide-gray-100">
-                        <!-- Populated via JS -->
-                    </tbody>
-                </table>
+
+            <!-- Tab: Item Analysis -->
+            <div id="tab-item" class="tab-content p-6 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">วิเคราะห์ข้อสอบ (Item Analysis)</h3>
+                        <p class="text-gray-500 text-sm mt-1">คอลัมน์ที่มีสีเขียวคือตัวเลือกที่ถูกต้อง</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs flex-wrap">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-yellow-400 inline-block"></span> ง่ายมาก (P &gt; 0.8)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-400 inline-block"></span> ยากเกินไป (P &lt; 0.2)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-green-400 inline-block"></span> ตัวเลือกที่ถูกต้อง</span>
+                    </div>
+                </div>
+
+                <!-- Summary Quality Badges -->
+                <div id="qualitySummary" class="mb-5 flex flex-wrap gap-2"></div>
+
+                <!-- Item Analysis Table (desktop) / Cards (mobile) -->
+                <div class="overflow-x-auto rounded-xl border border-gray-100">
+                    <table class="w-full text-sm text-left border-collapse" id="itemAnalysisTable">
+                        <thead class="bg-gray-50 text-gray-600 sticky top-0">
+                            <tr>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200 w-12">ข้อ</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">P-value</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">A</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">B</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">C</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">D</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">E</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">ไม่ตอบ</th>
+                                <th class="py-3 px-4 font-semibold border-b border-gray-200">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemAnalysisBody" class="divide-y divide-gray-50">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- fallback for empty -->
+                <div id="itemAnalysisEmpty" class="hidden py-12 text-center text-gray-400">ยังไม่มีข้อมูลการฝนคำตอบ</div>
+            </div>
+
+            <!-- Tab: Student List -->
+            <div id="tab-students" class="tab-content hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 text-gray-700 text-sm">
+                            <tr>
+                                <th class="py-4 px-6 font-semibold border-b border-gray-200">รหัสนิสิต</th>
+                                <th class="py-4 px-6 font-semibold border-b border-gray-200">ชุด</th>
+                                <th class="py-4 px-6 font-semibold border-b border-gray-200">คะแนน</th>
+                                <th class="py-4 px-6 font-semibold border-b border-gray-200">เวลาที่สแกน</th>
+                                <th class="py-4 px-6 font-semibold border-b border-gray-200 text-center">กระดาษคำตอบ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody" class="divide-y divide-gray-100">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -126,16 +175,24 @@ $exam_id = (int)$_GET['exam_id'];
     </script>
     <script src="js/charts.js"></script>
     <script>
-        // Modal toggling for view_results
+        // ─── Tab switching ───────────────────────────────────────────
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.remove('hidden');
+            });
+        });
+
+        // ─── Image modal ─────────────────────────────────────────────
         document.getElementById('closeImageBtn').addEventListener('click', () => {
             const modal = document.getElementById('imageModal');
             modal.classList.remove('flex');
             modal.classList.add('hidden');
         });
-        
-        // Expose a global showImage function since charts.js might be calling a custom one or just setting style.display
         window.showImage = function(src) {
-            const img = document.getElementById('scannedImage');
+            const img   = document.getElementById('scannedImage');
             const modal = document.getElementById('imageModal');
             img.src = src;
             modal.classList.remove('hidden');
