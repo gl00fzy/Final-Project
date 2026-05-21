@@ -10,8 +10,18 @@ if (!isset($_SESSION['user_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $exam_id = $_POST['exam_id'] ?? 0;
-    $username = $_POST['username'] ?? '';
+    $username = trim($_POST['username'] ?? '');
     $user_id = $_SESSION['user_id'];
+
+    // ── Domain validation: must be a @msu.ac.th email ─────────────────
+    $allowed_domain = '@msu.ac.th';
+    if (empty($username) || !str_ends_with(strtolower($username), $allowed_domain)) {
+        echo json_encode([
+            'status'  => 'error',
+            'message' => 'กรุณาใช้อีเมลของมหาวิทยาลัยเท่านั้น (เช่น someone@msu.ac.th)'
+        ]);
+        exit;
+    }
 
     // Verify ownership
     $stmt = $pdo->prepare("SELECT owner_id FROM exams WHERE exam_id = ?");
@@ -23,9 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Find target user
+    // Find target user by email (stored as username in DB)
     $stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ?");
-    $stmt->execute([trim($username)]);
+    $stmt->execute([$username]);
     $target_user = $stmt->fetch();
 
     if (!$target_user) {

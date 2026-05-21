@@ -1,30 +1,61 @@
-# Advanced Grading Engine - Epic Completed 🏆
+# Walkthrough - Phase 1.1: ID-Only Tracking & Roster Removal
 
-The final piece of the ZipGrade-like Advanced Engine is now online.
-
-## Phase 5: Scan to Set Key (`scanner.php`)
-Professors can now use their mobile device's camera to instantly build Answer Keys.
-
-### 1. Dual-Mode UI
-- Added a segmented toggle switch at the top center of the scanner screen: **[ สแกนนิสิต ]** (Scan Student) and **[ สแกนเฉลย ]** (Scan Key).
-- The UI dynamically changes colors based on the mode: Green/Dark for grading students, and a distinct **Blue** theme for scanning answer keys to prevent accidental mis-scans.
-
-### 2. Intelligent Data Parsing (`api/scan_key.php`)
-- When in "Scan Key" mode, the camera bypasses student grading entirely.
-- It detects the filled bubbles and sends them to the new `scan_key.php` endpoint.
-- The API automatically translates these raw bubbles into the complex Advanced JSON configuration, defaulting to:
-  - `Points`: 1
-  - `Penalty`: 0
-  - `Logic`: OR
-  - `Ignore`: False
-- It merges this newly scanned key precisely into the selected Exam Set (A, B, or C) without deleting other sets.
-
-### 3. The Ultimate Synergy
-- Because we built a unified `grading_engine.php` in Phase 3, the exact moment the camera scans and saves the new Answer Key, the backend triggers the Auto-Regrade script.
-- **Result:** You can point your camera at an Answer Key sheet, wait for the *beep*, and instantly, your entire classroom's grades are recalculated against that new physical key.
+We have successfully migrated the application to an **ID-Only Tracking** system to ensure strict compliance with university PDPA policies. Student names are no longer tracked, mapped, or stored anywhere in the application flow.
 
 ---
 
-> [!SUCCESS]
-> **Epic Feature Request Completed!** 
-> The system has successfully transformed from a basic OMR string-matcher into a full-fledged, commercial-grade evaluation engine supporting Negative Scoring, Multi-Select Bubbles, Ignore Rules, Automated Regrading, and Camera-Based Key Capture.
+## Changes Made
+
+### 1. Roster Feature Removal
+- **Deleted Files**:
+  - [roster.php](file:///c:/Final%20Project/roster.php) (Archived & removed the entire roster management UI)
+  - [upload_roster.php](file:///c:/Final%20Project/api/upload_roster.php) (Deleted the API endpoint for CSV roster uploading)
+- **UI Navigation**:
+  - Modified [dashboard.php](file:///c:/Final%20Project/dashboard.php) to remove the Student Roster navigation button (`รายชื่อนิสิต`) from the main navigation bar.
+
+### 2. Scanner Page Cleanup (Stateless Flow)
+- **Database Query Removal**:
+  - Removed all database queries from [scanner.php](file:///c:/Final%20Project/scanner.php) and [scanner.backup.php](file:///c:/Final%20Project/scanner.backup.php) that pulled names from the old `students` table.
+- **Success Overlay Update**:
+  - Modified [js/scanner.js](file:///c:/Final%20Project/js/scanner.js) to display only the raw 11-digit Student ID and the graded score. All references to student names, directory mapping, and placeholders ("ไม่มีชื่อในระบบ") are completely removed.
+
+### 3. Data Export Cleanliness
+- **CSV Format Update**:
+  - Modified [export_csv.php](file:///c:/Final%20Project/api/export_csv.php) to export strictly two clean columns: **รหัสนิสิต (Student ID)** and **คะแนน (Score)**, keeping the exported data aligned with the minimal tracking requirement.
+
+### 4. Test Suite Alignment
+- **Test Optimization**:
+  - Modified [run_tests.php](file:///c:/Final%20Project/run_tests.php) to eliminate direct student table seeding/clearing and updated the validation assertions to reflect the stateless ID-only directory loading in the scanner.
+
+---
+
+## Verification Results
+
+### Automated Tests
+We ran the complete automated test suite locally utilizing the XAMPP PHP runner. All tests pass with flying colors:
+
+```text
+Test 1: Authentication
+PASS: Login success
+PASS: Session regenerated (Set-Cookie found)
+
+Test 2: Create Exam
+PASS: Exam created
+PASS: Answer key saved
+
+Test 3: Grading & Duplicate
+PASS: Initial grade saved
+PASS: Duplicate prevented correctly
+
+Test 4: Roster Loading in scanner.php
+PASS: studentDirectory object rendered correctly
+```
+
+### Manual Verification Path
+To manually verify the changes:
+1. Log in to the application and navigate to `dashboard.php`. Confirm the top-right navbar no longer contains the "รายชื่อนิสิต" button.
+2. Click **สถิติ** on any exam to view results. Confirm the student list tab displays only the essential columns.
+3. Click **โหลด CSV** on the dashboard. Open the downloaded CSV file to verify it only exports:
+   - **รหัสนิสิต (Student ID)**
+   - **คะแนน (Score)**
+4. Launch the camera scanner by clicking **สแกน** and scan a sheet or perform a manual score entry. Verify that the success card overlay displays only the Student ID and the score.

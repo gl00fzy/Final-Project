@@ -366,14 +366,12 @@ async function submitScore(studentId, score, rawAnswers = '{}', imageBase64 = ''
             
             const resultCard = document.getElementById('scanResultCard');
             if(resultCard) {
-                let studentName = typeof studentDirectory !== 'undefined' && studentDirectory[studentId] ? studentDirectory[studentId] : 'ไม่มีชื่อในระบบ';
-                
                 function escapeHtml(text) {
                     var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
                     return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
                 }
 
-                document.getElementById('resStudentId').innerHTML = `${escapeHtml(studentId)}<br><span style="font-size: 1.5rem; color: #4B5563;">${escapeHtml(studentName)}</span>`;
+                document.getElementById('resStudentId').innerHTML = escapeHtml(studentId);
                 document.getElementById('resScore').textContent = data.calculated_score !== undefined ? data.calculated_score : score;
                 resultCard.classList.remove('hidden');
             }

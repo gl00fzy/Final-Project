@@ -1,38 +1,81 @@
-# Implementation Plan: Phase 4 Advanced Key Editor UI
+# Implementation Plan - Phase 1.1: ID-Only Tracking & Roster Removal
 
-This phase focuses on completely revamping the Key Editor UI to allow professors to visually configure the new advanced JSON parameters (Multiple answers, Points, Penalties, Logic, and Ignore).
+We are transitioning the OMR system to an **ID-Only Tracking** system to comply with university PDPA policies and simplify workflows. Student name tracking and roster management will be entirely removed.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The Student Roster feature and all related files (`roster.php`, `api/upload_roster.php`) will be deleted. The database `students` table will no longer be utilized by the application.
+
+## Open Questions
+
+None at this stage. The goals and requirements are clear and direct.
+
+---
 
 ## Proposed Changes
 
-### [MODIFY] [key_editor.php](file:///c:/Final%20Project/key_editor.php)
+### Roster Feature Removal
 
-#### 1. Data Structure Migration & Initialization
-When loading the key from the database, the PHP script will need to adapt to the new structure.
-- Old structure: `{"A": {"1": "B"}}`
-- New structure: `{"A": {"1": {"answers": ["B"], "logic": "OR", "points": 1, "penalty": 0, "ignore": false}}}`
-- The script will initialize missing configurations with defaults `(points: 1, logic: 'OR')` to prevent JS errors.
+#### [DELETE] [roster.php](file:///c:/Final%20Project/roster.php)
+- Delete this file entirely as roster management is no longer needed.
 
-#### 2. UI Layout Overhaul
-- **Multi-select Bubbles:** Modify the A/B/C/D/E buttons to act as toggles (checkboxes) instead of radio buttons, allowing multiple correct answers.
-- **Settings Collapse/Modal per Question:** Add a "gear" settings button next to each question. Clicking it will reveal a Tailwind dropdown or inline form below the bubbles containing:
-  - `Points` (Number input, default 1)
-  - `Penalty` (Number input, default 0)
-  - `Logic` (Dropdown: `OR (Any match)` / `AND (Exact match)`)
-  - `Ignore` (Toggle switch to ignore the question)
+#### [DELETE] [upload_roster.php](file:///c:/Final%20Project/api/upload_roster.php)
+- Delete this file entirely to remove the API endpoint for CSV roster uploading.
 
-#### 3. JavaScript Logic Rewrite
-- Rewrite `renderKey()` to parse the new object format. It will highlight multiple bubbles and populate the settings dropdown correctly.
-- Update click listeners so clicking a bubble toggles it in the `answerKey[currentSet][q].answers` array rather than replacing it.
-- Bind `change` events on the settings inputs to update their respective keys in the `answerKey` object instantly.
-- The "Save" button will `JSON.stringify` the new complex object and send it to `api/exams.php`, which will then naturally trigger the Auto-Regrade hook we built in Phase 3.
+#### [MODIFY] [dashboard.php](file:///c:/Final%20Project/dashboard.php)
+- Remove the navigation button pointing to `roster.php` ("รายชื่อนิสิต") from the top navbar.
 
-## User Review Required
-> [!IMPORTANT]
-> The UI for per-question settings can get cluttered. I plan to use an **inline collapsible section** (hidden by default) that expands when the user clicks a "Settings" gear icon for that specific question. This keeps the initial view clean. Do you approve this inline collapsible design?
+---
+
+### Student List & Results Table
+
+#### [MODIFY] [view_results.php](file:///c:/Final%20Project/view_results.php)
+- Verify that no "Student Name" columns or data exist in `view_results.php` (currently, the HTML already lists "รหัสนิสิต (Student ID)", "ชุด (Set)", "คะแนน (Score)", "เวลาที่สแกน (Scanned Time)").
+- Ensure the student list tab displays only essential and safe fields: "รหัสนิสิต", "ชุด", "คะแนน", and "เวลาที่สแกน".
+
+#### [MODIFY] [js/charts.js](file:///c:/Final%20Project/js/charts.js)
+- Verify `js/charts.js` renders the table with clean ID-only columns. (The existing table population in `js/charts.js` is already name-free, but we will double check).
+
+---
+
+### Clean Up DB Logic & Scanner Page
+
+#### [MODIFY] [scanner.php](file:///c:/Final%20Project/scanner.php)
+- Remove database query to the `students` table (`SELECT student_id, name FROM students`).
+- Remove `const studentDirectory` script declaration from the HTML template.
+
+#### [MODIFY] [js/scanner.js](file:///c:/Final%20Project/js/scanner.js)
+- Update `submitScore` to completely remove any reference to `studentDirectory` and `studentName`.
+- The success card overlay (`scanResultCard`) should only display the 11-digit Student ID and score, removing any "ไม่มีชื่อในระบบ" or name subtitle.
+
+#### [MODIFY] [scanner.backup.php](file:///c:/Final%20Project/scanner.backup.php)
+- Perform matching updates to the backup file `scanner.backup.php` (remove `students` query and directory encoding) or safely delete/archive it. We will update it to keep it working in ID-only mode.
+
+---
+
+### Data Export Update
+
+#### [MODIFY] [export_csv.php](file:///c:/Final%20Project/api/export_csv.php)
+- Modify the CSV output format to export only: `รหัสนิสิต` (Student ID) and `คะแนน` (Score) as requested.
+- Remove the `เวลาที่สแกน` (Scanned Time) column from the export, or keep it if "these clean columns (Student ID, Score)" specifically limits to only those two. We will export strictly `รหัสนิสิต` (Student ID) and `คะแนน` (Score).
+
+---
+
+### Test Suite Alignment
+
+#### [MODIFY] [run_tests.php](file:///c:/Final%20Project/run_tests.php)
+- Update Test 3 and Test 4 to remove roster database operations (`INSERT INTO students`, `DELETE FROM students`).
+- Update Test 4 validation since `studentDirectory` is removed from `scanner.php` to ensure test passes under the new ID-only system.
+
+---
 
 ## Verification Plan
-1. Open the Key Editor for an exam.
-2. Select multiple bubbles for a question.
-3. Open the gear menu, change Points to 2 and Logic to AND.
-4. Hit Save.
-5. Reload the page and verify the state persists correctly.
+
+### Automated Tests
+- Run `php run_tests.php` to verify authentication, exam creation, answer key saving, grading, duplicate scoring prevention, and proper rendering of the updated scanner page.
+
+### Manual Verification
+- Access the dashboard at `http://localhost:8000/dashboard.php` and verify the Roster navigation button is gone.
+- Access the results statistics and download CSV to verify that only Student ID and Score are exported.
+- Run a scan in student mode or key mode to verify the camera and result card overlays display only the 11-digit Student ID.

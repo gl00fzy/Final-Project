@@ -39,14 +39,13 @@ $output = fopen('php://output', 'w');
 fputs($output, "\xEF\xBB\xBF");
 
 // Write CSV headers
-fputcsv($output, ['รหัสนิสิต', 'คะแนน', 'เวลาที่สแกน']);
+fputcsv($output, ['รหัสนิสิต', 'คะแนน']);
 
 // Write data rows
 foreach ($scores as $row) {
     fputcsv($output, [
         $row['student_id'],
-        $row['score'],
-        $row['scanned_at']
+        $row['score']
     ]);
 }
 

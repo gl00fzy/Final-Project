@@ -7,11 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 $exam_id = $_GET['exam_id'] ?? 1;
 
 require_once 'config/database.php';
-$stmt = $pdo->query("SELECT student_id, name FROM students");
 $students = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $students[$row['student_id']] = $row['name'];
-}
 ?>
 <!DOCTYPE html>
 <html lang="th">

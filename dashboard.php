@@ -25,7 +25,6 @@ if (!isset($_SESSION['user_id'])) {
                     OMR System
                 </a>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <a href="roster.php" class="text-gray-300 hover:text-white hover:bg-yellow-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors">รายชื่อนิสิต</a>
                     <span class="text-sm hidden sm:block font-medium">สวัสดี, <?= htmlspecialchars($_SESSION['name']) ?></span>
                     <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกระบบ</a>
                 </div>
@@ -82,16 +81,30 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Share Exam Modal -->
     <div id="shareExamModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-gray-100">
-            <h2 class="text-xl font-bold text-gray-900 mb-6">แชร์ข้อสอบให้อาจารย์ท่านอื่น</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-1">แชร์ข้อสอบให้อาจารย์ท่านอื่น</h2>
+            <p class="text-xs text-gray-400 mb-5">จำกัดเฉพาะอีเมลของมหาวิทยาลัยมหาสารคามเท่านั้น</p>
             <form id="shareExamForm" class="flex flex-col gap-4">
                 <input type="hidden" name="exam_id" id="shareExamId">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Username ของผู้ที่ต้องการแชร์ให้</label>
-                    <input type="text" name="username" required placeholder="เช่น teacher_demo" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">อีเมลมหาวิทยาลัย (MSU)</label>
+                    <div class="relative">
+                        <input type="email" name="username" id="shareEmailInput" required
+                               placeholder="ใส่อีเมล @msu.ac.th ของอาจารย์ท่านอื่น"
+                               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 pr-10">
+                        <span class="absolute inset-y-0 right-3 flex items-center text-gray-400 pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                        ต้องเป็นอีเมลที่ลงท้ายด้วย <strong class="text-gray-600">@msu.ac.th</strong> เท่านั้น
+                    </p>
                 </div>
-                <div class="mt-4 flex flex-col gap-3">
+                <!-- Inline error/success message -->
+                <div id="shareModalMsg" class="hidden text-sm font-medium px-4 py-2.5 rounded-lg"></div>
+                <div class="mt-2 flex flex-col gap-3">
                     <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-colors">แชร์ข้อสอบ</button>
-                    <button type="button" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors" onclick="document.getElementById('shareExamModal').classList.remove('flex'); document.getElementById('shareExamModal').classList.add('hidden');">ยกเลิก</button>
+                    <button type="button" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors" onclick="document.getElementById('shareExamModal').classList.remove('flex'); document.getElementById('shareExamModal').classList.add('hidden'); document.getElementById('shareModalMsg').classList.add('hidden');">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -148,18 +161,38 @@ if (!isset($_SESSION['user_id'])) {
         document.getElementById('shareExamForm').onsubmit = async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const email = formData.get('username').trim();
+            const msgBox = document.getElementById('shareModalMsg');
+
+            function showShareMsg(text, isError) {
+                msgBox.textContent = text;
+                msgBox.className = isError
+                    ? 'text-sm font-medium px-4 py-2.5 rounded-lg bg-red-50 text-red-700 border border-red-200'
+                    : 'text-sm font-medium px-4 py-2.5 rounded-lg bg-green-50 text-green-700 border border-green-200';
+                msgBox.classList.remove('hidden');
+            }
+
+            // ── Frontend domain guard ──────────────────────────────────
+            if (!email.toLowerCase().endsWith('@msu.ac.th')) {
+                showShareMsg('กรุณาใช้อีเมลของมหาวิทยาลัยเท่านั้น (เช่น someone@msu.ac.th)', true);
+                return;
+            }
+
             try {
                 const res = await fetch('api/share_manager.php', { method: 'POST', body: formData });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    alert('แชร์ข้อสอบสำเร็จ');
-                    shareModal.classList.remove('flex');
-                    shareModal.classList.add('hidden');
+                    showShareMsg('✅ แชร์ข้อสอบสำเร็จ', false);
                     e.target.reset();
+                    setTimeout(() => {
+                        shareModal.classList.remove('flex');
+                        shareModal.classList.add('hidden');
+                        msgBox.classList.add('hidden');
+                    }, 1800);
                 } else {
-                    alert(data.message);
+                    showShareMsg(data.message, true);
                 }
-            } catch (err) { alert('Error sharing exam'); }
+            } catch (err) { showShareMsg('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่', true); }
         };
 
         const deleteModal = document.getElementById('deleteExamModal');

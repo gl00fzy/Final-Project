@@ -68,7 +68,6 @@ if ($data3['status'] === 'success') {
 // Test 3: Duplicate grading
 echo "\nTest 3: Grading & Duplicate\n";
 require 'config/database.php';
-$pdo->exec("INSERT OR IGNORE INTO students (student_id, name) VALUES ('99999999999', 'Test Student')");
 // Ensure it's clean
 $pdo->exec("DELETE FROM student_scores WHERE student_id = '99999999999'");
 
@@ -106,6 +105,5 @@ if (strpos($res6['body'], 'const studentDirectory = {"') !== false || strpos($re
 
 // Cleanup
 $pdo->exec("DELETE FROM student_scores WHERE student_id = '99999999999'");
-$pdo->exec("DELETE FROM students WHERE student_id = '99999999999'");
 $pdo->exec("DELETE FROM exams WHERE exam_id = $exam_id");
 ?>
