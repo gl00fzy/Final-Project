@@ -58,7 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $stmt = $pdo->prepare("INSERT INTO student_scores (exam_id, student_id, score, raw_answers, image_path, exam_set, scanned_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$exam_id, $student_id, $actual_score, $raw_answers, $image_path, $exam_set, $user_id]);
-        
+
+        // ── Log this scan to system_logs ──────────────────────────────
+        $pdo->prepare("INSERT INTO system_logs (user_id, action, exam_id) VALUES (?, 'scan_success', ?)")
+            ->execute([$user_id, $exam_id]);
+
         echo json_encode(['status' => 'success', 'message' => 'บันทึกคะแนนเรียบร้อย', 'calculated_score' => $actual_score]);
     } catch (PDOException $e) {
         // SQLite constraint violation for UNIQUE(exam_id, student_id)

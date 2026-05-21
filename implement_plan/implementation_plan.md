@@ -1,81 +1,113 @@
-# Implementation Plan - Phase 1.1: ID-Only Tracking & Roster Removal
+# Implementation Plan — Phase 2: Role-Based Admin & Usage Statistics
 
-We are transitioning the OMR system to an **ID-Only Tracking** system to comply with university PDPA policies and simplify workflows. Student name tracking and roster management will be entirely removed.
+We are adding a two-tier role system (`user` / `admin`) and a centralized Admin Dashboard that shows system-wide usage statistics and allows granting admin privileges to other users.
 
-## User Review Required
-
-> [!IMPORTANT]
-> The Student Roster feature and all related files (`roster.php`, `api/upload_roster.php`) will be deleted. The database `students` table will no longer be utilized by the application.
+---
 
 ## Open Questions
 
-None at this stage. The goals and requirements are clear and direct.
+> [!IMPORTANT]
+> **Auth strategy:** Currently `auth.php` stores only `user_id` and `name` in the session. Should the `role` also be stored in the session at login time (fast, cached) rather than queried from the DB on every page load? **Recommended: yes**, store `$_SESSION['role']` at login. This approach is used in the plan below.
+
+> [!IMPORTANT]
+> **Log granularity:** Should `system_logs` track exam *creation* events too, or just *scans*? The plan below tracks scans only (as specified), but flagging this in case broader audit trails are needed later.
 
 ---
 
 ## Proposed Changes
 
-### Roster Feature Removal
+### 1. Database Migration
 
-#### [DELETE] [roster.php](file:///c:/Final%20Project/roster.php)
-- Delete this file entirely as roster management is no longer needed.
+#### [NEW] `migrate_phase2.php`
+A one-shot migration script (following the existing `migrate_phase3.php` pattern) that runs via the command line or browser to upgrade the live database:
 
-#### [DELETE] [upload_roster.php](file:///c:/Final%20Project/api/upload_roster.php)
-- Delete this file entirely to remove the API endpoint for CSV roster uploading.
+- `ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'` — adds role column, existing accounts default to `'user'`
+- Promote the default demo account (`teacher_demo`) to `'admin'` automatically so the system has at least one admin from the start
+- `CREATE TABLE IF NOT EXISTS system_logs (...)` — new audit table
 
-#### [MODIFY] [dashboard.php](file:///c:/Final%20Project/dashboard.php)
-- Remove the navigation button pointing to `roster.php` ("รายชื่อนิสิต") from the top navbar.
+**`system_logs` schema:**
+```sql
+CREATE TABLE IF NOT EXISTS system_logs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL,
+    action     TEXT    NOT NULL,   -- e.g. 'scan_success'
+    exam_id    INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+```
 
----
-
-### Student List & Results Table
-
-#### [MODIFY] [view_results.php](file:///c:/Final%20Project/view_results.php)
-- Verify that no "Student Name" columns or data exist in `view_results.php` (currently, the HTML already lists "รหัสนิสิต (Student ID)", "ชุด (Set)", "คะแนน (Score)", "เวลาที่สแกน (Scanned Time)").
-- Ensure the student list tab displays only essential and safe fields: "รหัสนิสิต", "ชุด", "คะแนน", and "เวลาที่สแกน".
-
-#### [MODIFY] [js/charts.js](file:///c:/Final%20Project/js/charts.js)
-- Verify `js/charts.js` renders the table with clean ID-only columns. (The existing table population in `js/charts.js` is already name-free, but we will double check).
-
----
-
-### Clean Up DB Logic & Scanner Page
-
-#### [MODIFY] [scanner.php](file:///c:/Final%20Project/scanner.php)
-- Remove database query to the `students` table (`SELECT student_id, name FROM students`).
-- Remove `const studentDirectory` script declaration from the HTML template.
-
-#### [MODIFY] [js/scanner.js](file:///c:/Final%20Project/js/scanner.js)
-- Update `submitScore` to completely remove any reference to `studentDirectory` and `studentName`.
-- The success card overlay (`scanResultCard`) should only display the 11-digit Student ID and score, removing any "ไม่มีชื่อในระบบ" or name subtitle.
-
-#### [MODIFY] [scanner.backup.php](file:///c:/Final%20Project/scanner.backup.php)
-- Perform matching updates to the backup file `scanner.backup.php` (remove `students` query and directory encoding) or safely delete/archive it. We will update it to keep it working in ID-only mode.
+#### [MODIFY] `schema.sql`
+Append the two new schema blocks so fresh database installs include the role column and `system_logs` from the start.
 
 ---
 
-### Data Export Update
+### 2. Auth — Store Role in Session
 
-#### [MODIFY] [export_csv.php](file:///c:/Final%20Project/api/export_csv.php)
-- Modify the CSV output format to export only: `รหัสนิสิต` (Student ID) and `คะแนน` (Score) as requested.
-- Remove the `เวลาที่สแกน` (Scanned Time) column from the export, or keep it if "these clean columns (Student ID, Score)" specifically limits to only those two. We will export strictly `รหัสนิสิต` (Student ID) and `คะแนน` (Score).
+#### [MODIFY] `api/auth.php`
+- After successful `password_verify`, store `$_SESSION['role'] = $user['role']` alongside `user_id` and `name`.
+- This avoids a DB round-trip for role checks on every admin page.
 
 ---
 
-### Test Suite Alignment
+### 3. Usage Tracking
 
-#### [MODIFY] [run_tests.php](file:///c:/Final%20Project/run_tests.php)
-- Update Test 3 and Test 4 to remove roster database operations (`INSERT INTO students`, `DELETE FROM students`).
-- Update Test 4 validation since `studentDirectory` is removed from `scanner.php` to ensure test passes under the new ID-only system.
+#### [MODIFY] `api/scores.php`
+- After a **successful** `INSERT INTO student_scores`, insert a row into `system_logs`:
+  ```php
+  $pdo->prepare("INSERT INTO system_logs (user_id, action, exam_id) VALUES (?, 'scan_success', ?)")
+      ->execute([$user_id, $exam_id]);
+  ```
+- This is inside the existing `try` block, so it only fires on actual successful saves (not duplicates or errors).
+
+---
+
+### 4. Admin Dashboard
+
+#### [NEW] `admin_dashboard.php`
+A standalone PHP page with a **purple/indigo admin colour theme** to visually distinguish it from the regular yellow teacher dashboard. It includes:
+
+**Access Control:**
+- Session check: `$_SESSION['role'] !== 'admin'` → redirect to `dashboard.php` with an error flash.
+
+**Stats Cards (via direct DB queries at page load):**
+| Stat | Query |
+|---|---|
+| Total Users | `SELECT COUNT(*) FROM users` |
+| Total Exams | `SELECT COUNT(*) FROM exams` |
+| Total Scans (all-time) | `SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success'` |
+| Scans Today | `SELECT COUNT(*) FROM system_logs WHERE action='scan_success' AND DATE(created_at) = DATE('now')` |
+
+**Recent Activity Feed:**
+- Last 10 log entries joined with `users.name` and `exams.exam_title` — shown as a timeline list.
+
+**Grant Admin Interface:**
+- A small form: input `@msu.ac.th` email → POST to `api/admin_action.php?action=grant_admin`.
+- Shows inline success/error feedback.
+
+#### [NEW] `api/admin_action.php`
+Handles admin-only actions. Phase 2 supports one action:
+- `grant_admin`: validates the requester is admin, finds the user by email, updates `role = 'admin'`. Returns JSON.
+
+---
+
+### 5. Dashboard Navigation Link
+
+#### [MODIFY] `dashboard.php`
+- Add a conditional link in the navbar: if `$_SESSION['role'] === 'admin'`, render an "🛡 Admin" link pointing to `admin_dashboard.php`.
+- This keeps the admin section invisible to regular users.
 
 ---
 
 ## Verification Plan
 
-### Automated Tests
-- Run `php run_tests.php` to verify authentication, exam creation, answer key saving, grading, duplicate scoring prevention, and proper rendering of the updated scanner page.
+### Automated
+- Run `C:\xampp\php\php.exe migrate_phase2.php` to apply the migration — check output for success messages.
+- Confirm no errors appear on `dashboard.php` and `admin_dashboard.php`.
 
-### Manual Verification
-- Access the dashboard at `http://localhost:8000/dashboard.php` and verify the Roster navigation button is gone.
-- Access the results statistics and download CSV to verify that only Student ID and Score are exported.
-- Run a scan in student mode or key mode to verify the camera and result card overlays display only the 11-digit Student ID.
+### Manual
+1. Log in as `teacher_demo` → verify "🛡 Admin" link appears in navbar.
+2. Navigate to `admin_dashboard.php` → verify stats cards render correct counts.
+3. Try accessing `admin_dashboard.php` while logged in as a regular user → verify redirect.
+4. Scan a sheet via the scanner → verify a new row appears in `system_logs` and the "Scans Today" counter increments.
+5. Use the Grant Admin form to promote another user → verify their role changes in the DB.

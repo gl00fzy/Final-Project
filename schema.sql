@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    name TEXT NOT NULL
+    user_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT    NOT NULL UNIQUE,
+    password TEXT    NOT NULL,
+    name     TEXT    NOT NULL,
+    role     TEXT    NOT NULL DEFAULT 'user'
 );
 
 CREATE TABLE IF NOT EXISTS exams (
@@ -47,5 +48,14 @@ CREATE TABLE IF NOT EXISTS student_scores (
 
 -- Insert a default user for testing (password: password123)
 -- bcrypt hash for 'password123'
-INSERT OR IGNORE INTO users (user_id, username, password, name) 
-VALUES (1, 'teacher_demo', '$2y$10$Q6wnsSGblDiH.ZPcnnF/n.m629hBzCn4zfdgQppYRZyM0FCBY4l1S', 'อาจารย์ สมชาย');
+INSERT OR IGNORE INTO users (user_id, username, password, name, role) 
+VALUES (1, 'teacher_demo', '$2y$10$Q6wnsSGblDiH.ZPcnnF/n.m629hBzCn4zfdgQppYRZyM0FCBY4l1S', 'อาจารย์ สมชาย', 'admin');
+
+CREATE TABLE IF NOT EXISTS system_logs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL,
+    action     TEXT    NOT NULL,
+    exam_id    INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
