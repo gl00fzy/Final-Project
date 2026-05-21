@@ -145,6 +145,46 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
+    <!-- Print Answer Sheet Modal -->
+    <div id="printModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 border border-emerald-100">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">พิมพ์กระดาษคำตอบ</h2>
+                    <p class="text-xs text-gray-400">สร้าง PDF ขนาด A4 สำหรับนิสิต</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">จำนวนข้อ</label>
+                    <select id="printQCount" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm">
+                        <option value="50">50 ข้อ</option>
+                        <option value="100">100 ข้อ</option>
+                        <option value="150">150 ข้อ</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">ชุดข้อสอบ</label>
+                    <select id="printExamSet" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm">
+                        <option value="A">ชุด A</option>
+                        <option value="B">ชุด B</option>
+                        <option value="C">ชุด C</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 mt-1">
+                    <button onclick="closePrintModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm">ยกเลิก</button>
+                    <button onclick="submitPrint()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        สร้าง PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const createModal = document.getElementById('createExamModal');
         const shareModal = document.getElementById('shareExamModal');
@@ -272,9 +312,13 @@ if (!isset($_SESSION['user_id'])) {
                                         สถิติ
                                     </a>
                                 </div>
-                                <div class="grid grid-cols-2 gap-3">
+                                <div class="grid grid-cols-3 gap-3">
                                     <a href="key_editor.php?exam_id=${exam.exam_id}" class="bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 text-center font-medium py-2.5 px-4 rounded-xl transition-colors text-sm">จัดการเฉลย</a>
                                     <a href="api/export_csv.php?exam_id=${exam.exam_id}" class="bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 text-center font-medium py-2.5 px-4 rounded-xl transition-colors text-sm">โหลด CSV</a>
+                                    <button onclick="openPrintModal(${exam.exam_id}, ${exam.question_count})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-medium py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                        พิมพ์
+                                    </button>
                                 </div>
                                 <button onclick="openShareModal(${exam.exam_id})" class="mt-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 w-full font-medium py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
@@ -296,6 +340,34 @@ if (!isset($_SESSION['user_id'])) {
         function escapeHtml(unsafe) {
             if (!unsafe) return '';
             return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // ── Print Modal ───────────────────────────────────────────────────
+        let _printExamId = null;
+
+        function openPrintModal(examId, defaultQCount) {
+            _printExamId = examId;
+            // Pre-select the closest option to the exam's own question_count
+            const sel = document.getElementById('printQCount');
+            const opts = [50, 100, 150];
+            const closest = opts.reduce((a, b) => Math.abs(b - defaultQCount) < Math.abs(a - defaultQCount) ? b : a);
+            sel.value = String(closest);
+            const modal = document.getElementById('printModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePrintModal() {
+            const modal = document.getElementById('printModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function submitPrint() {
+            const qCount  = document.getElementById('printQCount').value;
+            const examSet = document.getElementById('printExamSet').value;
+            window.open(`generate_pdf.php?exam_id=${_printExamId}&q_count=${qCount}&exam_set=${examSet}`, '_blank');
+            closePrintModal();
         }
 
         loadExams();
