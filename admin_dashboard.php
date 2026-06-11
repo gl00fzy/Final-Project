@@ -57,9 +57,9 @@ $users = $pdo->query("
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* Animated gradient hero */
+        /* Animated gradient hero — Gray + Yellow theme */
         .admin-hero {
-            background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #6d28d9 100%);
+            background: linear-gradient(135deg, #1f2937 0%, #374151 60%, #4b5563 100%);
         }
 
         /* Stat card shimmer on hover */
@@ -68,7 +68,7 @@ $users = $pdo->query("
         }
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(99,102,241,0.15);
+            box-shadow: 0 12px 28px rgba(234,179,8,0.18);
         }
 
         /* Activity pulse dot */
@@ -85,22 +85,22 @@ $users = $pdo->query("
 <body class="bg-gray-50 text-gray-800">
 
 <!-- ════ NAVBAR ════════════════════════════════════════════════════════ -->
-<nav class="bg-indigo-900 text-white shadow-lg">
+<nav class="bg-gray-800 text-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <a href="admin_dashboard.php" class="flex items-center gap-2 text-xl font-bold tracking-wider">
-                <svg class="w-6 h-6 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
                 Admin Panel
             </a>
             <div class="flex items-center gap-4">
-                <span class="text-sm text-indigo-200 hidden sm:block">🛡 <?= htmlspecialchars($_SESSION['name']) ?></span>
-                <a href="dashboard.php" class="bg-indigo-800 hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                <span class="text-sm text-gray-300 hidden sm:block">🛡 <?= htmlspecialchars($_SESSION['name']) ?></span>
+                <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                     ← Dashboard
                 </a>
-                <a href="api/auth.php?logout=1" class="bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                     ออกระบบ
                 </a>
             </div>
@@ -112,7 +112,7 @@ $users = $pdo->query("
 <div class="admin-hero text-white py-10 px-4">
     <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-extrabold mb-1 tracking-tight">ภาพรวมระบบ</h1>
-        <p class="text-indigo-200 text-sm">ข้อมูล ณ วันที่ <?= date('d/m/Y H:i') ?> — สิทธิ์: <span class="bg-indigo-700 text-indigo-100 px-2 py-0.5 rounded-full text-xs font-bold">ADMIN</span></p>
+        <p class="text-gray-300 text-sm">ข้อมูล ณ วันที่ <?= date('d/m/Y H:i') ?> — สิทธิ์: <span class="bg-yellow-500 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">ADMIN</span></p>
     </div>
 </div>
 
@@ -125,7 +125,7 @@ $users = $pdo->query("
 
             <div class="stat-card bg-white rounded-2xl p-5 border border-gray-100 shadow-sm col-span-1">
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">ผู้ใช้งานทั้งหมด</p>
-                <p class="text-4xl font-extrabold text-indigo-600"><?= $total_users ?></p>
+                <p class="text-4xl font-extrabold text-gray-800"><?= $total_users ?></p>
                 <p class="text-xs text-gray-400 mt-1">Admin <?= $total_admins ?> คน</p>
             </div>
 
@@ -147,13 +147,13 @@ $users = $pdo->query("
                 <p class="text-xs text-gray-400 mt-1"><?= date('d M Y') ?></p>
             </div>
 
-            <div class="stat-card bg-indigo-600 text-white rounded-2xl p-5 shadow-sm col-span-2 lg:col-span-1 flex flex-col justify-between">
-                <p class="text-xs font-semibold text-indigo-200 uppercase tracking-wider mb-2">อัตราการใช้งาน</p>
+            <div class="stat-card bg-yellow-500 text-gray-900 rounded-2xl p-5 shadow-sm col-span-2 lg:col-span-1 flex flex-col justify-between">
+                <p class="text-xs font-semibold text-yellow-800 uppercase tracking-wider mb-2">อัตราการใช้งาน</p>
                 <?php
                     $rate = $total_users > 0 ? round($total_scans / max($total_users,1), 1) : 0;
                 ?>
                 <p class="text-4xl font-extrabold"><?= $rate ?></p>
-                <p class="text-xs text-indigo-200 mt-1">สแกนเฉลี่ย/ผู้ใช้</p>
+                <p class="text-xs text-yellow-800 mt-1">สแกนเฉลี่ย/ผู้ใช้</p>
             </div>
 
         </div>
@@ -165,9 +165,9 @@ $users = $pdo->query("
         <!-- Grant Admin Panel -->
         <div class="lg:col-span-1 space-y-6">
 
-            <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-6">
+            <div class="bg-white rounded-2xl border border-yellow-100 shadow-sm p-6">
                 <h2 class="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>
@@ -180,9 +180,9 @@ $users = $pdo->query("
                     <input type="email" name="email" id="grantEmail" required
                            placeholder="someone@msu.ac.th"
                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm
-                                  focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                                  focus:outline-none focus:ring-2 focus:ring-yellow-400">
                     <button type="submit"
-                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold
+                            class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold
                                    py-2.5 px-4 rounded-xl text-sm transition-colors">
                         ➕ มอบสิทธิ์ Admin
                     </button>
@@ -254,7 +254,7 @@ $users = $pdo->query("
                                 <span class="font-semibold"><?= htmlspecialchars($log['user_name']) ?></span>
                                 สแกนกระดาษคำตอบสำเร็จ
                                 <?php if ($log['exam_title']): ?>
-                                    — <span class="text-indigo-600 font-medium"><?= htmlspecialchars($log['exam_title']) ?></span>
+                                    — <span class="text-yellow-600 font-medium"><?= htmlspecialchars($log['exam_title']) ?></span>
                                 <?php endif; ?>
                             </p>
                             <p class="text-xs text-gray-400 mt-0.5"><?= $timeLabel ?></p>
@@ -274,7 +274,7 @@ $users = $pdo->query("
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 class="text-base font-bold text-gray-900">ผู้ใช้งานทั้งหมด (<?= $total_users ?> คน)</h2>
             <a href="register.php"
-               class="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-1.5 rounded-lg font-medium hover:bg-indigo-100 transition-colors">
+               class="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1.5 rounded-lg font-medium hover:bg-yellow-100 transition-colors">
                 + เพิ่มผู้ใช้งาน
             </a>
         </div>
@@ -296,7 +296,7 @@ $users = $pdo->query("
                         <td class="py-3 px-6 text-gray-500 font-mono text-xs"><?= htmlspecialchars($u['username']) ?></td>
                         <td class="py-3 px-6">
                             <?php if ($u['role'] === 'admin'): ?>
-                                <span class="inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold px-2.5 py-1 rounded-full">
+                                <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 border border-yellow-300 text-xs font-bold px-2.5 py-1 rounded-full">
                                     🛡 Admin
                                 </span>
                             <?php else: ?>
