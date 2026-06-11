@@ -40,24 +40,31 @@ if ($exam_id > 0) {
 // ════════════════════════════════════════════════════════════════════════
 const PW   = 210;   // page width
 const PH   = 297;   // page height
-const MARG = 12;    // outer safe margin
+const MARG = 15;    // outer safe margin (increased from 12 to give more space)
 
-// Corner marker squares
-const MK_SIZE = 10;   // 10 × 10 mm
-const MK_OFF  = 14;   // distance from edge to marker top-left corner
+// Corner marker squares — moved closer to edges to avoid overlap with content
+const MK_SIZE = 8;    // 8 × 8 mm (slightly smaller to avoid overlap)
+const MK_OFF  = 5;    // distance from edge to marker (much closer to edge)
 
 // Bubble geometry
-const BUB_R    = 2.5;   // bubble radius (mm) - EXACTLY 2.5mm as requested
+const BUB_R    = 2.5;   // bubble radius (mm) - EXACTLY 2.5mm
 const BUB_DX   = 7.0;   // centre-to-centre horizontal spacing (at least 6mm)
 const BUB_DY   = 6.5;   // centre-to-centre vertical spacing
 
 // ════════════════════════════════════════════════════════════════════════
-// EXTEND tFPDF FOR Ellipse support
+// EXTEND tFPDF FOR proper Circle support
 // ════════════════════════════════════════════════════════════════════════
 class OMR_PDF extends tFPDF {
 
-    /** Draw an ellipse at (x, y) with width w and height h */
-    public function Ellipse(float $x, float $y, float $w, float $h, string $style = 'D'): void {
+    /**
+     * Draw a perfect circle at center (cx, cy) with radius r.
+     * Uses Bézier curves with the standard kappa constant for accurate circles.
+     * @param float $cx  Center X coordinate (mm)
+     * @param float $cy  Center Y coordinate (mm)
+     * @param float $r   Radius (mm)
+     * @param string $style  'D' = Draw (outline), 'F' = Fill, 'DF'/'FD' = Draw + Fill
+     */
+    public function Circle(float $cx, float $cy, float $r, string $style = 'D'): void {
         if ($style === 'F') {
             $op = 'f';
         } elseif ($style === 'FD' || $style === 'DF') {
@@ -66,23 +73,38 @@ class OMR_PDF extends tFPDF {
             $op = 'S';
         }
 
-        $lx = 4 / 3 * (M_SQRT2 - 1) * $w / 2;
-        $ly = 4 / 3 * (M_SQRT2 - 1) * $h / 2;
-        $k  = $this->k;
-        $h2 = $this->h;
-        $cx = ($x + $w / 2) * $k;
-        $cy = ($h2 - ($y + $h / 2)) * $k;
-        $px = $w / 2 * $k;
-        $py = $h / 2 * $k;
+        // Kappa constant for Bézier approximation of a circle
+        // κ = 4(√2 - 1)/3 ≈ 0.5522847498
+        $kappa = 0.5522847498;
+        $l = $r * $kappa;   // control point distance from endpoint
 
+        $k  = $this->k;      // scale factor (points per mm)
+        $hp = $this->h;      // page height in mm
+
+        // Convert center coordinates to PDF coordinate system (origin at bottom-left)
+        $x  = $cx * $k;
+        $y  = ($hp - $cy) * $k;
+        $rk = $r * $k;
+        $lk = $l * $k;
+
+        // Draw circle using 4 Bézier curves (starting from right, going clockwise)
         $this->_out(sprintf(
-            '%.2f %.2f m %.2f %.2f %.2f %.2f %.2f %.2f c %.2f %.2f %.2f %.2f %.2f %.2f c '
-            . '%.2f %.2f %.2f %.2f %.2f %.2f c %.2f %.2f %.2f %.2f %.2f %.2f c %s',
-            $cx - $px, $cy,
-            $cx - $px, $cy + $ly, $cx - $lx, $cy + $py, $cx, $cy + $py,
-            $cx + $lx, $cy + $py, $cx + $px, $cy + $ly, $cx + $px, $cy,
-            $cx + $px, $cy - $ly, $cx + $lx, $cy - $py, $cx, $cy - $py,
-            $cx - $lx, $cy - $py, $cx - $px, $cy - $ly, $cx - $px, $cy,
+            '%.2f %.2f m '                                        // Move to right point
+            . '%.2f %.2f %.2f %.2f %.2f %.2f c '                  // Right → Bottom
+            . '%.2f %.2f %.2f %.2f %.2f %.2f c '                  // Bottom → Left
+            . '%.2f %.2f %.2f %.2f %.2f %.2f c '                  // Left → Top
+            . '%.2f %.2f %.2f %.2f %.2f %.2f c '                  // Top → Right (close)
+            . '%s',
+            // Start: right point of circle
+            $x + $rk, $y,
+            // Right → Bottom
+            $x + $rk, $y - $lk,    $x + $lk, $y - $rk,    $x, $y - $rk,
+            // Bottom → Left
+            $x - $lk, $y - $rk,    $x - $rk, $y - $lk,    $x - $rk, $y,
+            // Left → Top
+            $x - $rk, $y + $lk,    $x - $lk, $y + $rk,    $x, $y + $rk,
+            // Top → Right (close)
+            $x + $lk, $y + $rk,    $x + $rk, $y + $lk,    $x + $rk, $y,
             $op
         ));
     }
@@ -93,22 +115,23 @@ $pdf = new OMR_PDF('P', 'mm', 'A4');
 $pdf->SetMargins(MARG, MARG, MARG);
 $pdf->SetAutoPageBreak(false);
 
-// Register Thai Font (tahoma)
-$pdf->AddFont('tahoma', '', 'tahoma.ttf', true);
-$pdf->AddFont('tahoma', 'B', 'tahomabd.ttf', true);
+// Register Sarabun Font (THSarabunNew-style, Google Fonts open-source)
+$pdf->AddFont('sarabun', '', 'Sarabun-Regular.ttf', true);
+$pdf->AddFont('sarabun', 'B', 'Sarabun-Bold.ttf', true);
 
 $pdf->AddPage();
 
 // ════════════════════════════════════════════════════════════════════════
 // 1. CORNER FIDUCIAL MARKERS  ← CRITICAL for OpenCV detection
-//    Solid black squares, 10×10 mm, placed inside safe margin
+//    Solid black squares, placed at the very edges of the page
+//    to avoid overlapping with any content area.
 // ════════════════════════════════════════════════════════════════════════
 $pdf->SetFillColor(0, 0, 0);
 $markers = [
-    [MK_OFF, MK_OFF],                           // Top-Left
-    [PW - MK_OFF - MK_SIZE, MK_OFF],            // Top-Right
-    [PW - MK_OFF - MK_SIZE, PH - MK_OFF - MK_SIZE], // Bottom-Right
-    [MK_OFF, PH - MK_OFF - MK_SIZE],            // Bottom-Left
+    [MK_OFF, MK_OFF],                                     // Top-Left
+    [PW - MK_OFF - MK_SIZE, MK_OFF],                      // Top-Right
+    [PW - MK_OFF - MK_SIZE, PH - MK_OFF - MK_SIZE],       // Bottom-Right
+    [MK_OFF, PH - MK_OFF - MK_SIZE],                      // Bottom-Left
 ];
 foreach ($markers as [$mx, $my]) {
     $pdf->Rect($mx, $my, MK_SIZE, MK_SIZE, 'F');
@@ -119,20 +142,20 @@ foreach ($markers as [$mx, $my]) {
 // ════════════════════════════════════════════════════════════════════════
 $header_top = MK_OFF + MK_SIZE + 4;   // just below top markers
 
-$pdf->SetFont('tahoma', 'B', 12);
+$pdf->SetFont('sarabun', 'B', 14);
 $pdf->SetTextColor(0, 0, 0);
 $pdf->SetXY(MARG, $header_top);
-$pdf->Cell(PW - MARG * 2, 6, 'Mahasarakham University  |  OMR Answer Sheet (กระดาษคำตอบ)', 0, 1, 'C');
+$pdf->Cell(PW - MARG * 2, 7, 'Mahasarakham University  |  OMR Answer Sheet (กระดาษคำตอบ)', 0, 1, 'C');
 
-$pdf->SetFont('tahoma', 'B', 15);
+$pdf->SetFont('sarabun', 'B', 18);
 $exam_title_str = $exam['exam_title'];
 if ($exam['exam_code']) { $exam_title_str .= '  (' . $exam['exam_code'] . ')'; }
 $pdf->SetX(MARG);
-$pdf->Cell(PW - MARG * 2, 7, $exam_title_str, 0, 1, 'C');
+$pdf->Cell(PW - MARG * 2, 8, $exam_title_str, 0, 1, 'C');
 
-$pdf->SetFont('tahoma', '', 10);
+$pdf->SetFont('sarabun', '', 11);
 $pdf->SetX(MARG);
-$pdf->Cell(PW - MARG * 2, 5,
+$pdf->Cell(PW - MARG * 2, 6,
     'Exam ID (รหัสข้อสอบ): ' . $exam_id . '   |   Set (ชุดที่): ' . $exam_set . '   |   Questions (จำนวน): ' . $q_count . ' ข้อ',
     0, 1, 'C');
 
@@ -147,16 +170,16 @@ $pdf->Line(MARG, $y_after_header, PW - MARG, $y_after_header);
 // ════════════════════════════════════════════════════════════════════════
 $sid_top = $y_after_header + 4;
 
-$pdf->SetFont('tahoma', 'B', 10);
+$pdf->SetFont('sarabun', 'B', 12);
 $pdf->SetXY(MARG, $sid_top);
-$pdf->Cell(50, 5, 'STUDENT ID (รหัสนิสิต 11 หลัก)', 0, 1, 'L');
+$pdf->Cell(50, 6, 'STUDENT ID (รหัสนิสิต 11 หลัก)', 0, 1, 'L');
 
-$sid_y_start = $sid_top + 6;
+$sid_y_start = $sid_top + 7;
 $digits      = 11;
 $digit_rows  = 10;   // 0–9
 
 // Column headers (digit position 1–11)
-$pdf->SetFont('tahoma', '', 8);
+$pdf->SetFont('sarabun', '', 9);
 $pdf->SetTextColor(80, 80, 80);
 for ($col = 0; $col < $digits; $col++) {
     $cx = MARG + 14 + $col * BUB_DX;
@@ -172,17 +195,18 @@ $pdf->SetTextColor(0, 0, 0);
 for ($row = 0; $row < $digit_rows; $row++) {        // digit 0-9
     // Row label
     $ry = $sid_y_start + $row * BUB_DY;
-    $pdf->SetFont('tahoma', '', 9);
-    $pdf->SetXY(MARG, $ry - 2.2);
+    $pdf->SetFont('sarabun', '', 10);
+    $pdf->SetXY(MARG, $ry - 2.5);
     $pdf->Cell(10, BUB_DY, (string)$row, 0, 0, 'R');
 
     for ($col = 0; $col < $digits; $col++) {
         $cx = MARG + 14 + $col * BUB_DX;
         $cy = $ry;
-        $pdf->Ellipse($cx - BUB_R, $cy - BUB_R, BUB_R * 2, BUB_R * 2, 'D');
+        // Draw proper circle using center coordinates
+        $pdf->Circle($cx, $cy, BUB_R, 'D');
         
         // Put number exactly in the center
-        $pdf->SetFont('tahoma', '', 7);
+        $pdf->SetFont('sarabun', '', 8);
         $pdf->SetXY($cx - BUB_R, $cy - BUB_R);
         $pdf->Cell(BUB_R * 2, BUB_R * 2, (string)$row, 0, 0, 'C');
     }
@@ -190,22 +214,22 @@ for ($row = 0; $row < $digit_rows; $row++) {        // digit 0-9
 
 // Name / signature line
 $sid_block_bottom = $sid_y_start + $digit_rows * BUB_DY + 3;
-$pdf->SetFont('tahoma', '', 10);
+$pdf->SetFont('sarabun', '', 11);
 $pdf->SetXY(MARG + 14 + $digits * BUB_DX + 6, $sid_y_start - 2);
 $name_box_w = PW - MARG - (MARG + 14 + $digits * BUB_DX + 6);
-$pdf->Cell($name_box_w, 5, 'Name / ชื่อ–สกุล :', 0, 1, 'L');
+$pdf->Cell($name_box_w, 6, 'Name / ชื่อ–สกุล :', 0, 1, 'L');
 $pdf->SetLineWidth(0.25);
 $pdf->Line(
     MARG + 14 + $digits * BUB_DX + 8 + 25,
-    $sid_y_start + 3,
+    $sid_y_start + 4,
     PW - MARG,
-    $sid_y_start + 3
+    $sid_y_start + 4
 );
 $pdf->Line(
     MARG + 14 + $digits * BUB_DX + 8 + 25,
-    $sid_y_start + 10,
+    $sid_y_start + 11,
     PW - MARG,
-    $sid_y_start + 10
+    $sid_y_start + 11
 );
 
 // ════════════════════════════════════════════════════════════════════════
@@ -217,10 +241,10 @@ $ans_top  = max($sid_block_bottom, $sid_y_start + $digit_rows * BUB_DY) + 6;
 $pdf->SetLineWidth(0.3);
 $pdf->Line(MARG, $ans_top - 2, PW - MARG, $ans_top - 2);
 
-$pdf->SetFont('tahoma', 'B', 10);
+$pdf->SetFont('sarabun', 'B', 12);
 $pdf->SetXY(MARG, $ans_top);
-$pdf->Cell(60, 5, 'ANSWERS (คำตอบ)', 0, 1, 'L');
-$ans_top += 6;
+$pdf->Cell(60, 6, 'ANSWERS (คำตอบ)', 0, 1, 'L');
+$ans_top += 7;
 
 // Column layout
 $opts      = ['A', 'B', 'C', 'D', 'E'];
@@ -231,28 +255,35 @@ $n_cols    = ($q_count <= 50) ? 2 : 3;
 
 $qs_per_col = (int)ceil($q_count / $n_cols);
 
+// Calculate the answer row spacing to fit all questions in the available space
+$max_ans_y = PH - MK_OFF - MK_SIZE - 14;   // safe zone above bottom markers
+$available_height = $max_ans_y - $ans_top;
+$ans_dy = $available_height / $qs_per_col;  // dynamic spacing to fit exactly
+
+// Clamp: don't make rows bigger than BUB_DY (no need to stretch)
+if ($ans_dy > BUB_DY) { $ans_dy = BUB_DY; }
+
 // Width per answer column group
 $ans_block_w = (PW - MARG * 2) / $n_cols;
 
 // Each question row: q_no label + 5 bubbles
-$q_label_w = 11;   // mm (Increase gap between number and first bubble)
+$q_label_w = 12;   // mm (gap between number and first bubble)
 $bub_area_w = $n_opts * BUB_DX;   // 5 bubbles
 
-$pdf->SetFont('tahoma', '', 8);
+$pdf->SetFont('sarabun', '', 9);
 $pdf->SetDrawColor(0, 0, 0);
 $pdf->SetLineWidth(0.18);
 
 // Option headers per column
 for ($col = 0; $col < $n_cols; $col++) {
     $col_x = MARG + $col * $ans_block_w;
+    $pdf->SetFont('sarabun', 'B', 9);
     foreach ($opts as $oi => $opt) {
         $hx = $col_x + $q_label_w + $oi * BUB_DX;
         $pdf->SetXY($hx - BUB_R, $ans_top - 5);
         $pdf->Cell(BUB_R * 2, 4, $opt, 0, 0, 'C');
     }
 }
-
-$pdf->SetFont('tahoma', '', 9);
 
 for ($q = 1; $q <= $q_count; $q++) {
     $col_idx = (int)(($q - 1) / $qs_per_col);
@@ -261,22 +292,22 @@ for ($q = 1; $q <= $q_count; $q++) {
     if ($col_idx >= $n_cols) { break; }   // safety
 
     $col_x = MARG + $col_idx * $ans_block_w;
-    $qy    = $ans_top + $row_idx * BUB_DY;
+    $qy    = $ans_top + $row_idx * $ans_dy;
 
     // Question number
     $pdf->SetXY($col_x, $qy - 2.5);
-    $pdf->SetFont('tahoma', 'B', 9);
-    $pdf->Cell($q_label_w - 2, BUB_DY, (string)$q . '.', 0, 0, 'R');
+    $pdf->SetFont('sarabun', 'B', 10);
+    $pdf->Cell($q_label_w - 2, $ans_dy, (string)$q . '.', 0, 0, 'R');
 
-    // 5 bubbles
+    // 5 bubbles (proper circles)
     for ($oi = 0; $oi < $n_opts; $oi++) {
         $bx = $col_x + $q_label_w + $oi * BUB_DX;
         $by = $qy;
-        // Draw exact circle using Ellipse
-        $pdf->Ellipse($bx - BUB_R, $by - BUB_R, BUB_R * 2, BUB_R * 2, 'D');
+        // Draw perfect circle using center coordinates
+        $pdf->Circle($bx, $by, BUB_R, 'D');
         
         // Put the choice letter exactly in the center
-        $pdf->SetFont('tahoma', '', 7);
+        $pdf->SetFont('sarabun', '', 8);
         $pdf->SetXY($bx - BUB_R, $by - BUB_R);
         $pdf->Cell(BUB_R * 2, BUB_R * 2, $opts[$oi], 0, 0, 'C');
     }
@@ -285,7 +316,7 @@ for ($q = 1; $q <= $q_count; $q++) {
 // ════════════════════════════════════════════════════════════════════════
 // 5. FOOTER NOTE
 // ════════════════════════════════════════════════════════════════════════
-$pdf->SetFont('tahoma', '', 8);
+$pdf->SetFont('sarabun', '', 9);
 $pdf->SetTextColor(120, 120, 120);
 $pdf->SetXY(MARG, PH - MK_OFF - MK_SIZE - 6);
 $pdf->Cell(PW - MARG * 2, 5,
