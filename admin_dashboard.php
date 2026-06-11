@@ -78,8 +78,50 @@ $users = $pdo->query("
         }
         .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
 
-        /* Inline alert */
-        #grantMsg { transition: opacity 0.3s ease; }
+        /* Page-level toast notifications */
+        #toastContainer {
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9999;
+            pointer-events: none;
+            top: 80px;
+            right: 16px;
+        }
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 380px;
+            font-family: 'Inter', system-ui, sans-serif;
+            animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .toast.toast-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .toast.toast-out { animation: toastOut 0.2s ease-in forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
+
+        /* Button loading state */
+        .btn-loading {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+        }
+        .btn-loading::after {
+            content: ''; width: 16px; height: 16px;
+            border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%;
+            display: inline-block; margin-left: 8px;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -110,9 +152,15 @@ $users = $pdo->query("
 
 <!-- ════ HERO HEADER ══════════════════════════════════════════════════ -->
 <div class="admin-hero text-white py-10 px-4">
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-extrabold mb-1 tracking-tight">ภาพรวมระบบ</h1>
-        <p class="text-gray-300 text-sm">ข้อมูล ณ วันที่ <?= date('d/m/Y H:i') ?> — สิทธิ์: <span class="bg-yellow-500 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">ADMIN</span></p>
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold mb-1 tracking-tight">ภาพรวมระบบ</h1>
+            <p class="text-gray-300 text-sm">ข้อมูล ณ วันที่ <?= date('d/m/Y H:i') ?> — สิทธิ์: <span class="bg-yellow-500 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">ADMIN</span></p>
+        </div>
+        <button onclick="document.getElementById('roleModal').showModal()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-2 px-4 rounded-xl transition-colors text-sm flex items-center gap-2 backdrop-blur-sm">
+            <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            จัดการสิทธิ์ Admin
+        </button>
     </div>
 </div>
 
@@ -159,67 +207,9 @@ $users = $pdo->query("
         </div>
     </section>
 
-    <!-- ── Two-column layout: Grant Admin + Activity Feed ──────────── -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Grant Admin Panel -->
-        <div class="lg:col-span-1 space-y-6">
-
-            <div class="bg-white rounded-2xl border border-yellow-100 shadow-sm p-6">
-                <h2 class="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                    </svg>
-                    มอบสิทธิ์ Admin
-                </h2>
-                <p class="text-xs text-gray-400 mb-4">กรอกอีเมล @msu.ac.th ของอาจารย์ที่ต้องการเลื่อนสิทธิ์</p>
-
-                <form id="grantAdminForm" class="flex flex-col gap-3">
-                    <input type="hidden" name="action" value="grant_admin">
-                    <input type="email" name="email" id="grantEmail" required
-                           placeholder="someone@msu.ac.th"
-                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm
-                                  focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                    <button type="submit"
-                            class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold
-                                   py-2.5 px-4 rounded-xl text-sm transition-colors">
-                        ➕ มอบสิทธิ์ Admin
-                    </button>
-                </form>
-                <div id="grantMsg" class="hidden mt-3 text-sm font-medium px-4 py-2.5 rounded-lg"></div>
-            </div>
-
-            <!-- Revoke Admin Panel -->
-            <div class="bg-white rounded-2xl border border-red-100 shadow-sm p-6">
-                <h2 class="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"/>
-                    </svg>
-                    ถอนสิทธิ์ Admin
-                </h2>
-                <p class="text-xs text-gray-400 mb-4">กรอกอีเมลของ Admin ที่ต้องการลดสิทธิ์กลับเป็น User</p>
-
-                <form id="revokeAdminForm" class="flex flex-col gap-3">
-                    <input type="hidden" name="action" value="revoke_admin">
-                    <input type="email" name="email" id="revokeEmail" required
-                           placeholder="someone@msu.ac.th"
-                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm
-                                  focus:outline-none focus:ring-2 focus:ring-red-400">
-                    <button type="submit"
-                            class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold
-                                   py-2.5 px-4 rounded-xl text-sm transition-colors">
-                        ➖ ถอนสิทธิ์ Admin
-                    </button>
-                </form>
-                <div id="revokeMsg" class="hidden mt-3 text-sm font-medium px-4 py-2.5 rounded-lg"></div>
-            </div>
-
-        </div>
-
-        <!-- Activity Feed -->
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <!-- ── Activity Feed ──────────── -->
+    <section>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full pulse-dot"></span>
                 กิจกรรมล่าสุด (15 รายการ)
@@ -274,19 +264,19 @@ $users = $pdo->query("
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 class="text-base font-bold text-gray-900">ผู้ใช้งานทั้งหมด (<?= $total_users ?> คน)</h2>
             <a href="register.php"
-               class="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1.5 rounded-lg font-medium hover:bg-yellow-100 transition-colors">
+               class="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1.5 rounded-lg font-medium hover:bg-yellow-100 active:scale-95 transition-all shadow-sm">
                 + เพิ่มผู้ใช้งาน
             </a>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left">
-                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+        <div class="overflow-x-auto overflow-y-auto max-h-[500px]">
+            <table class="w-full text-sm text-left relative">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb]">
                     <tr>
-                        <th class="py-3 px-6 font-semibold">ชื่อ</th>
-                        <th class="py-3 px-6 font-semibold">อีเมล / Username</th>
-                        <th class="py-3 px-6 font-semibold">สิทธิ์</th>
-                        <th class="py-3 px-6 font-semibold text-center">ข้อสอบ</th>
-                        <th class="py-3 px-6 font-semibold text-center">สแกน</th>
+                        <th class="py-3 px-6 font-semibold bg-gray-50">ชื่อ</th>
+                        <th class="py-3 px-6 font-semibold bg-gray-50">อีเมล / Username</th>
+                        <th class="py-3 px-6 font-semibold bg-gray-50">สิทธิ์</th>
+                        <th class="py-3 px-6 font-semibold text-center bg-gray-50">ข้อสอบ</th>
+                        <th class="py-3 px-6 font-semibold text-center bg-gray-50">สแกน</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -316,16 +306,67 @@ $users = $pdo->query("
 
 </div><!-- /main -->
 
+<!-- ════ MODALS ═══════════════════════════════════════════════════════ -->
+<dialog id="roleModal" class="backdrop:bg-black/50 backdrop:backdrop-blur-sm rounded-2xl shadow-2xl border-0 p-0 w-full max-w-md m-auto">
+    <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-900">จัดการสิทธิ์ Admin</h2>
+            <button type="button" onclick="document.getElementById('roleModal').close()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Grant -->
+            <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
+                <h3 class="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    มอบสิทธิ์ Admin
+                </h3>
+                <p class="text-xs text-gray-600 mb-3">อีเมล @msu.ac.th ของอาจารย์</p>
+                <form id="grantAdminForm" class="flex gap-2">
+                    <input type="hidden" name="action" value="grant_admin">
+                    <input type="email" name="email" id="grantEmail" required placeholder="someone@msu.ac.th" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <button type="submit" id="btnGrantAdmin" class="bg-yellow-500 hover:bg-yellow-600 active:scale-[0.98] text-gray-900 font-semibold py-2 px-3 rounded-lg text-sm transition-all whitespace-nowrap">เพิ่ม</button>
+                </form>
+            </div>
+
+            <!-- Revoke -->
+            <div class="bg-red-50 rounded-xl p-4 border border-red-100">
+                <h3 class="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                    ถอนสิทธิ์ Admin
+                </h3>
+                <p class="text-xs text-gray-600 mb-3">อีเมลของ Admin ที่ต้องการลดสิทธิ์</p>
+                <form id="revokeAdminForm" class="flex gap-2">
+                    <input type="hidden" name="action" value="revoke_admin">
+                    <input type="email" name="email" id="revokeEmail" required placeholder="someone@msu.ac.th" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+                    <button type="submit" id="btnRevokeAdmin" class="bg-red-500 hover:bg-red-600 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-lg text-sm transition-all whitespace-nowrap">ถอน</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+<div id="toastContainer"></div>
 <script>
-    // ── Shared inline-msg helper ──────────────────────────────────────────
-    function showMsg(boxId, text, isError) {
-        const el = document.getElementById(boxId);
-        el.textContent = text;
-        el.className = isError
-            ? 'mt-3 text-sm font-medium px-4 py-2.5 rounded-lg bg-red-50 text-red-700 border border-red-200'
-            : 'mt-3 text-sm font-medium px-4 py-2.5 rounded-lg bg-green-50 text-green-700 border border-green-200';
-        el.classList.remove('hidden');
-        if (!isError) setTimeout(() => el.classList.add('hidden'), 4000);
+    // ── Toast Notification System ─────────────────────────────────────────
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        
+        const icon = type === 'success' 
+            ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+            : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            
+        toast.innerHTML = `${icon} <span>${message}</span>`;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('toast-out');
+            setTimeout(() => toast.remove(), 200);
+        }, 3000);
     }
 
     // ── Grant Admin ───────────────────────────────────────────────────────
@@ -333,37 +374,55 @@ $users = $pdo->query("
         e.preventDefault();
         const fd = new FormData(e.target);
         const email = fd.get('email').trim();
+        const btn = document.getElementById('btnGrantAdmin');
 
         if (!email.toLowerCase().endsWith('@msu.ac.th')) {
-            showMsg('grantMsg', 'กรุณาใช้อีเมล @msu.ac.th เท่านั้น', true);
+            showToast('กรุณาใช้อีเมล @msu.ac.th เท่านั้น', 'error');
             return;
         }
 
+        btn.classList.add('btn-loading');
         try {
             const res  = await fetch('api/admin_action.php', { method: 'POST', body: fd });
             const data = await res.json();
-            showMsg('grantMsg', data.message, data.status !== 'success');
+            
             if (data.status === 'success') {
+                showToast(data.message, 'success');
                 e.target.reset();
                 setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message, 'error');
+                btn.classList.remove('btn-loading');
             }
-        } catch { showMsg('grantMsg', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', true); }
+        } catch { 
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            btn.classList.remove('btn-loading');
+        }
     });
 
     // ── Revoke Admin ──────────────────────────────────────────────────────
     document.getElementById('revokeAdminForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
+        const btn = document.getElementById('btnRevokeAdmin');
 
+        btn.classList.add('btn-loading');
         try {
             const res  = await fetch('api/admin_action.php', { method: 'POST', body: fd });
             const data = await res.json();
-            showMsg('revokeMsg', data.message, data.status !== 'success');
+            
             if (data.status === 'success') {
+                showToast(data.message, 'success');
                 e.target.reset();
                 setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message, 'error');
+                btn.classList.remove('btn-loading');
             }
-        } catch { showMsg('revokeMsg', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', true); }
+        } catch { 
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            btn.classList.remove('btn-loading');
+        }
     });
 </script>
 </body>

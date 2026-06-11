@@ -70,12 +70,61 @@ $answer_key = $normalized_key;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Page-level toast notifications */
+        #toastContainer {
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9999;
+            pointer-events: none;
+            top: 20px;
+            right: 16px;
+        }
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 380px;
+            font-family: 'Inter', system-ui, sans-serif;
+            animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .toast.toast-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .toast.toast-out { animation: toastOut 0.2s ease-in forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
+
+        /* Button loading state */
+        .btn-loading {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+            color: transparent !important;
+        }
+        .btn-loading::after {
+            content: ''; width: 20px; height: 20px;
+            border: 2.5px solid #111827; border-top-color: transparent; border-radius: 50%;
+            display: inline-block;
+            position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
     <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm flex items-center gap-2">
+                <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-all active:scale-95 text-sm flex items-center gap-2">
                     &larr; กลับ
                 </a>
                 <div class="font-bold text-lg hidden sm:block truncate px-4">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
@@ -97,7 +146,7 @@ $answer_key = $normalized_key;
                         <option value="B">ชุดข้อสอบ B</option>
                         <option value="C">ชุดข้อสอบ C</option>
                     </select>
-                    <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
+                    <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-all active:scale-95 shadow-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
                 </div>
             </div>
 
@@ -109,12 +158,12 @@ $answer_key = $normalized_key;
                             <span class="font-bold text-gray-700 w-8"><?= $i ?>.</span>
                             <div class="flex gap-1.5 options" data-q="<?= $i ?>">
                                 <?php foreach($options as $opt): ?>
-                                    <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-yellow-500 transition-all opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
+                                    <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-yellow-500 active:scale-90 transition-all opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
                                 <?php endforeach; ?>
                             </div>
                             
                             <!-- Settings Gear Button -->
-                            <button type="button" title="ตั้งค่าข้อนี้" class="ml-2 p-1.5 text-gray-400 hover:text-yellow-600 transition-colors focus:outline-none gear-btn" data-q="<?= $i ?>">
+                            <button type="button" title="ตั้งค่าข้อนี้" class="ml-2 p-1.5 text-gray-400 hover:text-yellow-600 active:scale-90 transition-all focus:outline-none gear-btn" data-q="<?= $i ?>">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </button>
                         </div>
@@ -149,7 +198,27 @@ $answer_key = $normalized_key;
         </div>
     </div>
 
+    <div id="toastContainer"></div>
     <script>
+        // ── Toast Notification System ─────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' 
+                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('toast-out');
+                setTimeout(() => toast.remove(), 200);
+            }, 3000);
+        }
+
         let answerKey = <?= json_encode($answer_key) ?>;
         const examId = <?= $exam_id ?>;
         let currentSet = 'A';
@@ -253,9 +322,7 @@ $answer_key = $normalized_key;
 
         document.getElementById('btnSaveKey').addEventListener('click', async () => {
             const btn = document.getElementById('btnSaveKey');
-            const originalText = btn.textContent;
-            btn.textContent = 'กำลังบันทึกและตรวจใหม่...';
-            btn.disabled = true;
+            btn.classList.add('btn-loading');
 
             const formData = new FormData();
             formData.append('action', 'save_key');
@@ -269,16 +336,15 @@ $answer_key = $normalized_key;
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    alert('บันทึกเฉลยเรียบร้อยแล้ว!\nระบบได้ทำการอัปเดตคะแนนนิสิตอัตโนมัติ จำนวน ' + (data.regraded_count || 0) + ' คน');
+                    showToast('บันทึกเฉลยเรียบร้อยแล้ว! อัปเดตคะแนนนิสิต ' + (data.regraded_count || 0) + ' คน');
                 } else {
-                    alert('Error: ' + data.message);
+                    showToast('Error: ' + data.message, 'error');
                 }
             } catch (err) {
-                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
             }
             
-            btn.textContent = originalText;
-            btn.disabled = false;
+            btn.classList.remove('btn-loading');
         });
     </script>
 </body>

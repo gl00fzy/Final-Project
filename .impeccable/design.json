@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-11T07:37:00Z",
+  "title": "Design System: OMR System",
+  "extensions": {
+    "colorMeta": {
+      "yellow-primary": {
+        "role": "primary",
+        "displayName": "MSU Yellow",
+        "canonical": "#EAB308",
+        "tonalRamp": ["#422006", "#713F12", "#854D0E", "#A16207", "#CA8A04", "#EAB308", "#FACC15", "#FDE047", "#FEF08A", "#FEF9C3"]
+      },
+      "yellow-hover": {
+        "role": "primary",
+        "displayName": "Yellow Hover",
+        "canonical": "#CA8A04",
+        "tonalRamp": ["#422006", "#713F12", "#854D0E", "#A16207", "#CA8A04", "#EAB308", "#FACC15", "#FDE047", "#FEF08A", "#FEF9C3"]
+      },
+      "gray-900": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#111827",
+        "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#F9FAFB"]
+      },
+      "gray-800": {
+        "role": "neutral",
+        "displayName": "Nav Dark",
+        "canonical": "#1F2937",
+        "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#F9FAFB"]
+      },
+      "gray-50": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "canonical": "#F9FAFB",
+        "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#F9FAFB"]
+      },
+      "red-600": {
+        "role": "semantic",
+        "displayName": "Error Red",
+        "canonical": "#DC2626",
+        "tonalRamp": ["#450A0A", "#7F1D1D", "#991B1B", "#B91C1C", "#DC2626", "#EF4444", "#F87171", "#FCA5A5", "#FECACA", "#FEF2F2"]
+      },
+      "emerald-500": {
+        "role": "semantic",
+        "displayName": "Success Emerald",
+        "canonical": "#10B981",
+        "tonalRamp": ["#022C22", "#064E3B", "#065F46", "#047857", "#059669", "#10B981", "#34D399", "#6EE7B7", "#A7F3D0", "#ECFDF5"]
+      },
+      "indigo-600": {
+        "role": "semantic",
+        "displayName": "Admin Indigo",
+        "canonical": "#4F46E5",
+        "tonalRamp": ["#1E1B4B", "#312E81", "#3730A3", "#4338CA", "#4F46E5", "#6366F1", "#818CF8", "#A5B4FC", "#C7D2FE", "#EEF2FF"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page-level headings. OMR System logo text, admin hero headings." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings. Exam management title, exam card titles." },
+      "title": { "displayName": "Title", "purpose": "Modal titles, tab section headers, card sub-headings." },
+      "body": { "displayName": "Body", "purpose": "Default reading text, form labels, activity feed entries." },
+      "label": { "displayName": "Label", "purpose": "Stat card category labels, badge text, table column headers. Often uppercase." }
+    },
+    "shadows": [
+      { "name": "card-ambient", "value": "0 1px 2px 0 rgba(0,0,0,0.05)", "purpose": "Default subtle shadow on white cards over gray-50 canvas." },
+      { "name": "card-hover-yellow", "value": "0 12px 28px rgba(234,179,8,0.18)", "purpose": "Yellow-tinted hover shadow on admin stat cards." },
+      { "name": "modal", "value": "0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)", "purpose": "Modal dialogs and scanner result cards." },
+      { "name": "hud-glass", "value": "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)", "purpose": "Floating controls on the camera scanner view." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "ease", "purpose": "Default easing for background-color and border transitions (200ms)." },
+      { "name": "ease-hover-lift", "value": "ease", "purpose": "Stat card hover translateY + shadow transition (200ms)." },
+      { "name": "pulse-dot", "value": "ease-in-out 2s infinite", "purpose": "Activity feed pulse indicator dot animation." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA button used for form submissions, creating exams, saving answer keys.",
+      "html": "<button class=\"ds-btn-primary\">บันทึก</button>",
+      "css": ".ds-btn-primary { background-color: #EAB308; color: #111827; font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 0.875rem; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; transition: background-color 0.2s ease; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); } .ds-btn-primary:hover { background-color: #CA8A04; } .ds-btn-primary:focus-visible { outline: 2px solid #EAB308; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Cancel and back actions. Gray, low-emphasis.",
+      "html": "<button class=\"ds-btn-secondary\">ยกเลิก</button>",
+      "css": ".ds-btn-secondary { background-color: #F3F4F6; color: #374151; font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 0.875rem; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; transition: background-color 0.2s ease; } .ds-btn-secondary:hover { background-color: #E5E7EB; } .ds-btn-secondary:focus-visible { outline: 2px solid #6B7280; outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive actions like deleting exams. Red, high-emphasis.",
+      "html": "<button class=\"ds-btn-danger\">ลบข้อมูลถาวร</button>",
+      "css": ".ds-btn-danger { background-color: #DC2626; color: #FFFFFF; font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 0.875rem; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; transition: background-color 0.2s ease; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); } .ds-btn-danger:hover { background-color: #B91C1C; } .ds-btn-danger:focus-visible { outline: 2px solid #DC2626; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Standard text input used across login, registration, and admin forms.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"เช่น teacher_demo\" />",
+      "css": ".ds-input { width: 100%; padding: 10px 16px; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; color: #111827; background-color: #FFFFFF; border: 1px solid #D1D5DB; border-radius: 8px; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; } .ds-input:focus { border-color: #EAB308; box-shadow: 0 0 0 2px rgba(234,179,8,0.3); } .ds-input::placeholder { color: #9CA3AF; }"
+    },
+    {
+      "name": "Exam Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Exam listing card on the dashboard. Contains title, question count, and action buttons.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">วิชาคณิตศาสตร์ <span class=\"ds-card-code\">(MATH101)</span></h3><p class=\"ds-card-desc\">จำนวน 50 ข้อ</p><div class=\"ds-card-actions\"><button class=\"ds-btn-primary\">สแกน</button><button class=\"ds-btn-secondary\">สถิติ</button></div></div>",
+      "css": ".ds-card { background-color: #FFFFFF; border-radius: 16px; padding: 24px; border: 1px solid #F3F4F6; transition: box-shadow 0.2s ease; display: flex; flex-direction: column; } .ds-card:hover { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); } .ds-card-title { font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0 0 4px 0; font-family: Inter, system-ui, sans-serif; } .ds-card-code { color: #CA8A04; font-size: 1.125rem; } .ds-card-desc { font-size: 0.875rem; color: #6B7280; margin: 0 0 24px 0; font-family: Inter, system-ui, sans-serif; } .ds-card-actions { display: flex; gap: 12px; } .ds-card-actions .ds-btn-primary, .ds-card-actions .ds-btn-secondary { flex: 1; padding: 10px 16px; font-size: 0.875rem; text-align: center; }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "navbar",
+      "description": "Top navigation bar. Dark gray-800, sticky, with logo and user actions.",
+      "html": "<nav class=\"ds-navbar\"><a href=\"#\" class=\"ds-navbar-logo\"><svg class=\"ds-navbar-icon\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg>OMR System</a><div class=\"ds-navbar-actions\"><span class=\"ds-navbar-user\">สวัสดี, อาจารย์</span><a href=\"#\" class=\"ds-navbar-btn\">ออกระบบ</a></div></nav>",
+      "css": ".ds-navbar { background-color: #1F2937; color: #FFFFFF; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-family: Inter, system-ui, sans-serif; } .ds-navbar-logo { display: flex; align-items: center; gap: 8px; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.05em; color: #FFFFFF; text-decoration: none; } .ds-navbar-icon { width: 24px; height: 24px; } .ds-navbar-actions { display: flex; align-items: center; gap: 16px; } .ds-navbar-user { font-size: 0.875rem; font-weight: 500; color: #D1D5DB; } .ds-navbar-btn { background-color: #374151; color: #FFFFFF; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: background-color 0.2s ease; } .ds-navbar-btn:hover { background-color: #4B5563; }"
+    },
+    {
+      "name": "Answer Key Bubble",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Signature component. Circle toggle for selecting answer key options (A–E). Yellow when selected.",
+      "html": "<div class=\"ds-bubble-group\"><span class=\"ds-bubble-label\">1.</span><button class=\"ds-bubble ds-bubble-selected\">A</button><button class=\"ds-bubble\">B</button><button class=\"ds-bubble\">C</button><button class=\"ds-bubble\">D</button><button class=\"ds-bubble\">E</button></div>",
+      "css": ".ds-bubble-group { display: flex; align-items: center; gap: 6px; padding: 12px; background-color: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB; font-family: Inter, system-ui, sans-serif; } .ds-bubble-label { font-weight: 700; color: #374151; width: 32px; font-size: 0.875rem; } .ds-bubble { width: 32px; height: 32px; border-radius: 9999px; border: 1px solid #D1D5DB; background-color: #FFFFFF; color: #4B5563; font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; display: flex; align-items: center; justify-content: center; } .ds-bubble:hover { border-color: #EAB308; } .ds-bubble-selected { background-color: #FACC15; color: #111827; border-color: #EAB308; font-weight: 700; } .ds-bubble:focus-visible { outline: 2px solid #EAB308; outline-offset: 2px; }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": null,
+      "description": "Admin dashboard metric card. Big number, small label, hover lift with yellow shadow.",
+      "html": "<div class=\"ds-stat-card\"><p class=\"ds-stat-label\">ผู้ใช้งานทั้งหมด</p><p class=\"ds-stat-value\">24</p><p class=\"ds-stat-sub\">Admin 3 คน</p></div>",
+      "css": ".ds-stat-card { background-color: #FFFFFF; border-radius: 16px; padding: 20px; border: 1px solid #F3F4F6; text-align: left; transition: transform 0.2s ease, box-shadow 0.2s ease; font-family: Inter, system-ui, sans-serif; } .ds-stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(234,179,8,0.18); } .ds-stat-label { font-size: 0.75rem; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px 0; } .ds-stat-value { font-size: 2.25rem; font-weight: 800; color: #111827; margin: 0; line-height: 1; } .ds-stat-sub { font-size: 0.75rem; color: #9CA3AF; margin: 4px 0 0 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Exam Control Room",
+    "overview": "A no-nonsense command center where teachers execute grading workflows with precision and confidence. The interface is structured, task-focused, and respects the teacher's time above all else. Every surface serves the workflow: scan answer sheets, manage answer keys, review results, administer users. There is no marketing, no onboarding whimsy, no decoration for its own sake.\n\nThe system is built on a single sans-serif family (Inter) at a tight scale ratio, with yellow (#EAB308) as the sole brand accent. The palette is restrained: gray neutrals carry 90% of the surface, and yellow marks only primary actions and active states. This restraint is deliberate—in a data-rich grading tool, color discipline prevents cognitive overload.\n\nThe system explicitly rejects overly complex dashboards, outdated '90s web portal looks, or overly playful/childish interfaces (per PRODUCT.md). It also rejects gratuitous animation, display fonts in UI labels, and decorative motion that doesn't convey state.",
+    "keyCharacteristics": [
+      "Single-family typography (Inter) across all surfaces, no pairing",
+      "Yellow accent used exclusively for primary actions and active state indicators",
+      "Flat-by-default elevation with hover-only shadows",
+      "Rounded corners (8–16px) that soften without becoming playful",
+      "Consistent component vocabulary across all screens"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Yellow is the sole brand color. Red, emerald, and indigo are semantic only—they mark state, not identity. If a new feature needs a color, it must be a tint of an existing semantic or a shade of the neutral ramp, never a new accent.", "section": "colors" },
+      { "name": "The Inter-Only Rule", "body": "No secondary typeface. Weight and size provide all the hierarchy this tool needs. Display fonts in UI labels, buttons, or data are prohibited.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadows appear only as a response to state (hover, elevation, focus). Static shadows on resting cards are wrong—use border + background instead.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use yellow (#EAB308) exclusively for primary CTAs, active states, and the brand icon. Rarity is the point.",
+      "Do use Inter at 400/500/600/700/800 weights for all hierarchy. One family is enough.",
+      "Do use transition-colors on every interactive element. 200ms, ease.",
+      "Do use gray-50 canvas → white cards → gray-800 nav as the three-tier depth model.",
+      "Do use the same button shape (12px radius, same padding scale) across every surface.",
+      "Do use semantic colors (red, emerald, indigo) only in their designated roles (error, success, admin).",
+      "Do maintain consistent component vocabulary across all screens—same button, same input, same card."
+    ],
+    "donts": [
+      "Don't introduce a second accent color. Yellow is the identity. Red, emerald, and indigo are semantic only.",
+      "Don't use display fonts, decorative typefaces, or font pairings. Inter only.",
+      "Don't create overly complex dashboards with too many stat cards or nested data panels.",
+      "Don't use outdated '90s web portal patterns: heavy beveled borders, dark table headers, fixed-width layouts.",
+      "Don't use overly playful or childish interface elements: emoji as UI icons, rounded-full buttons with bouncy animations, bright multicolor palettes.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe on cards or list items.",
+      "Don't apply gradient text (background-clip: text with gradient).",
+      "Don't use glassmorphism as a default surface treatment. The scanner HUD is the sole exception.",
+      "Don't animate <img> elements on hover—ever.",
+      "Don't add decorative motion that doesn't convey state. No orchestrated page-load sequences.",
+      "Don't use modals as a first thought. Exhaust inline and progressive alternatives first."
+    ]
+  }
+}

@@ -13,21 +13,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // ─── Stats Cards ──────────────────────────────────────────────
         document.getElementById('statsGrid').innerHTML = `
-            <div class="stat-card">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
                 <div class="text-gray-500 text-sm font-medium mb-1">คะแนนเฉลี่ย</div>
-                <div class="stat-value">${data.summary.avg}</div>
+                <div class="text-4xl font-extrabold text-yellow-600">${data.summary.avg}</div>
             </div>
-            <div class="stat-card">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
                 <div class="text-gray-500 text-sm font-medium mb-1">คะแนนสูงสุด</div>
-                <div class="stat-value">${data.summary.max}</div>
+                <div class="text-4xl font-extrabold text-yellow-600">${data.summary.max}</div>
             </div>
-            <div class="stat-card">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
                 <div class="text-gray-500 text-sm font-medium mb-1">คะแนนต่ำสุด</div>
-                <div class="stat-value">${data.summary.min}</div>
+                <div class="text-4xl font-extrabold text-yellow-600">${data.summary.min}</div>
             </div>
-            <div class="stat-card">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
                 <div class="text-gray-500 text-sm font-medium mb-1">ส่วนเบี่ยงเบน (SD)</div>
-                <div class="stat-value">${data.summary.std_dev}</div>
+                <div class="text-4xl font-extrabold text-yellow-600">${data.summary.std_dev}</div>
             </div>
         `;
 

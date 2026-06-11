@@ -404,12 +404,10 @@ const btnCancelManual = document.getElementById('btnCancelManual');
 const manualForm = document.getElementById('manualForm');
 
 btnManual.addEventListener('click', () => {
-    manualModal.classList.remove('hidden');
-    manualModal.classList.add('flex');
+    manualModal.showModal();
 });
 btnCancelManual.addEventListener('click', () => {
-    manualModal.classList.remove('flex');
-    manualModal.classList.add('hidden');
+    manualModal.close();
 });
 
 manualForm.addEventListener('submit', async (e) => {
@@ -417,8 +415,7 @@ manualForm.addEventListener('submit', async (e) => {
     const studentId = document.getElementById('studentId').value;
     const score = document.getElementById('score').value;
     
-    manualModal.classList.remove('flex');
-    manualModal.classList.add('hidden');
+    manualModal.close();
     await submitScore(studentId, score);
     manualForm.reset();
 });

@@ -43,6 +43,37 @@ $students = [];
         #modeStudentBtn, #modeKeyBtn {
             transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
         }
+
+        /* Page-level toast notifications */
+        #toastContainer {
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9999;
+            pointer-events: none;
+            top: 20px;
+            right: 16px;
+        }
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 380px;
+            font-family: 'Inter', system-ui, sans-serif;
+            animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .toast.toast-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .toast.toast-out { animation: toastOut 0.2s ease-in forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden">
@@ -68,15 +99,19 @@ $students = [];
         <!-- ============================================================ -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
             <div class="relative w-[80%] max-w-[340px] aspect-[1/1.414]">
-                <!-- Corner brackets — MSU Yellow -->
-                <span class="absolute top-0    left-0  w-10 h-10 border-t-[3px] border-l-[3px] border-yellow-400 rounded-tl-lg"></span>
-                <span class="absolute top-0    right-0 w-10 h-10 border-t-[3px] border-r-[3px] border-yellow-400 rounded-tr-lg"></span>
-                <span class="absolute bottom-0 left-0  w-10 h-10 border-b-[3px] border-l-[3px] border-yellow-400 rounded-bl-lg"></span>
-                <span class="absolute bottom-0 right-0 w-10 h-10 border-b-[3px] border-r-[3px] border-yellow-400 rounded-br-lg"></span>
+                <!-- Ghost Boundary -->
+                <div class="absolute inset-0 border-2 border-white/10 rounded-2xl"></div>
+                
+                <!-- Corner brackets — Premium Scanner Feel -->
+                <span class="absolute top-[-2px]    left-[-2px]  w-12 h-12 border-t-[4px] border-l-[4px] border-yellow-400 rounded-tl-2xl shadow-[0_0_15px_rgba(250,204,21,0.5)]"></span>
+                <span class="absolute top-[-2px]    right-[-2px] w-12 h-12 border-t-[4px] border-r-[4px] border-yellow-400 rounded-tr-2xl shadow-[0_0_15px_rgba(250,204,21,0.5)]"></span>
+                <span class="absolute bottom-[-2px] left-[-2px]  w-12 h-12 border-b-[4px] border-l-[4px] border-yellow-400 rounded-bl-2xl shadow-[0_0_15px_rgba(250,204,21,0.5)]"></span>
+                <span class="absolute bottom-[-2px] right-[-2px] w-12 h-12 border-b-[4px] border-r-[4px] border-yellow-400 rounded-br-2xl shadow-[0_0_15px_rgba(250,204,21,0.5)]"></span>
 
                 <!-- Helper text centered inside box -->
-                <div class="absolute bottom-[-2.35rem] w-full flex justify-center">
-                    <span class="bg-black/60 backdrop-blur-sm text-white/90 text-xs font-medium px-4 py-1.5 rounded-full border border-white/10">
+                <div class="absolute bottom-[-3.5rem] w-full flex justify-center animate-pulse">
+                    <span class="bg-black/60 backdrop-blur-sm text-yellow-400 text-xs font-semibold px-4 py-2 rounded-full border border-yellow-500/30 flex items-center gap-2 shadow-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         เล็งกรอบให้อยู่ในหน้าจอ
                     </span>
                 </div>
@@ -94,7 +129,7 @@ $students = [];
             <a href="dashboard.php"
                class="inline-flex items-center gap-2 bg-black/50 backdrop-blur-md
                       border border-white/20 text-white text-sm font-medium
-                      px-4 py-2 rounded-xl shadow-lg hover:bg-black/70 transition-colors whitespace-nowrap">
+                      px-4 py-2 rounded-xl shadow-lg hover:bg-black/70 active:scale-95 transition-all whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -124,12 +159,12 @@ $students = [];
                     bg-gray-900/80 backdrop-blur-md rounded-full p-1 flex shadow-xl border border-white/10">
             <button id="modeStudentBtn"
                     onclick="setScanMode('student')"
-                    class="px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap bg-yellow-500 text-gray-900 shadow-md">
+                    class="px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap bg-yellow-500 text-gray-900 shadow-md active:scale-95 transition-all">
                 สแกนนิสิต
             </button>
             <button id="modeKeyBtn"
                     onclick="setScanMode('key')"
-                    class="px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap text-gray-300 hover:text-white">
+                    class="px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap text-gray-300 hover:text-white active:scale-95 transition-all">
                 สแกนเฉลย
             </button>
         </div>
@@ -147,7 +182,7 @@ $students = [];
             <button id="btnManual"
                     class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md
                            text-gray-900 font-semibold text-xs md:text-sm px-4 py-2 rounded-full shadow-xl
-                           border border-white/40 hover:bg-white hover:scale-105
+                           border border-white/40 hover:bg-white hover:scale-105 active:scale-95
                            transition-all duration-200 whitespace-nowrap">
                 <svg class="w-3.5 h-3.5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -185,9 +220,9 @@ $students = [];
     <!-- ============================================================ -->
     <!-- MANUAL ENTRY MODAL (z-[1000])                                -->
     <!-- ============================================================ -->
-    <div id="manualModal"
-         class="hidden fixed inset-0 bg-black/80 z-[1000] items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-gray-900">
+    <dialog id="manualModal"
+         class="backdrop:bg-black/80 backdrop:backdrop-blur-md bg-white rounded-3xl shadow-2xl w-[calc(100%-2rem)] max-w-md p-8 text-gray-900 border-0 m-auto">
+        <div>
             <h2 class="text-2xl font-bold text-red-600 mb-2 text-center">กรอกคะแนนด้วยตนเอง</h2>
             <p class="text-center text-gray-500 mb-6 text-sm">ใช้ในกรณีที่กล้องสแกนไม่ติด หรือมีปัญหาแสงสว่าง</p>
             <form id="manualForm" class="flex flex-col gap-4">
@@ -209,20 +244,40 @@ $students = [];
                 <div class="flex gap-3 mt-4">
                     <button type="button" id="btnCancelManual"
                             class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700
-                                   font-semibold py-3 px-6 rounded-xl transition-colors">
+                                   font-semibold py-3 px-6 rounded-xl active:scale-95 transition-all">
                         ยกเลิก
                     </button>
                     <button type="submit"
                             class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900
-                                   font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm">
+                                   font-semibold py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-all">
                         บันทึกคะแนน
                     </button>
                 </div>
             </form>
         </div>
-    </div>
+    </dialog>
 
+    <div id="toastContainer"></div>
     <script>
+        // ── Toast Notification System ─────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' 
+                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('toast-out');
+                setTimeout(() => toast.remove(), 200);
+            }, 3000);
+        }
+
         const studentDirectory = <?= json_encode($students) ?>;
     </script>
     <script async src="https://docs.opencv.org/4.8.0/opencv.js"

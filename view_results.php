@@ -21,42 +21,6 @@ $exam_id = (int)$_GET['exam_id'];
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* CSS to override inline styles applied by charts.js if needed, though Tailwind mostly handles it */
-        .stat-card {
-            background: #fff;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            text-align: center;
-            border: 1px solid #F3F4F6;
-        }
-        .stat-value {
-            font-size: 2.25rem;
-            font-weight: 800;
-            color: #d97706; /* emerald-600 */
-        }
-        .item-card {
-            background: #fff;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid #E5E7EB;
-        }
-        .item-card.hard {
-            border-left: 4px solid #EF4444;
-            background: #FEF2F2;
-        }
-        .item-card.easy {
-            border-left: 4px solid #F59E0B;
-            background: #FFFBEB;
-        }
-        /* Tab active underline */
-        .tab-btn.active {
-            color: #1F2937;
-            border-bottom: 3px solid #EAB308;
-            font-weight: 700;
-        }
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
     <nav class="bg-gray-800 text-white shadow-md">
@@ -77,7 +41,7 @@ $exam_id = (int)$_GET['exam_id'];
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <h2 id="pageTitle" class="text-2xl font-bold text-gray-900">กำลังโหลดข้อมูล...</h2>
-            <a href="dashboard.php" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-xl shadow-sm transition-colors w-full sm:w-auto text-center">&larr; กลับหน้าหลัก</a>
+            <a href="dashboard.php" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-xl shadow-sm active:scale-95 transition-all w-full sm:w-auto text-center">&larr; กลับหน้าหลัก</a>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsGrid">
@@ -87,9 +51,9 @@ $exam_id = (int)$_GET['exam_id'];
         <!-- Tab Navigation -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
             <div class="flex border-b border-gray-100 px-6 pt-4 gap-6 overflow-x-auto">
-                <button class="tab-btn active pb-3 text-sm text-gray-500 whitespace-nowrap" data-tab="tab-histogram">📊 กราฟคะแนน</button>
-                <button class="tab-btn pb-3 text-sm text-gray-500 whitespace-nowrap" data-tab="tab-item">🔬 วิเคราะห์ข้อสอบ (Item Analysis)</button>
-                <button class="tab-btn pb-3 text-sm text-gray-500 whitespace-nowrap" data-tab="tab-students">📋 รายชื่อผู้เข้าสอบ</button>
+                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-900 border-b-[3px] border-yellow-500 font-bold active:scale-95 transition-all" data-tab="tab-histogram">📊 กราฟคะแนน</button>
+                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all" data-tab="tab-item">🔬 วิเคราะห์ข้อสอบ (Item Analysis)</button>
+                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all" data-tab="tab-students">📋 รายชื่อผู้เข้าสอบ</button>
             </div>
 
             <!-- Tab: Score Distribution -->
@@ -116,19 +80,19 @@ $exam_id = (int)$_GET['exam_id'];
                 <div id="qualitySummary" class="mb-5 flex flex-wrap gap-2"></div>
 
                 <!-- Item Analysis Table (desktop) / Cards (mobile) -->
-                <div class="overflow-x-auto rounded-xl border border-gray-100">
+                <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-xl border border-gray-100">
                     <table class="w-full text-sm text-left border-collapse" id="itemAnalysisTable">
-                        <thead class="bg-gray-50 text-gray-600 sticky top-0">
+                        <thead class="bg-gray-50 text-gray-600 sticky top-0 shadow-[0_1px_0_0_#e5e7eb] z-10">
                             <tr>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200 w-12">ข้อ</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">P-value</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">A</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">B</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">C</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">D</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">E</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">ไม่ตอบ</th>
-                                <th class="py-3 px-4 font-semibold border-b border-gray-200">สถานะ</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50 w-12">ข้อ</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">P-value</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">A</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">B</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">C</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">D</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">E</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">ไม่ตอบ</th>
+                                <th class="py-3 px-4 font-semibold bg-gray-50">สถานะ</th>
                             </tr>
                         </thead>
                         <tbody id="itemAnalysisBody" class="divide-y divide-gray-50">
@@ -142,15 +106,15 @@ $exam_id = (int)$_GET['exam_id'];
 
             <!-- Tab: Student List -->
             <div id="tab-students" class="tab-content hidden">
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-xl border border-gray-100">
                     <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 text-gray-700 text-sm">
+                        <thead class="bg-gray-50 text-gray-700 text-sm sticky top-0 shadow-[0_1px_0_0_#e5e7eb] z-10">
                             <tr>
-                                <th class="py-4 px-6 font-semibold border-b border-gray-200">รหัสนิสิต</th>
-                                <th class="py-4 px-6 font-semibold border-b border-gray-200">ชุด</th>
-                                <th class="py-4 px-6 font-semibold border-b border-gray-200">คะแนน</th>
-                                <th class="py-4 px-6 font-semibold border-b border-gray-200">เวลาที่สแกน</th>
-                                <th class="py-4 px-6 font-semibold border-b border-gray-200 text-center">กระดาษคำตอบ</th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50">รหัสนิสิต</th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50">ชุด</th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50">คะแนน</th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50">เวลาที่สแกน</th>
+                                <th class="py-4 px-6 font-semibold text-center bg-gray-50">กระดาษคำตอบ</th>
                             </tr>
                         </thead>
                         <tbody id="studentTableBody" class="divide-y divide-gray-100">
@@ -163,12 +127,14 @@ $exam_id = (int)$_GET['exam_id'];
     </div>
 
     <!-- Image Modal -->
-    <div id="imageModal" class="hidden fixed inset-0 bg-black/90 z-[1000] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="relative w-full max-w-2xl bg-black rounded-2xl overflow-hidden shadow-2xl">
-            <button id="closeImageBtn" class="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white border-2 border-white rounded-full w-10 h-10 flex items-center justify-center text-xl cursor-pointer z-10 transition-colors">&times;</button>
+    <dialog id="imageModal" class="backdrop:bg-black/90 backdrop:backdrop-blur-sm bg-transparent border-0 w-[calc(100%-2rem)] max-w-2xl p-0 m-auto">
+        <div class="relative w-full bg-black rounded-2xl overflow-hidden shadow-2xl">
+            <button id="closeImageBtn" class="absolute top-4 right-4 bg-black/50 hover:bg-red-600 text-white backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-10 active:scale-95 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
             <img id="scannedImage" src="" class="w-full h-auto block" alt="Scanned Answer Sheet">
         </div>
-    </div>
+    </dialog>
 
     <script>
         const examId = <?= $exam_id ?>;
@@ -176,27 +142,31 @@ $exam_id = (int)$_GET['exam_id'];
     <script src="js/charts.js"></script>
     <script>
         // ─── Tab switching ───────────────────────────────────────────
+        const activeClasses = ['text-gray-900', 'border-yellow-500', 'font-bold'];
+        const inactiveClasses = ['text-gray-500', 'border-transparent', 'font-medium'];
+        
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove(...activeClasses);
+                    b.classList.add(...inactiveClasses);
+                });
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                btn.classList.add('active');
+                btn.classList.remove(...inactiveClasses);
+                btn.classList.add(...activeClasses);
                 document.getElementById(btn.dataset.tab).classList.remove('hidden');
             });
         });
 
         // ─── Image modal ─────────────────────────────────────────────
         document.getElementById('closeImageBtn').addEventListener('click', () => {
-            const modal = document.getElementById('imageModal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
+            document.getElementById('imageModal').close();
         });
         window.showImage = function(src) {
             const img   = document.getElementById('scannedImage');
             const modal = document.getElementById('imageModal');
             img.src = src;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.showModal();
         };
     </script>
 </body>

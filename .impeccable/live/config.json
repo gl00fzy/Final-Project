@@ -1,0 +1,7 @@
+{
+  "files": ["**/*.php"],
+  "exclude": ["api/**/*.php", "config/**/*.php", "vendor/**/*.php", "FPDF/**/*.php", "tFPDF/**/*.php"],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}
