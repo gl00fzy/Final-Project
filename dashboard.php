@@ -170,7 +170,7 @@ if (!isset($_SESSION['user_id'])) {
     </style>
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter']">
+<body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
     <nav class="bg-gray-800 text-white shadow-md">
 
     <!-- Toast Container -->
@@ -588,5 +588,10 @@ if (!isset($_SESSION['user_id'])) {
 
         loadExams();
     </script>
+
+    <!-- Global Footer -->
+    <footer class="mt-auto border-t border-gray-200 py-6 text-center">
+        <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+    </footer>
 </body>
 </html>

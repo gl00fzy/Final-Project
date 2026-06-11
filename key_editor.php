@@ -120,7 +120,7 @@ $answer_key = $normalized_key;
         @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter']">
+<body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
     <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -347,5 +347,10 @@ $answer_key = $normalized_key;
             btn.classList.remove('btn-loading');
         });
     </script>
+
+    <!-- Global Footer -->
+    <footer class="mt-auto border-t border-gray-200 py-6 text-center">
+        <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+    </footer>
 </body>
 </html>

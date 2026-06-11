@@ -22,7 +22,7 @@ $exam_id = (int)$_GET['exam_id'];
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter']">
+<body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
     <nav class="bg-gray-800 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -169,5 +169,10 @@ $exam_id = (int)$_GET['exam_id'];
             modal.showModal();
         };
     </script>
+
+    <!-- Global Footer -->
+    <footer class="mt-auto border-t border-gray-200 py-6 text-center">
+        <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+    </footer>
 </body>
 </html>

@@ -64,7 +64,7 @@ if (isset($_SESSION['user_id'])) {
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter']">
-    <div class="min-h-screen flex flex-col justify-center items-center p-4">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-100">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 mb-4">
@@ -117,8 +117,12 @@ if (isset($_SESSION['user_id'])) {
             <p class="text-sm text-gray-600">ยังไม่มีบัญชีผู้ใช้งาน? <a href="register.php" class="text-yellow-600 font-semibold hover:text-yellow-700 hover:underline transition-colors">สมัครสมาชิก</a></p>
         </div>
         
-        <p class="mt-8 text-sm text-gray-400">Powered by Advanced Agentic AI</p>
     </div>
+
+    <!-- Global Footer -->
+    <footer class="w-full border-t border-gray-200 py-6 text-center">
+        <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+    </footer>
 
     <div id="toastContainer"></div>
     <script>

@@ -124,7 +124,7 @@ $users = $pdo->query("
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
 <!-- ════ NAVBAR ════════════════════════════════════════════════════════ -->
 <nav class="bg-gray-800 text-white shadow-lg">
@@ -425,5 +425,10 @@ $users = $pdo->query("
         }
     });
 </script>
+
+<!-- Global Footer -->
+<footer class="mt-auto border-t border-gray-200 py-6 text-center">
+    <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+</footer>
 </body>
 </html>
