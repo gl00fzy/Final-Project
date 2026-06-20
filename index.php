@@ -10,7 +10,7 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - ระบบตรวจข้อสอบแบบปรนัย</title>
+    <title>เข้าสู่ระบบ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
@@ -70,7 +70,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 mb-4">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">OMR System</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">MSU Scoring</h1>
                 <p class="text-gray-500">ระบบตรวจข้อสอบแบบปรนัย</p>
             </div>
             

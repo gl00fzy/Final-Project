@@ -1,113 +1,137 @@
-# Implementation Plan — Phase 2: Role-Based Admin & Usage Statistics
+# ปรับ Layout กระดาษคำตอบให้เหมือน ZipGrade
 
-We are adding a two-tier role system (`user` / `admin`) and a centralized Admin Dashboard that shows system-wide usage statistics and allows granting admin privileges to other users.
+## สิ่งที่วิเคราะห์จากรูป ZipGrade
+
+จากรูปตัวอย่างทั้ง 2 แบบ (50 ข้อ และ 100 ข้อ) ผมสังเกตจุดสำคัญของ ZipGrade ดังนี้:
+
+### โครงสร้างหลักของ ZipGrade
+
+```
+┌─■───────────────────────────────────────────────■─┐
+│  ┌──────────────────────┐ ┌────────┐              │
+│  │ Name                 │ │ Date   │              │
+│  ├──────────────────────┤ ├────────┤              │
+│  │ Class                │ │ Quiz   │              │
+│  └──────────────────────┘ └────────┘              │
+│                                                   │
+│  Student ZipGrade ID         ■ A B C D E          │
+│  ┌─┬─┬─┬─┬─┬─┬─┬─┐  Key   1  ○ ○ ○ ○ ○  ...    │
+│  │○│○│○│○│○│○│○│○│  A ○   2  ○ ○ ○ ○ ○  ...    │
+│  │○│○│○│○│○│○│○│○│  B ○   3  ○ ○ ○ ○ ○  ...    │
+│  │ ...              │  C ○                        │
+│  │○│○│○│○│○│○│○│○│  D ○   ...                    │
+■  └─┴─┴─┴─┴─┴─┴─┴─┘  E ○  10  ○ ○ ○ ○ ○  ...  ■ │
+│                                                   │
+│    A B C D E  ■ A B C D E  ■ A B C D E            │
+│  1  ○○○○○  21 ○○○○○  41 ○○○○○            │
+│  2  ○○○○○  22 ○○○○○  42 ○○○○○            │
+│  ...         ...         ...                      │
+│  10 ○○○○○  30 ○○○○○  50 ○○○○○            │
+│                                                   │
+■──────────────────────────────────────────────────■│
+└───────────────────────────────────────────────────┘
+```
+
+### จุดแตกต่างสำคัญเทียบกับกระดาษเราตอนนี้
+
+| จุดเปรียบเทียบ | กระดาษเราตอนนี้ | ZipGrade |
+|---|---|---|
+| **วงกลมฝน** | เส้นบาง ตัวอักษรเล็กอยู่กลาง | เส้นบาง ไม่มีตัวอักษรกลางวง (วงเปล่า) |
+| **Header** | ข้อความกลางหน้า | ฟอร์มกล่อง Name/Date/Class/Quiz ที่มีกรอบชัดเจน |
+| **คำตอบแบ่ง 2 ครึ่ง** | ❌ ไม่แบ่ง (ต่อเนื่องยาว) | ✅ แบ่งเป็น 2 Section บน-ล่าง |
+| **Section markers (■)** | ❌ ไม่มี | ✅ มีจุดสี่เหลี่ยมดำเล็กๆ คั่นระหว่างกลุ่มคอลัมน์ |
+| **Header ของแต่ละ Section** | มี A B C D E แค่ชุดเดียว | มี A B C D E ซ้ำทุก Section (ทุกครั้งที่มีกลุ่มคำตอบใหม่) |
+| **Student ID** | วงกลม 0-9 แนวตั้ง 11 คอลัมน์ | วงกลม 0-9 แนวตั้ง, ขนาดเล็กกว่า, มากคอลัมน์กว่า |
+| **Key/Version** | ไม่มี | มีตัวเลือก A-E แนวตั้งด้านซ้าย |
+| **ข้อความด้านข้าง** | ไม่มี | มีคำแนะนำแนวตั้ง (หมุน 90°) ด้านซ้ายและขวา |
+
+---
+
+## แผนที่จะแก้ไข
+
+### ไฟล์ที่จะแก้
+
+#### [MODIFY] [generate_pdf.php](file:///c:/Final%20Project/generate_pdf.php)
+
+---
+
+### การเปลี่ยนแปลงหลัก 6 ข้อ
+
+### 1. Header — เปลี่ยนเป็นกล่องฟอร์มแบบ ZipGrade
+
+**ก่อน:** ข้อความตรงกลาง "Mahasarakham University | OMR Answer Sheet"
+**หลัง:** กล่องฟอร์มที่มีกรอบ พร้อมช่อง Name, Class, Date/Quiz
+
+```
+┌──────────────────────────────┐ ┌──────────┐
+│ Name                         │ │ Date     │
+├──────────────────────────────┤ ├──────────┤
+│ Class                        │ │ Quiz     │
+└──────────────────────────────┘ └──────────┘
+```
+
+### 2. Student ID — ปรับให้กระชับขึ้น
+
+- ยังคง 11 digits, 0-9 แต่ลด spacing ให้กระชับขึ้น
+- ย้ายชื่อ-สกุล/ลายมือชื่อไปอยู่ข้างขวาของ Student ID (เหมือนเดิม แต่จัดระเบียบใหม่)
+
+### 3. Answer Section — แบ่งเป็น 2 ครึ่งบน-ล่าง (สำคัญที่สุด)
+
+แทนที่จะเรียงคำตอบต่อเนื่องยาวลงไป → แบ่งเป็น 2 Section:
+
+**50 ข้อ:**
+- Section บน: คอลัมน์ 1-10, 11-20, 21-25 (ถ้าเหลือ) — อยู่ข้างขวาของ Student ID
+- Section ล่าง: คอลัมน์ 26-50 เรียง 3 คอลัมน์ × 10 แถว
+
+**100 ข้อ:**
+- Section บน: 4 คอลัมน์ × 10 แถว (ข้อ 1-10, 11-20, ..., 31-40) ข้างขวา Student ID
+- Section ล่าง: 4 คอลัมน์ × 10 แถว (ข้อ 41-50, 51-60, ..., 91-100)
+
+> [!IMPORTANT]
+> สำหรับ 150 ข้อ ZipGrade ไม่มีแบบ 150 ข้อมาตรฐาน เราอาจต้องใช้ layout พิเศษ เช่น 5 คอลัมน์ × 10 แถว × 3 Section หรือ layout อื่น — ต้องการความเห็นจากคุณว่าอยากให้จัดแบบไหน
+
+### 4. Section Markers (■) — เพิ่มจุดสี่เหลี่ยมดำคั่นคอลัมน์
+
+- เพิ่มจุดดำเล็กๆ (ประมาณ 3×3 mm) ก่อนหัว A B C D E ของแต่ละกลุ่มคอลัมน์
+- ทำหน้าที่เป็น alignment marker สำหรับ scanner/OpenCV
+- ทุก Section จะมี header ของตัวเอง (A B C D E) พร้อม ■ นำหน้า
+
+```
+  ■ A B C D E    ■ A B C D E    ■ A B C D E
+ 1  ○ ○ ○ ○ ○   11 ○ ○ ○ ○ ○   21 ○ ○ ○ ○ ○
+ 2  ○ ○ ○ ○ ○   12 ○ ○ ○ ○ ○   22 ○ ○ ○ ○ ○
+```
+
+### 5. วงกลมฝน — เอาตัวอักษรออกจากกลางวง
+
+- ZipGrade ใช้วงกลมเปล่า (ไม่มี A/B/C/D/E หรือ 0-9 อยู่กลางวง)
+- ตัวอักษรจะอยู่ที่ header ด้านบนเท่านั้น
+- ทำให้วงกลมสะอาดกว่า ฝนได้ง่ายกว่า และ scanner อ่านง่ายกว่า
+
+### 6. คำแนะนำแนวตั้ง — เพิ่มข้อความหมุน 90° ด้านข้าง
+
+- ด้านซ้าย: "ใช้ดินสอหรือปากกาดำ ระบายวงกลมให้เต็ม"
+- ด้านขวา: "ลบรอยเก่าให้สะอาดก่อนเปลี่ยนคำตอบ"
 
 ---
 
 ## Open Questions
 
 > [!IMPORTANT]
-> **Auth strategy:** Currently `auth.php` stores only `user_id` and `name` in the session. Should the `role` also be stored in the session at login time (fast, cached) rather than queried from the DB on every page load? **Recommended: yes**, store `$_SESSION['role']` at login. This approach is used in the plan below.
+> **150 ข้อ**: ZipGrade ไม่มีแบบ 150 ข้อมาตรฐาน ต้องการให้จัดอย่างไร?
+> - **ตัวเลือก A**: 5 คอลัมน์ × 10 แถว × 3 Section (ตัววงกลมจะเล็กลงเล็กน้อย)
+> - **ตัวเลือก B**: 5 คอลัมน์ × 15 แถว × 2 Section
+> - **ตัวเลือก C**: ตัดตัวเลือก 150 ข้อออก (เหลือแค่ 50 และ 100 เหมือน ZipGrade)
 
 > [!IMPORTANT]
-> **Log granularity:** Should `system_logs` track exam *creation* events too, or just *scans*? The plan below tracks scans only (as specified), but flagging this in case broader audit trails are needed later.
-
----
-
-## Proposed Changes
-
-### 1. Database Migration
-
-#### [NEW] `migrate_phase2.php`
-A one-shot migration script (following the existing `migrate_phase3.php` pattern) that runs via the command line or browser to upgrade the live database:
-
-- `ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'` — adds role column, existing accounts default to `'user'`
-- Promote the default demo account (`teacher_demo`) to `'admin'` automatically so the system has at least one admin from the start
-- `CREATE TABLE IF NOT EXISTS system_logs (...)` — new audit table
-
-**`system_logs` schema:**
-```sql
-CREATE TABLE IF NOT EXISTS system_logs (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id    INTEGER NOT NULL,
-    action     TEXT    NOT NULL,   -- e.g. 'scan_success'
-    exam_id    INTEGER,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-```
-
-#### [MODIFY] `schema.sql`
-Append the two new schema blocks so fresh database installs include the role column and `system_logs` from the start.
-
----
-
-### 2. Auth — Store Role in Session
-
-#### [MODIFY] `api/auth.php`
-- After successful `password_verify`, store `$_SESSION['role'] = $user['role']` alongside `user_id` and `name`.
-- This avoids a DB round-trip for role checks on every admin page.
-
----
-
-### 3. Usage Tracking
-
-#### [MODIFY] `api/scores.php`
-- After a **successful** `INSERT INTO student_scores`, insert a row into `system_logs`:
-  ```php
-  $pdo->prepare("INSERT INTO system_logs (user_id, action, exam_id) VALUES (?, 'scan_success', ?)")
-      ->execute([$user_id, $exam_id]);
-  ```
-- This is inside the existing `try` block, so it only fires on actual successful saves (not duplicates or errors).
-
----
-
-### 4. Admin Dashboard
-
-#### [NEW] `admin_dashboard.php`
-A standalone PHP page with a **purple/indigo admin colour theme** to visually distinguish it from the regular yellow teacher dashboard. It includes:
-
-**Access Control:**
-- Session check: `$_SESSION['role'] !== 'admin'` → redirect to `dashboard.php` with an error flash.
-
-**Stats Cards (via direct DB queries at page load):**
-| Stat | Query |
-|---|---|
-| Total Users | `SELECT COUNT(*) FROM users` |
-| Total Exams | `SELECT COUNT(*) FROM exams` |
-| Total Scans (all-time) | `SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success'` |
-| Scans Today | `SELECT COUNT(*) FROM system_logs WHERE action='scan_success' AND DATE(created_at) = DATE('now')` |
-
-**Recent Activity Feed:**
-- Last 10 log entries joined with `users.name` and `exams.exam_title` — shown as a timeline list.
-
-**Grant Admin Interface:**
-- A small form: input `@msu.ac.th` email → POST to `api/admin_action.php?action=grant_admin`.
-- Shows inline success/error feedback.
-
-#### [NEW] `api/admin_action.php`
-Handles admin-only actions. Phase 2 supports one action:
-- `grant_admin`: validates the requester is admin, finds the user by email, updates `role = 'admin'`. Returns JSON.
-
----
-
-### 5. Dashboard Navigation Link
-
-#### [MODIFY] `dashboard.php`
-- Add a conditional link in the navbar: if `$_SESSION['role'] === 'admin'`, render an "🛡 Admin" link pointing to `admin_dashboard.php`.
-- This keeps the admin section invisible to regular users.
-
----
+> **Key Version**: ZipGrade มีตัวเลือก Key Version (A-E) ด้านซ้ายของ Student ID ต้องการเพิ่มหรือไม่? (ปัจจุบันเราส่ง exam_set ผ่าน URL parameter แทน)
 
 ## Verification Plan
 
-### Automated
-- Run `C:\xampp\php\php.exe migrate_phase2.php` to apply the migration — check output for success messages.
-- Confirm no errors appear on `dashboard.php` and `admin_dashboard.php`.
-
-### Manual
-1. Log in as `teacher_demo` → verify "🛡 Admin" link appears in navbar.
-2. Navigate to `admin_dashboard.php` → verify stats cards render correct counts.
-3. Try accessing `admin_dashboard.php` while logged in as a regular user → verify redirect.
-4. Scan a sheet via the scanner → verify a new row appears in `system_logs` and the "Scans Today" counter increments.
-5. Use the Grant Admin form to promote another user → verify their role changes in the DB.
+### Manual Verification
+- สร้าง PDF ทุกแบบ (50, 100, 150 ข้อ) แล้วตรวจดูด้วยตาว่า:
+  - ไม่มีส่วนใดทับซ้อนกัน
+  - วงกลมไม่ล้นออกนอกกรอบ
+  - Corner markers ยังอยู่ตำแหน่งเดิม
+  - Section markers อยู่ตรงแนว
+  - ข้อความชัดเจน อ่านง่าย

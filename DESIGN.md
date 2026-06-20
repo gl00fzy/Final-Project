@@ -1,5 +1,5 @@
 ---
-name: OMR System
+name: MSU Scoring
 description: Web-based multiple-choice exam grading tool for MSU teachers
 colors:
   yellow-primary: "#EAB308"
@@ -97,7 +97,7 @@ components:
     height: "64px"
 ---
 
-# Design System: OMR System
+# Design System: MSU Scoring
 
 ## 1. Overview
 
@@ -157,7 +157,7 @@ A restrained palette. Yellow is the single accent; gray neutrals carry the struc
 **Character:** One family, many weights. Inter carries everything from page headings to bubble labels. The system feels consistent and workmanlike; typography variety comes from weight and size, never from font pairing. This is a tool, not a magazine.
 
 ### Hierarchy
-- **Display** (800, 1.875rem / 30px, 1.2 line-height): Page-level headings. "OMR System" logo text, "ภาพรวมระบบ" admin hero.
+- **Display** (800, 1.875rem / 30px, 1.2 line-height): Page-level headings. "MSU Scoring" logo text, "ภาพรวมระบบ" admin hero.
 - **Headline** (700, 1.5rem / 24px, 1.3 line-height): Section headings. "จัดการข้อสอบ", exam card titles.
 - **Title** (700, 1.25rem / 20px, 1.4 line-height): Modal titles, tab section headers, card sub-headings.
 - **Body** (400, 0.875rem / 14px, 1.5 line-height): Default reading text, form labels, activity feed entries. Max line-length 65–75ch for prose blocks.
@@ -204,7 +204,7 @@ Flat-by-default. Surfaces are flat at rest. Shadows appear only as a response to
 
 ### Navigation
 - **Style:** Gray-800 background, white text, 64px height, full-width sticky top.
-- **Logo:** "OMR System" or "Admin Panel" with checkmark SVG icon, bold tracking-wider text.
+- **Logo:** "MSU Scoring" or "Admin Panel" with checkmark SVG icon, bold tracking-wider text.
 - **Links:** Gray-700 background pills on hover becoming gray-600. 8px radius.
 - **Active indicator:** Indigo-600 for admin button (admin-only surfaces).
 - **Mobile:** Items stack or collapse to icon-only at `sm` breakpoint.

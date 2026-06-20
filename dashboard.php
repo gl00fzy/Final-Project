@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - OMR System</title>
+    <title>Dashboard - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
@@ -179,7 +179,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    OMR System
+                    MSU Scoring
                 </a>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <?php if (($_SESSION['role'] ?? 'user') === 'admin'): ?>

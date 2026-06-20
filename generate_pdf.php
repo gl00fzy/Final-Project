@@ -47,9 +47,9 @@ const MK_SIZE = 8;    // 8 × 8 mm (slightly smaller to avoid overlap)
 const MK_OFF  = 5;    // distance from edge to marker (much closer to edge)
 
 // Bubble geometry
-const BUB_R    = 2.5;   // bubble radius (mm) - EXACTLY 2.5mm
-const BUB_DX   = 7.0;   // centre-to-centre horizontal spacing (at least 6mm)
-const BUB_DY   = 6.5;   // centre-to-centre vertical spacing
+const BUB_R    = 2.1;   // bubble radius (mm) - adjusted for fit
+const BUB_DX   = 5.5;   // centre-to-centre horizontal spacing
+const BUB_DY   = 5.8;   // centre-to-centre vertical spacing (Student ID)
 
 // ════════════════════════════════════════════════════════════════════════
 // EXTEND tFPDF FOR proper Circle support
@@ -174,15 +174,18 @@ $pdf->SetFont('sarabun', 'B', 12);
 $pdf->SetXY(MARG, $sid_top);
 $pdf->Cell(50, 6, 'STUDENT ID (รหัสนิสิต 11 หลัก)', 0, 1, 'L');
 
-$sid_y_start = $sid_top + 7;
+$sid_y_start = $sid_top + 8;   // slightly less gap
+
 $digits      = 11;
 $digit_rows  = 10;   // 0–9
+
+$sid_base_x = MARG + 10;
 
 // Column headers (digit position 1–11)
 $pdf->SetFont('sarabun', '', 9);
 $pdf->SetTextColor(80, 80, 80);
 for ($col = 0; $col < $digits; $col++) {
-    $cx = MARG + 14 + $col * BUB_DX;
+    $cx = $sid_base_x + $col * BUB_DX;
     $pdf->SetXY($cx - BUB_R, $sid_y_start - 4);
     $pdf->Cell(BUB_R * 2, 4, (string)($col + 1), 0, 0, 'C');
 }
@@ -192,15 +195,15 @@ $pdf->SetDrawColor(0, 0, 0);
 $pdf->SetLineWidth(0.2);
 $pdf->SetTextColor(0, 0, 0);
 
-for ($row = 0; $row < $digit_rows; $row++) {        // digit 0-9
+for ($row = 0; $row < $digit_rows; $row++) {
     // Row label
     $ry = $sid_y_start + $row * BUB_DY;
     $pdf->SetFont('sarabun', '', 10);
-    $pdf->SetXY(MARG, $ry - 2.5);
-    $pdf->Cell(10, BUB_DY, (string)$row, 0, 0, 'R');
+    $pdf->SetXY($sid_base_x - 10, $ry - 2.5);
+    $pdf->Cell(8, BUB_DY, (string)$row, 0, 0, 'R');
 
     for ($col = 0; $col < $digits; $col++) {
-        $cx = MARG + 14 + $col * BUB_DX;
+        $cx = $sid_base_x + $col * BUB_DX;
         $cy = $ry;
         // Draw proper circle using center coordinates
         $pdf->Circle($cx, $cy, BUB_R, 'D');
@@ -213,29 +216,27 @@ for ($row = 0; $row < $digit_rows; $row++) {        // digit 0-9
 }
 
 // Name / signature line
-$sid_block_bottom = $sid_y_start + $digit_rows * BUB_DY + 3;
+$sid_block_bottom = $sid_y_start + ($digit_rows - 1) * BUB_DY + 3;
 $pdf->SetFont('sarabun', '', 11);
-$pdf->SetXY(MARG + 14 + $digits * BUB_DX + 6, $sid_y_start - 2);
-$name_box_w = PW - MARG - (MARG + 14 + $digits * BUB_DX + 6);
-$pdf->Cell($name_box_w, 6, 'Name / ชื่อ–สกุล :', 0, 1, 'L');
+
+$name_x = $sid_base_x + $digits * BUB_DX + 5;
+$name_box_w = PW - MARG - $name_x;
+
+$pdf->SetXY($name_x, $sid_y_start - 2);
+$pdf->Cell($name_box_w, 6, 'Name / ชื่อ-สกุล :', 0, 1, 'L');
+
+$line_start_x = $name_x + 28;
 $pdf->SetLineWidth(0.25);
-$pdf->Line(
-    MARG + 14 + $digits * BUB_DX + 8 + 25,
-    $sid_y_start + 4,
-    PW - MARG,
-    $sid_y_start + 4
-);
-$pdf->Line(
-    MARG + 14 + $digits * BUB_DX + 8 + 25,
-    $sid_y_start + 11,
-    PW - MARG,
-    $sid_y_start + 11
-);
+$pdf->Line($line_start_x, $sid_y_start + 4, PW - MARG, $sid_y_start + 4);
+
+$pdf->SetXY($name_x, $sid_y_start + 10);
+$pdf->Cell($name_box_w, 6, 'Signature / ลายมือชื่อ :', 0, 1, 'L');
+$pdf->Line($line_start_x, $sid_y_start + 16, PW - MARG, $sid_y_start + 16);
 
 // ════════════════════════════════════════════════════════════════════════
 // 4. ANSWERS BLOCK — A/B/C/D/E bubbles, arranged in columns
 // ════════════════════════════════════════════════════════════════════════
-$ans_top  = max($sid_block_bottom, $sid_y_start + $digit_rows * BUB_DY) + 6;
+$ans_top  = max($sid_block_bottom, $sid_y_start + ($digit_rows - 1) * BUB_DY) + 6;
 
 // Divider
 $pdf->SetLineWidth(0.3);
@@ -244,31 +245,32 @@ $pdf->Line(MARG, $ans_top - 2, PW - MARG, $ans_top - 2);
 $pdf->SetFont('sarabun', 'B', 12);
 $pdf->SetXY(MARG, $ans_top);
 $pdf->Cell(60, 6, 'ANSWERS (คำตอบ)', 0, 1, 'L');
-$ans_top += 7;
+$ans_top += 8;   // tight gap to fit max questions
 
 // Column layout
 $opts      = ['A', 'B', 'C', 'D', 'E'];
 $n_opts    = count($opts);
 
 // Decide how many answer columns to use based on q_count
-$n_cols    = ($q_count <= 50) ? 2 : 3;
+$n_cols = 2;
+if ($q_count > 50 && $q_count <= 100) {
+    $n_cols = 4;
+} elseif ($q_count > 100) {
+    $n_cols = 5;
+}
 
 $qs_per_col = (int)ceil($q_count / $n_cols);
 
-// Calculate the answer row spacing to fit all questions in the available space
-$max_ans_y = PH - MK_OFF - MK_SIZE - 14;   // safe zone above bottom markers
-$available_height = $max_ans_y - $ans_top;
-$ans_dy = $available_height / $qs_per_col;  // dynamic spacing to fit exactly
-
-// Clamp: don't make rows bigger than BUB_DY (no need to stretch)
-if ($ans_dy > BUB_DY) { $ans_dy = BUB_DY; }
+// Use a slightly smaller vertical spacing for answers to ensure 150 fits
+$ans_dy = 5.2;
 
 // Width per answer column group
 $ans_block_w = (PW - MARG * 2) / $n_cols;
 
 // Each question row: q_no label + 5 bubbles
-$q_label_w = 12;   // mm (gap between number and first bubble)
-$bub_area_w = $n_opts * BUB_DX;   // 5 bubbles
+$q_label_w = 7.0;   // mm (gap between number and first bubble)
+$content_w = $q_label_w + ($n_opts - 1) * BUB_DX;
+$offset_x  = ($ans_block_w - $content_w) / 2;
 
 $pdf->SetFont('sarabun', '', 9);
 $pdf->SetDrawColor(0, 0, 0);
@@ -276,10 +278,10 @@ $pdf->SetLineWidth(0.18);
 
 // Option headers per column
 for ($col = 0; $col < $n_cols; $col++) {
-    $col_x = MARG + $col * $ans_block_w;
+    $base_x = MARG + $col * $ans_block_w + $offset_x;
     $pdf->SetFont('sarabun', 'B', 9);
     foreach ($opts as $oi => $opt) {
-        $hx = $col_x + $q_label_w + $oi * BUB_DX;
+        $hx = $base_x + $q_label_w + $oi * BUB_DX;
         $pdf->SetXY($hx - BUB_R, $ans_top - 5);
         $pdf->Cell(BUB_R * 2, 4, $opt, 0, 0, 'C');
     }
@@ -291,17 +293,17 @@ for ($q = 1; $q <= $q_count; $q++) {
 
     if ($col_idx >= $n_cols) { break; }   // safety
 
-    $col_x = MARG + $col_idx * $ans_block_w;
-    $qy    = $ans_top + $row_idx * $ans_dy;
+    $base_x = MARG + $col_idx * $ans_block_w + $offset_x;
+    $qy     = $ans_top + $row_idx * $ans_dy;
 
     // Question number
-    $pdf->SetXY($col_x, $qy - 2.5);
+    $pdf->SetXY($base_x, $qy - 2.5);
     $pdf->SetFont('sarabun', 'B', 10);
     $pdf->Cell($q_label_w - 2, $ans_dy, (string)$q . '.', 0, 0, 'R');
 
     // 5 bubbles (proper circles)
     for ($oi = 0; $oi < $n_opts; $oi++) {
-        $bx = $col_x + $q_label_w + $oi * BUB_DX;
+        $bx = $base_x + $q_label_w + $oi * BUB_DX;
         $by = $qy;
         // Draw perfect circle using center coordinates
         $pdf->Circle($bx, $by, BUB_R, 'D');
@@ -320,7 +322,7 @@ $pdf->SetFont('sarabun', '', 9);
 $pdf->SetTextColor(120, 120, 120);
 $pdf->SetXY(MARG, PH - MK_OFF - MK_SIZE - 6);
 $pdf->Cell(PW - MARG * 2, 5,
-    'ใช้ปากกาหรือดินสอดำ ระบายวงกลมให้ทึบเต็มวง ห้ามมีรอยขีดเขียนอื่นบนกระดาษ | OMR System v3',
+    'ใช้ปากกาหรือดินสอดำ ระบายวงกลมให้ทึบเต็มวง ห้ามมีรอยขีดเขียนอื่นบนกระดาษ | MSU Scoring v3',
     0, 0, 'C');
 
 // ════════════════════════════════════════════════════════════════════════
