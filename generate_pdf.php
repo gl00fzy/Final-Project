@@ -183,7 +183,7 @@ $pdf->SetFont('sarabun', '', 10);
 $pdf->SetTextColor(0, 0, 0);
 $exam_info = $exam['exam_title'];
 if ($exam['exam_code']) { $exam_info .= '  (' . $exam['exam_code'] . ')'; }
-$exam_info .= '   |   Exam ID: ' . $exam_id . '   |   ' . $q_count . ' ข้อ';
+$exam_info .= '   |   Exam ID : ' . $exam_id . '   |   ' . $q_count . ' ข้อ';
 $pdf->SetXY(MARG, $info_y);
 $pdf->Cell(PW - MARG * 2, 5, $exam_info, 0, 1, 'L');
 
