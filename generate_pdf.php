@@ -213,7 +213,7 @@ $pdf->SetFont('sarabun', '', 8);
 $pdf->SetTextColor(80, 80, 80);
 for ($col = 0; $col < $digits; $col++) {
     $cx = $sid_base_x + $col * BUB_DX;
-    $pdf->SetXY($cx - BUB_R, $sid_y_start - 4);
+    $pdf->SetXY($cx - BUB_R, $sid_y_start - 7.5);
     $pdf->Cell(BUB_R * 2, 4, (string)($col + 1), 0, 0, 'C');
 }
 
@@ -265,24 +265,6 @@ for ($ki = 0; $ki < count($key_options); $ki++) {
     $pdf->SetXY($key_bub_x + BUB_R + 1.5, $ky - BUB_R);
     $pdf->Cell(10, BUB_R * 2, $key_options[$ki], 0, 0, 'L');
 }
-
-// ── Name / Signature area (to the right of Key Version) ─────────────
-$name_x   = $key_x + 25;
-$name_end = PW - MARG;
-
-$pdf->SetFont('sarabun', '', 10);
-$pdf->SetTextColor(0, 0, 0);
-
-// Name line
-$pdf->SetXY($name_x, $sid_y_start - 2);
-$pdf->Cell(50, 5, 'ชื่อ-สกุล :', 0, 0, 'L');
-$pdf->SetLineWidth(0.2);
-$pdf->Line($name_x + 18, $sid_y_start + 3, $name_end, $sid_y_start + 3);
-
-// Signature line
-$pdf->SetXY($name_x, $sid_y_start + 8);
-$pdf->Cell(50, 5, 'ลายมือชื่อ :', 0, 0, 'L');
-$pdf->Line($name_x + 20, $sid_y_start + 13, $name_end, $sid_y_start + 13);
 
 // ── Bottom of Student ID block ──────────────────────────────────────
 $sid_block_bottom = $sid_y_start + ($digit_rows - 1) * $sid_dy + BUB_R + 2;
@@ -346,8 +328,8 @@ foreach ($sections as $si => $sec) {
     for ($c = 0; $c < $n_cols; $c++) {
         $base_x = MARG + $c * $col_w + $offset_x;
 
-        // Section marker ■
-        $mk_x = $base_x + $q_label_w - SEC_MK - 0.5;
+        // Section marker ■ — centred in the question-number column
+        $mk_x = $base_x + ($q_label_w - 2) / 2 - SEC_MK / 2;
         $pdf->Rect($mk_x, $header_y, SEC_MK, SEC_MK, 'F');
 
         // A B C D E column headers
