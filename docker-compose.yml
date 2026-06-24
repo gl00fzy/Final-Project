@@ -1,0 +1,89 @@
+# ═══════════════════════════════════════════════════════════════
+#  MSU Scoring — docker-compose.yml
+#  รวม container ทั้งหมดเข้าด้วยกัน
+#
+#  วิธีใช้:
+#    รัน:  docker-compose up -d
+#    หยุด: docker-compose down
+#    ดู log: docker-compose logs -f
+# ═══════════════════════════════════════════════════════════════
+
+version: '3.9'
+
+services:
+
+  # ── MySQL Database ─────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: msuscore_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-msuscore}
+      MYSQL_USER: ${DB_USER:-msuscore_user}
+      MYSQL_PASSWORD: ${DB_PASS:-secret}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootsecret}
+    volumes:
+      # เก็บข้อมูล MySQL ถาวร (ไม่หายตอน restart container)
+      - mysql_data:/var/lib/mysql
+      # Auto-initialize database จาก schema.sql ตอนสร้าง container ครั้งแรก
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - msuscore_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootsecret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Web Application (PHP + Apache) ────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: msuscore_web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    volumes:
+      # เก็บไฟล์รูปภาพที่สแกน ถาวร
+      - uploads_data:/var/www/html/uploads
+    environment:
+      - APP_ENV=production
+      - APP_URL=${APP_URL:-https://msuscore.msu.ac.th}
+      # Override DB_HOST ให้ชี้ไปที่ mysql service ใน Docker
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-msuscore}
+      - DB_USER=${DB_USER:-msuscore_user}
+      - DB_PASS=${DB_PASS:-secret}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - msuscore_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/index.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# ── Volumes (ที่เก็บข้อมูลถาวร) ──────────────────────────────
+volumes:
+  mysql_data:
+    driver: local
+
+  uploads_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/uploads
+
+# ── Networks ──────────────────────────────────────────────────
+networks:
+  msuscore_network:
+    driver: bridge

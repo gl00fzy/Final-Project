@@ -37,13 +37,14 @@ try {
 // ── 3. Create system_logs table ───────────────────────────────────────────
 try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS system_logs (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id    INTEGER NOT NULL,
-        action     TEXT    NOT NULL,
-        exam_id    INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(user_id)
-    )");
+        id         INT          NOT NULL AUTO_INCREMENT,
+        user_id    INT          NOT NULL,
+        action     VARCHAR(100) NOT NULL,
+        exam_id    INT          DEFAULT NULL,
+        created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_logs_user2 FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     $steps[] = "✅ Created `system_logs` table (or already existed).";
 } catch (Exception $e) {
     $steps[] = "❌ Failed to create system_logs: " . $e->getMessage();

@@ -1,0 +1,22 @@
+# ── ไฟล์ความลับ — ห้าม commit เด็ดขาด ────────────────────────
+.env
+cookie.txt
+
+# ── ข้อมูล database (เก็บไว้บน server เท่านั้น) ───────────────
+config/database.sqlite
+data/
+
+# ── ไฟล์ที่ Upload มา ─────────────────────────────────────────
+uploads/*
+!uploads/.gitkeep
+
+# ── Editor / OS files ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log

@@ -1,9 +1,11 @@
 <?php
 session_start();
+require_once 'config/database.php'; // โหลด .env และ env() helper
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit;
 }
+$google_client_id = env('GOOGLE_CLIENT_ID', '6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com');
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -92,9 +94,8 @@ if (isset($_SESSION['user_id'])) {
                 <hr class="w-full border-gray-200">
             </div>
 
-            <!-- TODO: Replace YOUR_GOOGLE_CLIENT_ID with your actual Client ID -->
             <div id="g_id_onload"
-                 data-client_id="6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com"
+                 data-client_id="<?= htmlspecialchars($google_client_id) ?>"
                  data-context="signin"
                  data-ux_mode="popup"
                  data-callback="handleCredentialResponse"

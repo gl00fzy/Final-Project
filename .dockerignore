@@ -1,0 +1,37 @@
+# ── Git ───────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ── ไฟล์สำคัญที่ห้ามเข้า container ──────────────────────────
+.env
+cookie.txt
+
+# ── ไฟล์ Docker เอง ──────────────────────────────────────────
+Dockerfile
+docker-compose.yml
+docker/
+.dockerignore
+
+# ── ไฟล์ migrate และ fix ─────────────────────────────────────
+# (ไม่ควรมีใน production server)
+migrate.php
+migrate_google_auth.php
+migrate_phase2.php
+migrate_phase3.php
+fix_password.php
+run_tests.php
+
+# ── Database จะถูก mount จาก volume ─────────────────────────
+# ไม่ต้องเอาเข้า container (จะใช้ของจาก volume แทน)
+config/database.sqlite
+
+# ── ไฟล์พัฒนา ────────────────────────────────────────────────
+*.backup.php
+*.backup.js
+*.md
+*.log
+
+# ── โฟลเดอร์ที่ไม่จำเป็น ─────────────────────────────────────
+implement_plan/
+important_note/
+data/

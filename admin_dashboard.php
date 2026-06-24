@@ -18,7 +18,7 @@ $total_users  = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $total_admins = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'")->fetchColumn();
 $total_exams  = $pdo->query("SELECT COUNT(*) FROM exams")->fetchColumn();
 $total_scans  = $pdo->query("SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success'")->fetchColumn();
-$scans_today  = $pdo->query("SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success' AND DATE(created_at) = DATE('now')")->fetchColumn();
+$scans_today  = $pdo->query("SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success' AND DATE(created_at) = CURDATE()")->fetchColumn();
 
 // ── Recent Activity (last 15 logs) ────────────────────────────────────────
 $activity = $pdo->query("

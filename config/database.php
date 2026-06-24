@@ -1,25 +1,48 @@
 <?php
-$db_file = __DIR__ . '/database.sqlite';
-$schema_file = dirname(__DIR__) . '/schema.sql';
-$is_new_db = !file_exists($db_file);
+// ── โหลดค่าจากไฟล์ .env ────────────────────────────────────────
+// (ถ้ารันผ่าน Docker จะได้ค่าจาก environment variables โดยตรง)
+function loadEnv(string $path): void {
+    if (!file_exists($path)) return;
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (str_starts_with(trim($line), '#')) continue;
+        if (!str_contains($line, '=')) continue;
+        [$key, $value] = explode('=', $line, 2);
+        $key   = trim($key);
+        $value = trim($value);
+        if (!empty($key) && !array_key_exists($key, $_ENV)) {
+            $_ENV[$key] = $value;
+            putenv("$key=$value");
+        }
+    }
+}
+
+// โหลด .env จาก root ของโปรเจค
+loadEnv(dirname(__DIR__) . '/.env');
+
+// ── Helper function สำหรับดึงค่า config ──────────────────────
+function env(string $key, string $default = ''): string {
+    return $_ENV[$key] ?? getenv($key) ?: $default;
+}
+
+// ── ตั้งค่า MySQL Connection ──────────────────────────────────
+$db_host = env('DB_HOST', '127.0.0.1');
+$db_port = env('DB_PORT', '3306');
+$db_name = env('DB_NAME', 'msuscore');
+$db_user = env('DB_USER', 'root');
+$db_pass = env('DB_PASS', '');
 
 try {
-    $pdo = new PDO("sqlite:" . $db_file);
+    $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4";
+    $pdo = new PDO($dsn, $db_user, $db_pass);
+
     // Set errormode to exceptions
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     // Set default fetch mode to associative array
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    // Prevent database locks on concurrent writes
-    $pdo->setAttribute(PDO::ATTR_TIMEOUT, 5);
-    $pdo->exec("PRAGMA busy_timeout = 5000;");
-
-    // Initialize database if it's new
-    if ($is_new_db && file_exists($schema_file)) {
-        $schema = file_get_contents($schema_file);
-        $pdo->exec($schema);
-    }
+    // Disable emulated prepares for security
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
 } catch(PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
-?>
