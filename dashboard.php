@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -122,7 +122,7 @@ if (!isset($_SESSION['user_id'])) {
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             max-width: 380px;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Sarabun', system-ui, sans-serif;
             animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast.toast-success {
@@ -170,7 +170,7 @@ if (!isset($_SESSION['user_id'])) {
     </style>
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
+<body class="bg-gray-50 text-gray-800 font-['Sarabun'] min-h-screen flex flex-col">
     <nav class="bg-gray-800 text-white shadow-md">
 
     <!-- Toast Container -->

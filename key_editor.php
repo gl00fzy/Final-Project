@@ -67,7 +67,7 @@ $answer_key = $normalized_key;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จัดการเฉลย - <?= htmlspecialchars($exam['exam_title']) ?></title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -93,7 +93,7 @@ $answer_key = $normalized_key;
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             max-width: 380px;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Sarabun', system-ui, sans-serif;
             animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
@@ -120,7 +120,7 @@ $answer_key = $normalized_key;
         @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
+<body class="bg-gray-50 text-gray-800 font-['Sarabun'] min-h-screen flex flex-col">
     <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">

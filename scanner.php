@@ -16,11 +16,11 @@ $students = [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>สแกนกระดาษคำตอบ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
 
         /* Feedback border on root container */
         #root-container.error  { box-shadow: inset 0 0 0 6px #EF4444; }
@@ -66,7 +66,7 @@ $students = [];
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             max-width: 380px;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Sarabun', system-ui, sans-serif;
             animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }

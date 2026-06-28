@@ -47,9 +47,9 @@ function output(string $msg, string $type = 'info'): void {
 if (!$isCli) {
     echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'>
     <title>Migrate SQLite → MySQL</title>
-    <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap' rel='stylesheet'>
     <style>
-        body{font-family:Inter,sans-serif;background:#f3f4f6;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+        body{font-family:Sarabun,sans-serif;background:#f3f4f6;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
         .card{background:#fff;border-radius:1rem;padding:2rem 2.5rem;box-shadow:0 4px 24px #0001;max-width:620px;width:100%}
         h1{font-size:1.4rem;font-weight:700;margin-bottom:1.2rem;color:#111827}
         ul{list-style:none;padding:0;margin:0}
