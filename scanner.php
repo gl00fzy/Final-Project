@@ -223,7 +223,7 @@ $students = [];
     <dialog id="manualModal"
          class="backdrop:bg-black/80 backdrop:backdrop-blur-md bg-white rounded-3xl shadow-2xl w-[calc(100%-2rem)] max-w-md p-8 text-gray-900 border-0 m-auto">
         <div>
-            <h2 class="text-2xl font-bold text-red-600 mb-2 text-center">กรอกคะแนนด้วยตนเอง</h2>
+            <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-red-600 mb-2 text-center">กรอกคะแนนด้วยตนเอง</h2>
             <p class="text-center text-gray-500 mb-6 text-sm">ใช้ในกรณีที่กล้องสแกนไม่ติด หรือมีปัญหาแสงสว่าง</p>
             <form id="manualForm" class="flex flex-col gap-4">
                 <input type="hidden" id="examId" name="exam_id" value="<?= htmlspecialchars($exam_id) ?>">

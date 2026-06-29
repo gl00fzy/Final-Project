@@ -127,7 +127,7 @@ $users = $pdo->query("
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
 <!-- ════ NAVBAR ════════════════════════════════════════════════════════ -->
-<nav class="bg-gray-800 text-white shadow-lg">
+<nav class="bg-gray-800 text-white sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <a href="admin_dashboard.php" class="flex items-center gap-2 text-xl font-bold tracking-wider">
@@ -154,7 +154,7 @@ $users = $pdo->query("
 <div class="admin-hero text-white py-10 px-4">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h1 class="text-3xl font-extrabold mb-1 tracking-tight">ภาพรวมระบบ</h1>
+            <h1 class="text-[1.875rem] font-extrabold tracking-tight leading-[1.2] mb-1">ภาพรวมระบบ</h1>
             <p class="text-gray-300 text-sm">ข้อมูล ณ วันที่ <?= date('d/m/Y H:i') ?> — สิทธิ์: <span class="bg-yellow-500 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">ADMIN</span></p>
         </div>
         <button onclick="document.getElementById('roleModal').showModal()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-2 px-4 rounded-xl transition-colors text-sm flex items-center gap-2 backdrop-blur-sm">

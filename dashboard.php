@@ -171,7 +171,7 @@ if (!isset($_SESSION['user_id'])) {
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
-    <nav class="bg-gray-800 text-white shadow-md">
+    <nav class="bg-gray-800 text-white sticky top-0 z-50">
 
     <!-- Toast Container -->
     <div id="toastContainer"></div>
@@ -210,7 +210,7 @@ if (!isset($_SESSION['user_id'])) {
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-            <h2 class="text-2xl font-bold text-gray-900">จัดการข้อสอบ</h2>
+            <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900">จัดการข้อสอบ</h2>
             <button id="btnCreateExam" class="bg-yellow-500 hover:bg-yellow-600 active:scale-[0.98] text-gray-900 font-semibold py-3 px-6 rounded-xl shadow-sm transition-all w-full sm:w-auto flex justify-center items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 สร้างชุดข้อสอบ

@@ -23,7 +23,7 @@ $exam_id = (int)$_GET['exam_id'];
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
-    <nav class="bg-gray-800 text-white shadow-md">
+    <nav class="bg-gray-800 text-white sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">
@@ -40,7 +40,7 @@ $exam_id = (int)$_GET['exam_id'];
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-            <h2 id="pageTitle" class="text-2xl font-bold text-gray-900">กำลังโหลดข้อมูล...</h2>
+            <h2 id="pageTitle" class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900">กำลังโหลดข้อมูล...</h2>
             <a href="dashboard.php" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-xl shadow-sm active:scale-95 transition-all w-full sm:w-auto text-center">&larr; กลับหน้าหลัก</a>
         </div>
 
@@ -58,7 +58,7 @@ $exam_id = (int)$_GET['exam_id'];
 
             <!-- Tab: Score Distribution -->
             <div id="tab-histogram" class="tab-content p-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">การกระจายตัวของคะแนน</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">การกระจายตัวของคะแนน</h3>
                 <canvas id="histogramChart" class="w-full max-h-[300px]"></canvas>
             </div>
 
@@ -66,7 +66,7 @@ $exam_id = (int)$_GET['exam_id'];
             <div id="tab-item" class="tab-content p-6 hidden">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">วิเคราะห์ข้อสอบ (Item Analysis)</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">วิเคราะห์ข้อสอบ (Item Analysis)</h3>
                         <p class="text-gray-500 text-sm mt-1">คอลัมน์ที่มีสีเขียวคือตัวเลือกที่ถูกต้อง</p>
                     </div>
                     <div class="flex items-center gap-3 text-xs flex-wrap">

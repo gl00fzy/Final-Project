@@ -121,7 +121,7 @@ $answer_key = $normalized_key;
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
-    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-10">
+    <nav class="bg-gray-800 text-white sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-all active:scale-95 text-sm flex items-center gap-2">
@@ -137,7 +137,7 @@ $answer_key = $normalized_key;
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-100 pb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-1 sm:hidden"><?= htmlspecialchars($exam['exam_title']) ?></h2>
+                    <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 mb-1 sm:hidden"><?= htmlspecialchars($exam['exam_title']) ?></h2>
                     <p class="text-gray-500">จำนวน <strong class="text-gray-900"><?= $question_count ?></strong> ข้อ</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
