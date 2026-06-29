@@ -17,13 +17,13 @@ $exam_id = (int)$_GET['exam_id'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ผลการสอบและการวิเคราะห์ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
-    <nav class="bg-gray-800 text-white sticky top-0 z-50">
+    <nav class="bg-gray-800 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">

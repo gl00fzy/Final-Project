@@ -14,7 +14,7 @@ $google_client_id = env('GOOGLE_CLIENT_ID', '6718745422-4o8ukvml1f5h7cjsh97a9rrg
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -41,7 +41,7 @@ $google_client_id = env('GOOGLE_CLIENT_ID', '6718745422-4o8ukvml1f5h7cjsh97a9rrg
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             max-width: 380px;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Sarabun', system-ui, sans-serif;
             animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
@@ -65,7 +65,7 @@ $google_client_id = env('GOOGLE_CLIENT_ID', '6718745422-4o8ukvml1f5h7cjsh97a9rrg
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter']">
+<body class="bg-gray-50 text-gray-800 font-['Sarabun']">
     <div class="min-h-screen flex flex-col items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-sm w-full max-w-md p-8 border border-gray-200">
             <div class="text-center mb-8">

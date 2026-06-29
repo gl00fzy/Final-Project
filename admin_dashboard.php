@@ -52,10 +52,10 @@ $users = $pdo->query("
     <title>Admin Dashboard - MSU Scoring</title>
     <meta name="description" content="แผงควบคุมสำหรับผู้ดูแลระบบ MSU Scoring">
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Sarabun', sans-serif; }
 
         /* Animated gradient hero — Gray + Yellow theme */
         .admin-hero {
@@ -100,7 +100,7 @@ $users = $pdo->query("
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             max-width: 380px;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Sarabun', system-ui, sans-serif;
             animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
