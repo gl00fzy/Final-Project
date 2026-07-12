@@ -109,7 +109,7 @@ const AREA_MAX   = 80000;
 const AR_MIN     = 0.4;
 const AR_MAX     = 2.5;
 const APPROX_EPS = 0.06;
-const FILL_FRAC  = 0.35;
+const FILL_FRAC  = 0.40;   // Raised from 0.35 → 0.40 to reduce false positives
 
 function findSquareMarkers(binaryMat) {
     let contours  = new cv.MatVector();
@@ -146,34 +146,12 @@ function findSquareMarkers(binaryMat) {
 function pickCorners(markers, W, H) {
     if (markers.length < 4) return null;
 
-    // Calculate simulated reticle size on video dimensions
-    // In scanner.php, the reticle has w = 80% (max-width: 340px) and aspect ratio 1:1.414 (A4)
-    // On portrait mobile screen, width is typically the limiting factor.
-    let reticleW = W * 0.80;
-    let reticleH = reticleW * 1.414;
-
-    // If height exceeds 80% of screen height, bound it
-    if (reticleH > H * 0.80) {
-        reticleH = H * 0.80;
-        reticleW = reticleH / 1.414;
-    }
-
-    // Calculate center coordinates
-    let cx = W / 2;
-    let cy = H / 2;
-
-    // Ideal coordinates for reticle corners
-    let rx1 = cx - reticleW / 2;
-    let rx2 = cx + reticleW / 2;
-    let ry1 = cy - reticleH / 2;
-    let ry2 = cy + reticleH / 2;
-
-    // Instead of using absolute screen boundaries (0 or W/H), we pick corners closest to the target reticle area
+    // Pick the 4 markers closest to the four corners of the frame
     const spec = [
-        { name: 'TL', tx: rx1, ty: ry1 },
-        { name: 'TR', tx: rx2, ty: ry1 },
-        { name: 'BL', tx: rx1, ty: ry2 },
-        { name: 'BR', tx: rx2, ty: ry2 },
+        { name: 'TL', tx: 0, ty: 0 },
+        { name: 'TR', tx: W, ty: 0 },
+        { name: 'BL', tx: 0, ty: H },
+        { name: 'BR', tx: W, ty: H },
     ];
 
     let picked = [], used = new Set();
@@ -190,61 +168,88 @@ function pickCorners(markers, W, H) {
         picked.push({ ...markers[best], role: corner.name });
     }
     
-    // Map roles to coordinate objects
     let tl = picked.find(p => p.role === 'TL');
     let tr = picked.find(p => p.role === 'TR');
     let bl = picked.find(p => p.role === 'BL');
     let br = picked.find(p => p.role === 'BR');
 
-    // ── RETICLE CONSTRAINTS (Forcing the sheet to align with yellow guidelines) ──
-    // Allow up to 25% margin of error around the reticle width/height
-    let maxOffset = Math.max(reticleW, reticleH) * 0.25; 
-    
-    let isAligned = (
-        Math.abs(tl.x - rx1) < maxOffset && Math.abs(tl.y - ry1) < maxOffset &&
-        Math.abs(tr.x - rx2) < maxOffset && Math.abs(tr.y - ry1) < maxOffset &&
-        Math.abs(bl.x - rx1) < maxOffset && Math.abs(bl.y - ry2) < maxOffset &&
-        Math.abs(br.x - rx2) < maxOffset && Math.abs(br.y - ry2) < maxOffset
-    );
-
-    if (!isAligned) {
-        if (window.dbg && _frameCount % 30 === 0) {
-            dbg('Reject: Out of yellow reticle bounds (Move paper closer to yellow brackets)', 'warn');
-        }
-        return null;
-    }
-
-    // ── GEOMETRIC SANITY CHECKS (A4 Simulation like Zipgrade) ──
-    
-    // 1. Calculate side lengths
-    let topWidth = Math.hypot(tr.x - tl.x, tr.y - tl.y);
+    // ── GEOMETRIC SANITY CHECKS ──
+    let topWidth    = Math.hypot(tr.x - tl.x, tr.y - tl.y);
     let bottomWidth = Math.hypot(br.x - bl.x, br.y - bl.y);
-    let leftHeight = Math.hypot(bl.x - tl.x, bl.y - tl.y);
+    let leftHeight  = Math.hypot(bl.x - tl.x, bl.y - tl.y);
     let rightHeight = Math.hypot(br.x - tr.x, br.y - tr.y);
 
-    let avgWidth = (topWidth + bottomWidth) / 2;
+    let avgWidth  = (topWidth + bottomWidth) / 2;
     let avgHeight = (leftHeight + rightHeight) / 2;
 
-    // 2. Aspect Ratio Check: A4 is 1:1.414. Width / Height in portrait should ideally be around 0.707
-    let aspectRatio = avgWidth / avgHeight;
-    if (aspectRatio < 0.50 || aspectRatio > 0.95) {
+    // 1. Minimum size: must fill at least 30% of the frame in both dimensions
+    if (avgWidth < W * 0.30 || avgHeight < H * 0.30) {
         if (window.dbg && _frameCount % 30 === 0) {
-            dbg('Reject: Aspect Ratio ' + aspectRatio.toFixed(2) + ' (expected 0.50 - 0.95)', 'warn');
+            dbg('Reject: Too small (' + Math.round(avgWidth) + '/' + Math.round(W*0.30) + ', ' + Math.round(avgHeight) + '/' + Math.round(H*0.30) + ')', 'warn');
         }
         return null;
     }
 
-    // 3. Parallelism Check
-    let widthRatio = Math.min(topWidth, bottomWidth) / Math.max(topWidth, bottomWidth);
-    let heightRatio = Math.min(leftHeight, rightHeight) / Math.max(leftHeight, rightHeight);
-    if (widthRatio < 0.75 || heightRatio < 0.75) {
+    // 2. Aspect Ratio: A4 portrait W/H ≈ 0.707, allow 0.45 – 1.0 for camera tilt
+    let aspectRatio = avgWidth / avgHeight;
+    if (aspectRatio < 0.45 || aspectRatio > 1.0) {
         if (window.dbg && _frameCount % 30 === 0) {
-            dbg('Reject: Not parallel (wRatio: ' + widthRatio.toFixed(2) + ', hRatio: ' + heightRatio.toFixed(2) + ')', 'warn');
+            dbg('Reject: Aspect ' + aspectRatio.toFixed(2) + ' (need 0.45-1.0)', 'warn');
         }
+        return null;
+    }
+
+    // 3. Parallelism: opposite sides must be similar length
+    let widthRatio  = Math.min(topWidth, bottomWidth) / Math.max(topWidth, bottomWidth);
+    let heightRatio = Math.min(leftHeight, rightHeight) / Math.max(leftHeight, rightHeight);
+    if (widthRatio < 0.70 || heightRatio < 0.70) {
+        if (window.dbg && _frameCount % 30 === 0) {
+            dbg('Reject: Not parallel (w:' + widthRatio.toFixed(2) + ' h:' + heightRatio.toFixed(2) + ')', 'warn');
+        }
+        return null;
+    }
+
+    // 4. TL must be above BL, TR must be above BR (basic ordering)
+    if (tl.y >= bl.y || tr.y >= br.y || tl.x >= tr.x || bl.x >= br.x) {
+        if (window.dbg && _frameCount % 30 === 0) dbg('Reject: Corner order wrong', 'warn');
         return null;
     }
 
     return [tl, tr, bl, br];
+}
+
+// ── STABILITY CHECK: require N consecutive stable frames before scanning ──
+const STABLE_FRAMES_NEEDED = 8;    // must see corners in same spot for 8 frames
+const STABLE_MAX_DRIFT = 15;       // corners must not move more than 15px between frames
+let _stableCount = 0;
+let _lastCorners = null;
+
+function checkStability(corners) {
+    if (!_lastCorners) {
+        _lastCorners = corners;
+        _stableCount = 1;
+        return false;
+    }
+    // Check if each corner is close to its previous position
+    let maxDrift = 0;
+    for (let i = 0; i < 4; i++) {
+        let dx = corners[i].x - _lastCorners[i].x;
+        let dy = corners[i].y - _lastCorners[i].y;
+        let d  = Math.sqrt(dx*dx + dy*dy);
+        if (d > maxDrift) maxDrift = d;
+    }
+    _lastCorners = corners;
+    if (maxDrift <= STABLE_MAX_DRIFT) {
+        _stableCount++;
+    } else {
+        _stableCount = 1;  // reset — camera moved
+    }
+    return _stableCount >= STABLE_FRAMES_NEEDED;
+}
+
+function resetStability() {
+    _stableCount = 0;
+    _lastCorners = null;
 }
 
 let _cooldown  = false;
@@ -255,10 +260,8 @@ function processVideo() {
     _frameCount++;
     let src = null;
     try {
-        // One-time log on first frame to confirm loop is alive
         if (_frameCount === 1 && window.dbg) dbg('processVideo loop STARTED', 'ok');
 
-        // Re-create mats if video resolution changed
         const vw = video.videoWidth, vh = video.videoHeight;
         if (!vw || !vh) { requestAnimationFrame(processVideo); return; }
         if (_captureCanvas.width !== vw || _captureCanvas.height !== vh) {
@@ -266,7 +269,6 @@ function processVideo() {
             initMats();
         }
 
-        // Capture frame: draw video to hidden canvas, then create Mat
         _captureCtx.drawImage(video, 0, 0, vw, vh);
         let imageData = _captureCtx.getImageData(0, 0, vw, vh);
         src = cv.matFromImageData(imageData);
@@ -292,10 +294,13 @@ function processVideo() {
         let markers = findSquareMarkers(dst);
         let corners = (markers.length >= 4) ? pickCorners(markers, W, H) : null;
 
-        // Log diagnostics every 30 frames to avoid flooding
+        // Log diagnostics every 30 frames
         if (_frameCount % 30 === 0 && window.dbg) {
             let areaList = markers.slice(0,6).map(m => Math.round(m.area)).join(',');
-            dbg('f#' + _frameCount + ' frame=' + W + 'x' + H + ' squares=' + markers.length + (markers.length ? ' areas=[' + areaList + (markers.length>6?'...' : '') + ']' : ''), corners ? 'ok' : 'warn');
+            dbg('f#' + _frameCount + ' ' + W + 'x' + H + ' sq=' + markers.length + 
+                (markers.length ? ' a=[' + areaList + ']' : '') + 
+                ' stable=' + _stableCount + '/' + STABLE_FRAMES_NEEDED,
+                corners ? 'ok' : 'warn');
         }
 
         ctx.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
@@ -305,30 +310,54 @@ function processVideo() {
 
         const rootEl = document.getElementById('root-container');
 
-        if (corners && !_cooldown) {
+        if (corners) {
+            // Draw green dots on detected corners
             for (let c of corners) {
                 ctx.fillStyle = '#10B981';
                 ctx.beginPath(); ctx.arc(c.x, c.y, 10, 0, 2 * Math.PI); ctx.fill();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
                 ctx.fillText(c.role, c.x, c.y + 4);
             }
-            rootEl.classList.remove('error'); rootEl.classList.add('success');
-            statusIndicator.textContent = 'เจอครบ 4 มุมแล้ว กรุณาถือกล้องนิ่งๆ...';
-            processSheet(corners, W, H, src);
-        } else if (!_cooldown) {
-            rootEl.classList.remove('success'); rootEl.classList.add('error');
-            let hint = markers.length === 0 ? 'ไม่เห็นมุมเลย ขยับให้ marker ดำอยู่ในกรอบ'
-                     : markers.length <  4  ? 'เห็น ' + markers.length + ' มุม ยังขาดอีก ' + (4 - markers.length) + ' มุม'
-                     : corners === null     ? 'เห็นสี่เหลี่ยมแต่ไม่กางเป็นกรอบกระดาษ เล็งใหม่ช้าๆ'
-                     :                        'เห็น ' + markers.length + ' สี่เหลี่ยม (มากเกิน) ลดสิ่งที่รบกวนในเฟรม';
-            statusIndicator.textContent = hint;
-            debugCanvas.style.display = 'none';
+
+            // Draw stability progress bar
+            let pct = Math.min(_stableCount / STABLE_FRAMES_NEEDED, 1.0);
+            let barW = canvasOutput.width * 0.6;
+            let barX = (canvasOutput.width - barW) / 2;
+            let barY = canvasOutput.height - 40;
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(barX, barY, barW, 12);
+            ctx.fillStyle = pct >= 1.0 ? '#10B981' : '#FBBF24';
+            ctx.fillRect(barX, barY, barW * pct, 12);
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.strokeRect(barX, barY, barW, 12);
+
+            let isStable = checkStability(corners);
+
+            if (isStable && !_cooldown) {
+                rootEl.classList.remove('error'); rootEl.classList.add('success');
+                statusIndicator.textContent = '📸 สแกนสำเร็จ!';
+                processSheet(corners, W, H, src);
+                resetStability();
+            } else if (!_cooldown) {
+                rootEl.classList.remove('error'); rootEl.classList.add('success');
+                statusIndicator.textContent = 'เจอ 4 มุม ถือนิ่งๆ อีก ' + Math.max(0, STABLE_FRAMES_NEEDED - _stableCount) + ' เฟรม...';
+            }
+        } else {
+            // No valid corners — reset stability counter
+            resetStability();
+            if (!_cooldown) {
+                rootEl.classList.remove('success'); rootEl.classList.add('error');
+                let hint = markers.length === 0 ? 'ไม่เห็นมุมเลย ขยับให้ marker ดำอยู่ในกรอบ'
+                         : markers.length <  4  ? 'เห็น ' + markers.length + ' มุม ยังขาดอีก ' + (4 - markers.length) + ' มุม'
+                         :                        'เห็นสี่เหลี่ยมแต่ไม่กางเป็นกรอบกระดาษ เล็งใหม่ช้าๆ';
+                statusIndicator.textContent = hint;
+                debugCanvas.style.display = 'none';
+            }
         }
     } catch (err) {
         if (window.dbg) dbg('ERROR f#' + _frameCount + ': ' + (err.message || String(err)), 'err');
         console.error('OpenCV error:', err);
     }
-    // src is created fresh each frame — must delete to prevent memory leak
     if (src && src.delete) src.delete();
     requestAnimationFrame(processVideo);
 }
@@ -347,13 +376,23 @@ function processSheet(corners, W, H, frameMat) {
         cv.cvtColor(warped, wGray, cv.COLOR_RGBA2GRAY);
         cv.threshold(wGray, wBin, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
 
-        let rawAnswers = readAllBubbles(wBin, outW, outH);
-        let studentId  = readStudentId(wBin, outW, outH) || '00000000000';
+        let rawAnswers = readAllBubbles(wBin, outW, outH, warped);
+        let studentId  = readStudentId(wBin, outW, outH, warped) || '00000000000';
 
         debugCanvas.width = outW; debugCanvas.height = outH;
         debugCanvas.style.display = 'block';
         cv.imshow('debug-canvas', warped);
+
+        // Draw debug overlay dots on the debug canvas
+        let dbgCtx = debugCanvas.getContext('2d');
+        drawBubbleDebugOverlay(dbgCtx, rawAnswers, outW, outH);
+
         let base64Image = debugCanvas.toDataURL('image/jpeg', 0.7);
+
+        if (window.dbg) {
+            let ansCount = Object.keys(rawAnswers).length;
+            dbg('Scan result: SID=' + studentId + ' answers=' + ansCount + '/50', ansCount > 0 ? 'ok' : 'warn');
+        }
 
         if (!isSubmitting) {
             if (scanMode === 'key') {
@@ -398,7 +437,7 @@ const _ans_start_y   = _y_div2 + 3;
 const _first_row_y   = _ans_start_y + _SEC_MK_MM + 3;
 const _ans_dy        = 5.5;
 
-function readAllBubbles(binMat, W, H) {
+function readAllBubbles(binMat, W, H, warpedMat) {
     const opts = ['A','B','C','D','E'], n_opts = 5, n_cols = 5, rows_per = 10, q_count = 50;
     const usable_w  = 210 - _MARG * 2;
     const col_w_mm  = usable_w / n_cols;
@@ -410,7 +449,7 @@ function readAllBubbles(binMat, W, H) {
         let base_x_mm = _MARG + c * col_w_mm + offset_x;
         for (let r = 0; r < rows_per && q <= q_count; r++) {
             let qy_mm = _first_row_y + r * _ans_dy;
-            let bestOpt = null, bestFill = 0;
+            let fills = [];
             for (let oi = 0; oi < n_opts; oi++) {
                 let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
                 let bx_px = Math.round(mm2px(bx_mm, 'x'));
@@ -418,26 +457,39 @@ function readAllBubbles(binMat, W, H) {
                 let r_px  = Math.round(_BUB_PX);
                 let x1 = Math.max(0, bx_px - r_px), y1 = Math.max(0, by_px - r_px);
                 let x2 = Math.min(W-1, bx_px + r_px), y2 = Math.min(H-1, by_px + r_px);
-                if (x2 <= x1 || y2 <= y1) continue;
+                if (x2 <= x1 || y2 <= y1) { fills.push(0); continue; }
                 let roi = binMat.roi(new cv.Rect(x1, y1, x2-x1, y2-y1));
                 let frac = cv.countNonZero(roi) / (roi.rows * roi.cols);
                 roi.delete();
-                if (frac > bestFill) { bestFill = frac; bestOpt = opts[oi]; }
+                fills.push(frac);
             }
-            if (bestFill >= FILL_FRAC) answers[q] = bestOpt;
+
+            // Relative threshold: best must exceed FILL_FRAC AND be ≥ 1.8x the second-best
+            let bestIdx = 0, bestFill = fills[0];
+            for (let i = 1; i < fills.length; i++) {
+                if (fills[i] > bestFill) { bestFill = fills[i]; bestIdx = i; }
+            }
+            let secondBest = 0;
+            for (let i = 0; i < fills.length; i++) {
+                if (i !== bestIdx && fills[i] > secondBest) secondBest = fills[i];
+            }
+
+            if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.8)) {
+                answers[q] = opts[bestIdx];
+            }
             q++;
         }
     }
     return answers;
 }
 
-function readStudentId(binMat, W, H) {
+function readStudentId(binMat, W, H, warpedMat) {
     const digits = 11, digit_rows = 10;
     const sid_base_x_mm = _MARG + 10;
     let studentId = '';
     for (let col = 0; col < digits; col++) {
         let cx_mm = sid_base_x_mm + col * _BUB_DX_MM;
-        let bestRow = -1, bestFill = 0;
+        let fills = [];
         for (let row = 0; row < digit_rows; row++) {
             let cy_mm = _sid_y_start + row * _sid_dy;
             let bx_px = Math.round(mm2px(cx_mm, 'x'));
@@ -445,15 +497,57 @@ function readStudentId(binMat, W, H) {
             let r_px  = Math.round(_BUB_PX);
             let x1 = Math.max(0, bx_px - r_px), y1 = Math.max(0, by_px - r_px);
             let x2 = Math.min(W-1, bx_px + r_px), y2 = Math.min(H-1, by_px + r_px);
-            if (x2 <= x1 || y2 <= y1) continue;
+            if (x2 <= x1 || y2 <= y1) { fills.push(0); continue; }
             let roi = binMat.roi(new cv.Rect(x1, y1, x2-x1, y2-y1));
             let frac = cv.countNonZero(roi) / (roi.rows * roi.cols);
             roi.delete();
-            if (frac > bestFill) { bestFill = frac; bestRow = row; }
+            fills.push(frac);
         }
-        studentId += (bestFill >= FILL_FRAC && bestRow >= 0) ? String(bestRow) : '?';
+        // Relative threshold: best must be strong AND clearly dominant
+        let bestRow = 0, bestFill = fills[0];
+        for (let i = 1; i < fills.length; i++) {
+            if (fills[i] > bestFill) { bestFill = fills[i]; bestRow = i; }
+        }
+        let secondBest = 0;
+        for (let i = 0; i < fills.length; i++) {
+            if (i !== bestRow && fills[i] > secondBest) secondBest = fills[i];
+        }
+
+        if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.8)) {
+            studentId += String(bestRow);
+        } else {
+            studentId += '?';
+        }
     }
     return studentId.includes('?') ? null : studentId;
+}
+
+// ── Debug overlay: draw red dots on warped image where bubbles are sampled ──
+function drawBubbleDebugOverlay(dbgCtx, answers, W, H) {
+    const opts = ['A','B','C','D','E'], n_opts = 5, n_cols = 5, rows_per = 10, q_count = 50;
+    const usable_w  = 210 - _MARG * 2;
+    const col_w_mm  = usable_w / n_cols;
+    const q_label_w = 9;
+    const content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
+    const offset_x  = (col_w_mm - content_w) / 2;
+    let q = 1;
+    for (let c = 0; c < n_cols && q <= q_count; c++) {
+        let base_x_mm = _MARG + c * col_w_mm + offset_x;
+        for (let r = 0; r < rows_per && q <= q_count; r++) {
+            let qy_mm = _first_row_y + r * _ans_dy;
+            for (let oi = 0; oi < n_opts; oi++) {
+                let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
+                let bx_px = Math.round(mm2px(bx_mm, 'x'));
+                let by_px = Math.round(mm2px(qy_mm,  'y'));
+                let isSelected = answers[q] === opts[oi];
+                dbgCtx.fillStyle = isSelected ? 'rgba(16,185,129,0.7)' : 'rgba(255,0,0,0.3)';
+                dbgCtx.beginPath();
+                dbgCtx.arc(bx_px, by_px, isSelected ? 5 : 2, 0, 2 * Math.PI);
+                dbgCtx.fill();
+            }
+            q++;
+        }
+    }
 }
 
 // ════════════════════════════════════════════════════════════════
