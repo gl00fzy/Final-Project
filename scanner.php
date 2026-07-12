@@ -39,6 +39,43 @@ $students = [];
             z-index: 200;
         }
 
+        /* On-screen debug panel */
+        #debugPanel {
+            position: fixed;
+            bottom: 90px;
+            left: 8px;
+            right: 8px;
+            z-index: 500;
+            background: rgba(0,0,0,0.82);
+            border: 1px solid rgba(255,255,0,0.3);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #facc15;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            pointer-events: auto;
+        }
+        #debugPanel .log-line { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 2px 0; }
+        #debugPanel .log-ok   { color: #34d399; }
+        #debugPanel .log-warn { color: #fb923c; }
+        #debugPanel .log-err  { color: #f87171; }
+        #debugToggleBtn {
+            position: fixed;
+            bottom: 50px;
+            left: 8px;
+            z-index: 501;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,0,0.4);
+            color: #facc15;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
         /* Smooth toggle transition */
         #modeStudentBtn, #modeKeyBtn {
             transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
@@ -195,6 +232,9 @@ $students = [];
         <!-- Debug canvas (hidden by default) -->
         <canvas id="debug-canvas"></canvas>
 
+        <!-- On-screen debug toggle button -->
+        <button id="debugToggleBtn" onclick="toggleDebugPanel()">🔍 DEBUG</button>
+
     </div><!-- /root-container -->
 
     <!-- ============================================================ -->
@@ -257,8 +297,34 @@ $students = [];
         </div>
     </dialog>
 
+    <!-- On-screen debug panel (outside root-container so it overlays everything) -->
+    <div id="debugPanel"></div>
+
     <div id="toastContainer"></div>
     <script>
+        // ── On-screen Debug Log ───────────────────────────────────────────────
+        const _debugPanel = document.getElementById('debugPanel');
+        let _debugVisible = false;
+        let _logLines = [];
+
+        window.dbg = function(msg, level) {
+            level = level || 'info';
+            const cls = level === 'ok' ? 'log-ok' : level === 'warn' ? 'log-warn' : level === 'err' ? 'log-err' : '';
+            const now = new Date();
+            const ts  = now.toTimeString().slice(0,8);
+            const line = `<div class="log-line ${cls}">[${ts}] ${msg}</div>`;
+            _logLines.push(line);
+            if (_logLines.length > 60) _logLines.shift();
+            _debugPanel.innerHTML = _logLines.join('');
+            _debugPanel.scrollTop = _debugPanel.scrollHeight;
+        };
+
+        window.toggleDebugPanel = function() {
+            _debugVisible = !_debugVisible;
+            _debugPanel.style.display = _debugVisible ? 'block' : 'none';
+            document.getElementById('debugToggleBtn').textContent = _debugVisible ? '✕ ปิด DEBUG' : '🔍 DEBUG';
+        };
+
         // ── Toast Notification System ─────────────────────────────────────────
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');

@@ -1,4 +1,4 @@
-﻿// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // scanner.js  —  OMR Answer Sheet Scanner (Fixed Corner Detection)
 // ═══════════════════════════════════════════════════════════════
 
@@ -10,10 +10,12 @@ let videoWrapper   = document.getElementById('video-wrapper');
 let statusIndicator = document.getElementById('statusIndicator');
 
 let streaming  = false;
-let src        = null;
 let dst        = null;
 let gray       = null;
-let cap        = null;
+
+// Hidden canvas for iOS-compatible frame capture (no cv.VideoCapture)
+let _captureCanvas = document.createElement('canvas');
+let _captureCtx    = _captureCanvas.getContext('2d', { willReadFrequently: true });
 
 // ── Audio ─────────────────────────────────────────────────────
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -37,7 +39,11 @@ function playBeep() {
 // ── OpenCV ready ──────────────────────────────────────────────
 function onOpenCvReady() {
     statusIndicator.textContent = 'กำลังเปิดกล้อง กรุณารอสักครู่...';
-    cv['onRuntimeInitialized'] = () => { startCamera(); };
+    if (window.dbg) dbg('OpenCV script loaded, waiting for WASM init...', 'ok');
+    cv['onRuntimeInitialized'] = () => {
+        if (window.dbg) dbg('OpenCV WASM ready!', 'ok');
+        startCamera();
+    };
 }
 
 // ── Camera start ──────────────────────────────────────────────
@@ -50,23 +56,51 @@ function startCamera() {
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
     })
-    .then(stream => { video.srcObject = stream; video.play(); streaming = true; })
+    .then(stream => {
+        if (window.dbg) dbg('Camera stream started', 'ok');
+        video.srcObject = stream; video.play(); streaming = true;
+    })
     .catch(err => {
         console.error('Camera error:', err);
+        if (window.dbg) dbg('Camera ERROR: ' + err.message, 'err');
         statusIndicator.textContent = 'ไม่สามารถเปิดกล้องได้';
     });
 
-    video.addEventListener('canplay', () => {
-        if (!streaming) return;
-        canvasOutput.width  = video.videoWidth;
-        canvasOutput.height = video.videoHeight;
-        src  = new cv.Mat(video.videoHeight, video.videoWidth, cv.CV_8UC4);
-        dst  = new cv.Mat(video.videoHeight, video.videoWidth, cv.CV_8UC1);
-        gray = new cv.Mat();
-        cap  = new cv.VideoCapture(video);
+    // iOS WebKit (Chrome/Safari on iPhone) fires canplay before videoWidth is ready.
+    // We poll until we get valid dimensions before initializing OpenCV mats.
+    let _loopStarted = false;
+
+    function tryStartLoop() {
+        if (_loopStarted) return;
+        if (!video.videoWidth || !video.videoHeight) {
+            // Not ready yet — retry in 100ms
+            if (window.dbg) dbg('Waiting for video dimensions... (' + video.videoWidth + 'x' + video.videoHeight + ')', 'warn');
+            setTimeout(tryStartLoop, 100);
+            return;
+        }
+        _loopStarted = true;
+        initMats();
+        if (window.dbg) dbg('Video ready: ' + video.videoWidth + 'x' + video.videoHeight + ' px', 'ok');
         statusIndicator.textContent = 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
         requestAnimationFrame(processVideo);
-    }, false);
+    }
+
+    // Listen to multiple events — iOS needs both
+    video.addEventListener('loadedmetadata', tryStartLoop, false);
+    video.addEventListener('canplay',        tryStartLoop, false);
+    video.addEventListener('playing',        tryStartLoop, false);
+}
+
+function initMats() {
+    if (dst)  dst.delete();
+    if (gray) gray.delete();
+    const w = video.videoWidth, h = video.videoHeight;
+    canvasOutput.width  = w;
+    canvasOutput.height = h;
+    _captureCanvas.width  = w;
+    _captureCanvas.height = h;
+    dst  = new cv.Mat(h, w, cv.CV_8UC1);
+    gray = new cv.Mat();
 }
 
 // ── Detection constants ────────────────────────────────────────
@@ -94,9 +128,11 @@ function findSquareMarkers(binaryMat) {
                 let ar   = rect.width / rect.height;
                 if (ar >= AR_MIN && ar <= AR_MAX) {
                     let Mv = cv.moments(cnt);
-                    let cx = Mv.m10 / Mv.m00;
-                    let cy = Mv.m01 / Mv.m00;
-                    markers.push({ x: cx, y: cy, area, rect });
+                    if (Mv.m00 > 0) {
+                        let cx = Mv.m10 / Mv.m00;
+                        let cy = Mv.m01 / Mv.m00;
+                        markers.push({ x: cx, y: cy, area, rect });
+                    }
                 }
             }
             approx.delete();
@@ -109,12 +145,37 @@ function findSquareMarkers(binaryMat) {
 
 function pickCorners(markers, W, H) {
     if (markers.length < 4) return null;
+
+    // Calculate simulated reticle size on video dimensions
+    // In scanner.php, the reticle has w = 80% (max-width: 340px) and aspect ratio 1:1.414 (A4)
+    // On portrait mobile screen, width is typically the limiting factor.
+    let reticleW = W * 0.80;
+    let reticleH = reticleW * 1.414;
+
+    // If height exceeds 80% of screen height, bound it
+    if (reticleH > H * 0.80) {
+        reticleH = H * 0.80;
+        reticleW = reticleH / 1.414;
+    }
+
+    // Calculate center coordinates
+    let cx = W / 2;
+    let cy = H / 2;
+
+    // Ideal coordinates for reticle corners
+    let rx1 = cx - reticleW / 2;
+    let rx2 = cx + reticleW / 2;
+    let ry1 = cy - reticleH / 2;
+    let ry2 = cy + reticleH / 2;
+
+    // Instead of using absolute screen boundaries (0 or W/H), we pick corners closest to the target reticle area
     const spec = [
-        { name: 'TL', tx: 0, ty: 0 },
-        { name: 'TR', tx: W, ty: 0 },
-        { name: 'BL', tx: 0, ty: H },
-        { name: 'BR', tx: W, ty: H },
+        { name: 'TL', tx: rx1, ty: ry1 },
+        { name: 'TR', tx: rx2, ty: ry1 },
+        { name: 'BL', tx: rx1, ty: ry2 },
+        { name: 'BR', tx: rx2, ty: ry2 },
     ];
+
     let picked = [], used = new Set();
     for (let corner of spec) {
         let best = -1, bestDist = Infinity;
@@ -128,17 +189,88 @@ function pickCorners(markers, W, H) {
         used.add(best);
         picked.push({ ...markers[best], role: corner.name });
     }
-    let [TL, TR, BL, BR] = picked;
-    if ((TR.x - TL.x) < W * 0.15 || (BL.y - TL.y) < H * 0.15) return null;
-    return picked;
+    
+    // Map roles to coordinate objects
+    let tl = picked.find(p => p.role === 'TL');
+    let tr = picked.find(p => p.role === 'TR');
+    let bl = picked.find(p => p.role === 'BL');
+    let br = picked.find(p => p.role === 'BR');
+
+    // ── RETICLE CONSTRAINTS (Forcing the sheet to align with yellow guidelines) ──
+    // Allow up to 25% margin of error around the reticle width/height
+    let maxOffset = Math.max(reticleW, reticleH) * 0.25; 
+    
+    let isAligned = (
+        Math.abs(tl.x - rx1) < maxOffset && Math.abs(tl.y - ry1) < maxOffset &&
+        Math.abs(tr.x - rx2) < maxOffset && Math.abs(tr.y - ry1) < maxOffset &&
+        Math.abs(bl.x - rx1) < maxOffset && Math.abs(bl.y - ry2) < maxOffset &&
+        Math.abs(br.x - rx2) < maxOffset && Math.abs(br.y - ry2) < maxOffset
+    );
+
+    if (!isAligned) {
+        if (window.dbg && _frameCount % 30 === 0) {
+            dbg('Reject: Out of yellow reticle bounds (Move paper closer to yellow brackets)', 'warn');
+        }
+        return null;
+    }
+
+    // ── GEOMETRIC SANITY CHECKS (A4 Simulation like Zipgrade) ──
+    
+    // 1. Calculate side lengths
+    let topWidth = Math.hypot(tr.x - tl.x, tr.y - tl.y);
+    let bottomWidth = Math.hypot(br.x - bl.x, br.y - bl.y);
+    let leftHeight = Math.hypot(bl.x - tl.x, bl.y - tl.y);
+    let rightHeight = Math.hypot(br.x - tr.x, br.y - tr.y);
+
+    let avgWidth = (topWidth + bottomWidth) / 2;
+    let avgHeight = (leftHeight + rightHeight) / 2;
+
+    // 2. Aspect Ratio Check: A4 is 1:1.414. Width / Height in portrait should ideally be around 0.707
+    let aspectRatio = avgWidth / avgHeight;
+    if (aspectRatio < 0.50 || aspectRatio > 0.95) {
+        if (window.dbg && _frameCount % 30 === 0) {
+            dbg('Reject: Aspect Ratio ' + aspectRatio.toFixed(2) + ' (expected 0.50 - 0.95)', 'warn');
+        }
+        return null;
+    }
+
+    // 3. Parallelism Check
+    let widthRatio = Math.min(topWidth, bottomWidth) / Math.max(topWidth, bottomWidth);
+    let heightRatio = Math.min(leftHeight, rightHeight) / Math.max(leftHeight, rightHeight);
+    if (widthRatio < 0.75 || heightRatio < 0.75) {
+        if (window.dbg && _frameCount % 30 === 0) {
+            dbg('Reject: Not parallel (wRatio: ' + widthRatio.toFixed(2) + ', hRatio: ' + heightRatio.toFixed(2) + ')', 'warn');
+        }
+        return null;
+    }
+
+    return [tl, tr, bl, br];
 }
 
-let _cooldown = false;
+let _cooldown  = false;
+let _frameCount = 0;
 
 function processVideo() {
     if (!streaming) return;
+    _frameCount++;
+    let src = null;
     try {
-        cap.read(src);
+        // One-time log on first frame to confirm loop is alive
+        if (_frameCount === 1 && window.dbg) dbg('processVideo loop STARTED', 'ok');
+
+        // Re-create mats if video resolution changed
+        const vw = video.videoWidth, vh = video.videoHeight;
+        if (!vw || !vh) { requestAnimationFrame(processVideo); return; }
+        if (_captureCanvas.width !== vw || _captureCanvas.height !== vh) {
+            if (window.dbg) dbg('Video resized to ' + vw + 'x' + vh + ', reinit', 'warn');
+            initMats();
+        }
+
+        // Capture frame: draw video to hidden canvas, then create Mat
+        _captureCtx.drawImage(video, 0, 0, vw, vh);
+        let imageData = _captureCtx.getImageData(0, 0, vw, vh);
+        src = cv.matFromImageData(imageData);
+
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
         const W = src.cols, H = src.rows;
 
@@ -160,6 +292,12 @@ function processVideo() {
         let markers = findSquareMarkers(dst);
         let corners = (markers.length >= 4) ? pickCorners(markers, W, H) : null;
 
+        // Log diagnostics every 30 frames to avoid flooding
+        if (_frameCount % 30 === 0 && window.dbg) {
+            let areaList = markers.slice(0,6).map(m => Math.round(m.area)).join(',');
+            dbg('f#' + _frameCount + ' frame=' + W + 'x' + H + ' squares=' + markers.length + (markers.length ? ' areas=[' + areaList + (markers.length>6?'...' : '') + ']' : ''), corners ? 'ok' : 'warn');
+        }
+
         ctx.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
         ctx.strokeStyle = 'rgba(255,165,0,0.6)';
         ctx.lineWidth   = 1;
@@ -176,20 +314,26 @@ function processVideo() {
             }
             rootEl.classList.remove('error'); rootEl.classList.add('success');
             statusIndicator.textContent = 'เจอครบ 4 มุมแล้ว กรุณาถือกล้องนิ่งๆ...';
-            processSheet(corners, W, H);
+            processSheet(corners, W, H, src);
         } else if (!_cooldown) {
             rootEl.classList.remove('success'); rootEl.classList.add('error');
             let hint = markers.length === 0 ? 'ไม่เห็นมุมเลย ขยับให้ marker ดำอยู่ในกรอบ'
                      : markers.length <  4  ? 'เห็น ' + markers.length + ' มุม ยังขาดอีก ' + (4 - markers.length) + ' มุม'
+                     : corners === null     ? 'เห็นสี่เหลี่ยมแต่ไม่กางเป็นกรอบกระดาษ เล็งใหม่ช้าๆ'
                      :                        'เห็น ' + markers.length + ' สี่เหลี่ยม (มากเกิน) ลดสิ่งที่รบกวนในเฟรม';
             statusIndicator.textContent = hint;
             debugCanvas.style.display = 'none';
         }
-    } catch (err) { console.error('OpenCV error:', err); }
+    } catch (err) {
+        if (window.dbg) dbg('ERROR f#' + _frameCount + ': ' + (err.message || String(err)), 'err');
+        console.error('OpenCV error:', err);
+    }
+    // src is created fresh each frame — must delete to prevent memory leak
+    if (src && src.delete) src.delete();
     requestAnimationFrame(processVideo);
 }
 
-function processSheet(corners, W, H) {
+function processSheet(corners, W, H, frameMat) {
     let [tl, tr, bl, br] = corners;
     const outW = 600, outH = 848;
     let srcTri = null, dstTri = null, PM = null, warped = null, wGray = null, wBin = null;
@@ -198,7 +342,7 @@ function processSheet(corners, W, H) {
         dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, outW, 0, outW, outH, 0, outH]);
         PM = cv.getPerspectiveTransform(srcTri, dstTri);
         warped = new cv.Mat();
-        cv.warpPerspective(src, warped, PM, new cv.Size(outW, outH), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
+        cv.warpPerspective(frameMat, warped, PM, new cv.Size(outW, outH), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
         wGray = new cv.Mat(); wBin = new cv.Mat();
         cv.cvtColor(warped, wGray, cv.COLOR_RGBA2GRAY);
         cv.threshold(wGray, wBin, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
@@ -360,7 +504,7 @@ async function submitKey(rawAnswers) {
         statusIndicator.textContent = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้';
         statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
     }
-    setTimeout(() => { isSubmitting = false; _cooldown = false; setScanMode('key'); }, 4000);
+    setTimeout(() => { isSubmitting = false; _cooldown = false; setScanMode('key'); }, 2000);
 }
 
 async function submitScore(studentId, score, rawAnswers, imageBase64) {
@@ -370,6 +514,17 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
     if (scannedStudentIds.has(studentId)) {
         statusIndicator.textContent = 'รหัสนิสิตนี้ตรวจไปแล้ว (สแกนซ้ำ)';
         statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+        
+        // Fast cooldown reset for duplicates so it doesn't block the camera scan flow
+        _cooldown = true;
+        isSubmitting = true;
+        setTimeout(() => {
+            isSubmitting = false;
+            _cooldown = false;
+            statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            statusIndicator.textContent = 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
+            document.getElementById('root-container').classList.remove('success', 'error');
+        }, 1500);
         return;
     }
     isSubmitting = true; _cooldown = true;
@@ -400,7 +555,9 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
         } else {
             statusIndicator.textContent = data.message;
         }
-    } catch (e) { statusIndicator.textContent = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'; }
+    } catch (e) { 
+        statusIndicator.textContent = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'; 
+    }
     setTimeout(() => {
         isSubmitting = false; _cooldown = false;
         statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
@@ -408,7 +565,7 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
         document.getElementById('root-container').classList.remove('success', 'error');
         const resultCard = document.getElementById('scanResultCard');
         if (resultCard) resultCard.classList.add('hidden');
-    }, 3500);
+    }, 2500);
 }
 
 // ── Manual Entry ──────────────────────────────────────────────
