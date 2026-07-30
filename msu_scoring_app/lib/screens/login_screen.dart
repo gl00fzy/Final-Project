@@ -74,7 +74,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.gold.withOpacity(0.3),
+                          color: AppColors.gold.withValues(alpha: 0.3),
                           blurRadius: 20,
                         )
                       ],

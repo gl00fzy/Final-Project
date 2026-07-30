@@ -39,7 +39,7 @@ class AppTheme {
         ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.navyBackground.withOpacity(0.8),
+        backgroundColor: AppColors.navyBackground.withValues(alpha: 0.8),
         elevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.sarabun(
@@ -57,7 +57,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.navySurface,
-        hintStyle: TextStyle(color: AppColors.textMuted.withOpacity(0.6)),
+        hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.6)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

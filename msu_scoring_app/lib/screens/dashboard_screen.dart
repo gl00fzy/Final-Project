@@ -147,7 +147,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   gradient: LinearGradient(
                     colors: [
                       AppColors.navyCard,
-                      AppColors.navySurface.withOpacity(0.8),
+                      AppColors.navySurface.withValues(alpha: 0.8),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(20),
@@ -157,7 +157,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   children: [
                     CircleAvatar(
                       radius: 26,
-                      backgroundColor: AppColors.gold.withOpacity(0.2),
+                      backgroundColor: AppColors.gold.withValues(alpha: 0.2),
                       child: Text(
                         (authState.user?.name ?? 'U')[0].toUpperCase(),
                         style: GoogleFonts.outfit(
@@ -268,7 +268,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   width: 48,
                                   height: 48,
                                   decoration: BoxDecoration(
-                                    color: AppColors.gold.withOpacity(0.12),
+                                    color: AppColors.gold.withValues(alpha: 0.12),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Center(
@@ -322,7 +322,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: AppColors.success.withOpacity(0.15),
+                                        color: AppColors.success.withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(100),
                                       ),
                                       child: Text(

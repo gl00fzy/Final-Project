@@ -43,7 +43,7 @@ class SplashScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.gold.withOpacity(0.35),
+                    color: AppColors.gold.withValues(alpha: 0.35),
                     blurRadius: 30,
                     spreadRadius: 2,
                   )

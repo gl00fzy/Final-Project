@@ -109,7 +109,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
               width: MediaQuery.of(context).size.width * 0.82,
               height: MediaQuery.of(context).size.width * 0.82 * 1.414,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.5),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.5),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Stack(
@@ -128,9 +128,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(100),
-                          border: Border.all(color: AppColors.gold.withOpacity(0.4)),
+                          border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
                         ),
                         child: Text(
                           'เล็งกรอบให้อยู่ในหน้าจอ',
@@ -160,13 +160,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.black.withOpacity(0.6),
+                    backgroundColor: Colors.black.withValues(alpha: 0.6),
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.gold),
                   ),
@@ -203,9 +203,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.75),
+                  color: Colors.black.withValues(alpha: 0.75),
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -234,7 +234,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     color: AppColors.gold,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.gold.withOpacity(0.5),
+                        color: AppColors.gold.withValues(alpha: 0.5),
                         blurRadius: 20,
                         spreadRadius: 2,
                       )
@@ -254,7 +254,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
           if (_lastResult != null)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 child: Center(
                   child: Container(
                     width: 320,

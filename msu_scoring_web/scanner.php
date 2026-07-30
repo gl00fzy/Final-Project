@@ -8,6 +8,13 @@ $exam_id = $_GET['exam_id'] ?? 1;
 
 require_once 'config/database.php';
 $students = [];
+$question_count = 50;
+$stmt = $pdo->prepare("SELECT question_count, exam_title FROM exams WHERE exam_id = ?");
+$stmt->execute([$exam_id]);
+$exam_row = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($exam_row && !empty($exam_row['question_count'])) {
+    $question_count = (int)$exam_row['question_count'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -214,8 +221,23 @@ $students = [];
             กำลังโหลด OpenCV.js...
         </div>
 
-        <!-- [HUD] BOTTOM FOOTER: Manual Entry pill -->
-        <div class="absolute bottom-4 left-0 w-full px-4 z-20 flex justify-center">
+        <!-- [HUD] BOTTOM FOOTER: Manual Entry pill & Python Upload pill -->
+        <div class="absolute bottom-4 left-0 w-full px-4 z-20 flex justify-center gap-2">
+            <!-- Hidden file input for Python OMR Upload -->
+            <input type="file" id="pyUploadInput" accept="image/*" capture="environment" class="hidden" onchange="uploadToPythonEngine(this)">
+
+            <button onclick="document.getElementById('pyUploadInput').click()"
+                    class="inline-flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-400
+                           text-gray-900 font-bold text-xs md:text-sm px-4 py-2 rounded-full shadow-xl
+                           border border-yellow-300 hover:scale-105 active:scale-95
+                           transition-all duration-200 whitespace-nowrap">
+                <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                📸 อัปโหลดรูปสแกน (Python)
+            </button>
+
             <button id="btnManual"
                     class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md
                            text-gray-900 font-semibold text-xs md:text-sm px-4 py-2 rounded-full shadow-xl
@@ -241,19 +263,36 @@ $students = [];
     <!-- SUCCESS CARD (z-[100] — above all HUD layers)                -->
     <!-- ============================================================ -->
     <div id="scanResultCard"
-         class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 pointer-events-none">
-        <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-[400px]
-                    text-center border border-white/30 pointer-events-auto">
-            <h2 class="text-yellow-500 text-4xl font-bold mb-2 flex items-center justify-center gap-2">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none bg-black/60 backdrop-blur-sm">
+        <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 w-full max-w-[420px] max-h-[90vh] overflow-y-auto
+                    text-center border border-white/30 pointer-events-auto flex flex-col items-center">
+            <h2 class="text-yellow-500 text-3xl font-bold mb-1 flex items-center justify-center gap-2">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                 </svg>
                 สำเร็จ!
             </h2>
-            <p class="text-gray-400 mt-6 mb-1">รหัสนิสิต</p>
-            <p id="resStudentId" class="text-4xl font-black text-gray-900 tracking-widest mb-6"></p>
-            <p class="text-gray-400 mb-1">คะแนนที่ได้</p>
-            <p id="resScore" class="text-7xl font-black text-yellow-500 leading-none mb-2"></p>
+            <div class="flex justify-around w-full my-3 py-2 bg-gray-50 rounded-2xl border border-gray-100">
+                <div>
+                    <p class="text-gray-400 text-xs">รหัสนิสิต</p>
+                    <p id="resStudentId" class="text-2xl font-black text-gray-900 tracking-wider"></p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-xs">คะแนนที่ได้</p>
+                    <p id="resScore" class="text-4xl font-black text-yellow-500 leading-none"></p>
+                </div>
+            </div>
+
+            <!-- OMR Overlay Image Preview -->
+            <div id="resOverlayWrapper" class="hidden w-full my-2">
+                <p class="text-xs text-gray-500 font-semibold mb-1">ภาพตรวจจับ OMR (จุดสีเขียว = คำตอบที่เลือก):</p>
+                <img id="resOverlayImg" class="w-full max-h-[300px] object-contain rounded-xl border border-gray-300 shadow-inner bg-black" src="" alt="OMR Overlay">
+            </div>
+
+            <button onclick="document.getElementById('scanResultCard').classList.add('hidden')"
+                    class="mt-3 px-6 py-2 bg-gray-900 text-white text-xs font-bold rounded-full shadow hover:bg-gray-800 active:scale-95 transition-all">
+                ปิดหน้าต่างนี้
+            </button>
         </div>
     </div>
 
@@ -344,8 +383,77 @@ $students = [];
             }, 3000);
         }
 
+        // ── Upload Image to Python Backend Engine ─────────────────────────────
+        async function uploadToPythonEngine(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            const examId = document.getElementById('examId')?.value || document.querySelector('input[name="exam_id"]')?.value || 1;
+            const qCount = document.getElementById('qCount')?.value || 50;
+            
+            const statusIndicator = document.getElementById('statusIndicator');
+            statusIndicator.textContent = `⏳ กำลังประมวลผลกระดาษคำตอบ (${qCount} ข้อ) ผ่าน Python...`;
+            statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('exam_id', examId);
+            formData.append('q_count', qCount);
+
+            try {
+                const response = await fetch('api/scan_python.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    playBeep();
+                    showToast(`สแกนสำเร็จ! นิสิต: ${data.student_id} (คะแนน: ${data.score})`, 'success');
+                    
+                    const resultCard = document.getElementById('scanResultCard');
+                    if (resultCard) {
+                        document.getElementById('resStudentId').textContent = data.student_id;
+                        document.getElementById('resScore').textContent = data.score;
+                        
+                        const overlayWrapper = document.getElementById('resOverlayWrapper');
+                        const overlayImg = document.getElementById('resOverlayImg');
+                        if (overlayWrapper && overlayImg && data.processed_image) {
+                            overlayImg.src = data.processed_image;
+                            overlayWrapper.classList.remove('hidden');
+                        }
+
+                        resultCard.classList.remove('hidden');
+                    }
+
+                    statusIndicator.textContent = '📸 สแกนสำเร็จ!';
+                    statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
+                } else if (data.status === 'warning') {
+                    showToast(data.message, 'error');
+                    statusIndicator.textContent = data.message;
+                    statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+                } else {
+                    showToast(data.message || 'เกิดข้อผิดพลาดในการประมวลผล', 'error');
+                    statusIndicator.textContent = data.message || 'เกิดข้อผิดพลาด';
+                    statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('ไม่สามารถเชื่อมต่อ Python Server ได้', 'error');
+                statusIndicator.textContent = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้';
+                statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+            }
+            
+            // reset file input
+            input.value = '';
+            setTimeout(() => {
+                statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                statusIndicator.textContent = 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
+            }, 4000);
+        }
+
         const studentDirectory = <?= json_encode($students) ?>;
     </script>
+    <input type="hidden" id="qCount" value="<?= htmlspecialchars($question_count) ?>">
     <script async src="https://docs.opencv.org/4.8.0/opencv.js"
             onload="onOpenCvReady();" type="text/javascript"></script>
     <script src="js/scanner.js"></script>

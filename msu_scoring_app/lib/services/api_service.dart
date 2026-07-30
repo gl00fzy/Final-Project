@@ -147,8 +147,8 @@ class ApiService {
         'student_id': studentId,
         'score': score.toString(),
         'exam_set': examSet,
-        if (rawAnswersJson != null) 'raw_answers': rawAnswersJson,
-        if (base64Image != null) 'image': base64Image,
+        'raw_answers': ?rawAnswersJson,
+        'image': ?base64Image,
       },
     );
 

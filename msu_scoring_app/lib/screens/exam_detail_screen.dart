@@ -6,6 +6,8 @@ import '../models/exam_model.dart';
 import '../providers/exam_provider.dart';
 import '../services/api_service.dart';
 import 'scanner_screen.dart';
+import 'key_editor_screen.dart';
+import 'analytics_screen.dart';
 
 class ExamDetailScreen extends ConsumerStatefulWidget {
   final int examId;
@@ -160,39 +162,83 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-                  // Quick Action Buttons
+                  // Primary Scan Action Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ScannerScreen(exam: exam),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.camera_alt_rounded),
+                      label: const Text('เริ่มสแกนด้วยกล้องสด'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.gold,
+                        foregroundColor: AppColors.navyBackground,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Secondary Action Buttons Grid (Key Editor, Analytics, Manual Entry)
                   Row(
                     children: [
                       Expanded(
-                        child: ElevatedButton.icon(
+                        child: OutlinedButton.icon(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ScannerScreen(exam: exam),
+                                builder: (_) => KeyEditorScreen(exam: exam),
                               ),
                             );
                           },
-                          icon: const Icon(Icons.camera_alt_rounded),
-                          label: const Text('เริ่มสแกน'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.gold,
-                            foregroundColor: AppColors.navyBackground,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          icon: const Icon(Icons.vpn_key_rounded, size: 18, color: AppColors.gold),
+                          label: const Text('แก้ไขเฉลย', style: TextStyle(color: AppColors.textPrimary)),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: AppColors.navyBorder),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      OutlinedButton(
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AnalyticsScreen(exam: exam),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.bar_chart_rounded, size: 18, color: AppColors.gold),
+                          label: const Text('สถิติ & สเปก', style: TextStyle(color: AppColors.textPrimary)),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: AppColors.navyBorder),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      IconButton.outlined(
                         onPressed: () => _showManualScoreDialog(exam),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        icon: const Icon(Icons.edit_note_rounded, color: AppColors.gold),
+                        style: IconButton.styleFrom(
                           side: const BorderSide(color: AppColors.navyBorder),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.all(12),
                         ),
-                        child: const Icon(Icons.edit_note_rounded, color: AppColors.gold),
+                        tooltip: 'กรอกคะแนนด้วยตนเอง',
                       ),
                     ],
                   ),
@@ -258,7 +304,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: scores.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 10),
+                            separatorBuilder: (_, _) => const SizedBox(height: 10),
                             itemBuilder: (ctx, idx) {
                               final sc = scores[idx];
                               return Card(
