@@ -6,14 +6,14 @@ class AppColors {
   static const Color navyCard = Color(0xFF141C2E);
   static const Color navySurface = Color(0xFF1E293B);
   static const Color navyBorder = Color(0x26F5C842);
-  
+
   static const Color gold = Color(0xFFF5C842);
   static const Color goldLight = Color(0xFFFFE082);
   static const Color goldDark = Color(0xFFC9A227);
-  
+
   static const Color textPrimary = Color(0xFFF0F4FF);
   static const Color textMuted = Color(0xFF8A95B0);
-  
+
   static const Color success = Color(0xFF10B981);
   static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B);
@@ -48,9 +48,7 @@ class AppTheme {
           color: AppColors.textPrimary,
         ),
       ),
-      textTheme: GoogleFonts.sarabunTextTheme(
-        ThemeData.dark().textTheme,
-      ).apply(
+      textTheme: GoogleFonts.sarabunTextTheme(ThemeData.dark().textTheme).apply(
         bodyColor: AppColors.textPrimary,
         displayColor: AppColors.textPrimary,
       ),
@@ -58,7 +56,10 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.navySurface,
         hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.6)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.navyBorder),

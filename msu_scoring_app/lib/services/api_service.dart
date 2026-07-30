@@ -21,14 +21,14 @@ class ApiService {
   }
 
   // 1. Login with Username & Password
-  static Future<Map<String, dynamic>> login(String username, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) async {
     final url = Uri.parse('${ApiConfig.authEndpoint}?action=login');
     final response = await http.post(
       url,
-      body: {
-        'username': username,
-        'password': password,
-      },
+      body: {'username': username, 'password': password},
     );
 
     final data = jsonDecode(response.body);
@@ -43,12 +43,7 @@ class ApiService {
   // 2. Login with Google ID Token
   static Future<Map<String, dynamic>> loginWithGoogle(String idToken) async {
     final url = Uri.parse('${ApiConfig.authEndpoint}?action=google');
-    final response = await http.post(
-      url,
-      body: {
-        'id_token': idToken,
-      },
-    );
+    final response = await http.post(url, body: {'id_token': idToken});
 
     final data = jsonDecode(response.body);
     if (response.statusCode == 200 && data['status'] == 'success') {
@@ -77,7 +72,9 @@ class ApiService {
 
   // 4. Get Exam Detail
   static Future<ExamModel> getExamDetail(int examId) async {
-    final url = Uri.parse('${ApiConfig.examsEndpoint}?action=detail&exam_id=$examId');
+    final url = Uri.parse(
+      '${ApiConfig.examsEndpoint}?action=detail&exam_id=$examId',
+    );
     final headers = await _getHeaders();
     final response = await http.get(url, headers: headers);
 
@@ -91,7 +88,11 @@ class ApiService {
   }
 
   // 5. Create Exam
-  static Future<int> createExam(String title, String code, int questionCount) async {
+  static Future<int> createExam(
+    String title,
+    String code,
+    int questionCount,
+  ) async {
     final url = Uri.parse('${ApiConfig.examsEndpoint}?action=create');
     final headers = await _getHeaders();
     final response = await http.post(
@@ -112,16 +113,16 @@ class ApiService {
   }
 
   // 6. Save Answer Key
-  static Future<bool> saveAnswerKey(int examId, Map<String, dynamic> keyData) async {
+  static Future<bool> saveAnswerKey(
+    int examId,
+    Map<String, dynamic> keyData,
+  ) async {
     final url = Uri.parse('${ApiConfig.examsEndpoint}?action=save_key');
     final headers = await _getHeaders();
     final response = await http.post(
       url,
       headers: headers,
-      body: {
-        'exam_id': examId.toString(),
-        'answer_key': jsonEncode(keyData),
-      },
+      body: {'exam_id': examId.toString(), 'answer_key': jsonEncode(keyData)},
     );
 
     final data = jsonDecode(response.body);
@@ -157,7 +158,9 @@ class ApiService {
 
   // 8. Get Scores List for Exam
   static Future<Map<String, dynamic>> getScoresList(int examId) async {
-    final url = Uri.parse('${ApiConfig.scoresEndpoint}?action=list&exam_id=$examId');
+    final url = Uri.parse(
+      '${ApiConfig.scoresEndpoint}?action=list&exam_id=$examId',
+    );
     final headers = await _getHeaders();
     final response = await http.get(url, headers: headers);
 
@@ -166,10 +169,7 @@ class ApiService {
       if (data['status'] == 'success') {
         final List list = data['data'] ?? [];
         final scores = list.map((item) => ScoreModel.fromJson(item)).toList();
-        return {
-          'summary': data['summary'],
-          'scores': scores,
-        };
+        return {'summary': data['summary'], 'scores': scores};
       }
     }
     throw Exception('Failed to fetch scores list');

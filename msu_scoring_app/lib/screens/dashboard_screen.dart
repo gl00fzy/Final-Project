@@ -31,7 +31,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'สร้างชุดข้อสอบใหม่',
-          style: GoogleFonts.sarabun(fontWeight: FontWeight.bold, color: AppColors.gold),
+          style: GoogleFonts.sarabun(
+            fontWeight: FontWeight.bold,
+            color: AppColors.gold,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -64,7 +67,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('ยกเลิก', style: TextStyle(color: AppColors.textMuted)),
+            child: const Text(
+              'ยกเลิก',
+              style: TextStyle(color: AppColors.textMuted),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -80,12 +86,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 Navigator.pop(dialogCtx);
                 ref.invalidate(examsListProvider);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('สร้างชุดข้อสอบเรียบร้อยแล้ว'), backgroundColor: AppColors.success),
+                  const SnackBar(
+                    content: Text('สร้างชุดข้อสอบเรียบร้อยแล้ว'),
+                    backgroundColor: AppColors.success,
+                  ),
                 );
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+                  SnackBar(
+                    content: Text(e.toString()),
+                    backgroundColor: AppColors.error,
+                  ),
                 );
               }
             },
@@ -106,10 +118,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       appBar: AppBar(
         title: RichText(
           text: TextSpan(
-            style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+            style: GoogleFonts.outfit(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
             children: const [
               TextSpan(text: 'MSU '),
-              TextSpan(text: 'Scoring', style: TextStyle(color: AppColors.gold)),
+              TextSpan(
+                text: 'Scoring',
+                style: TextStyle(color: AppColors.gold),
+              ),
             ],
           ),
         ),
@@ -182,7 +201,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            authState.user?.email ?? authState.user?.username ?? 'มหาวิทยาลัยมหาสารคาม',
+                            authState.user?.email ??
+                                authState.user?.username ??
+                                'มหาวิทยาลัยมหาสารคาม',
                             style: GoogleFonts.sarabun(
                               fontSize: 13,
                               color: AppColors.textMuted,
@@ -208,7 +229,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: _searchController,
-                onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+                onChanged: (val) =>
+                    setState(() => _searchQuery = val.toLowerCase()),
                 decoration: const InputDecoration(
                   hintText: 'ค้นหาชื่อวิชา หรือรหัสวิชา...',
                   prefixIcon: Icon(Icons.search, color: AppColors.gold),
@@ -221,7 +243,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 data: (exams) {
                   final filteredExams = exams.where((e) {
                     return e.examTitle.toLowerCase().contains(_searchQuery) ||
-                        (e.examCode?.toLowerCase().contains(_searchQuery) ?? false);
+                        (e.examCode?.toLowerCase().contains(_searchQuery) ??
+                            false);
                   }).toList();
 
                   if (filteredExams.isEmpty) {
@@ -234,7 +257,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             const SizedBox(height: 12),
                             Text(
                               'ยังไม่มีชุดข้อสอบ',
-                              style: GoogleFonts.sarabun(fontSize: 16, color: AppColors.textMuted),
+                              style: GoogleFonts.sarabun(
+                                fontSize: 16,
+                                color: AppColors.textMuted,
+                              ),
                             ),
                           ],
                         ),
@@ -255,7 +281,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ExamDetailScreen(examId: exam.examId),
+                                builder: (_) =>
+                                    ExamDetailScreen(examId: exam.examId),
                               ),
                             );
                           },
@@ -268,17 +295,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   width: 48,
                                   height: 48,
                                   decoration: BoxDecoration(
-                                    color: AppColors.gold.withValues(alpha: 0.12),
+                                    color: AppColors.gold.withValues(
+                                      alpha: 0.12,
+                                    ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Center(
-                                    child: Text('📝', style: TextStyle(fontSize: 22)),
+                                    child: Text(
+                                      '📝',
+                                      style: TextStyle(fontSize: 22),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         exam.examTitle,
@@ -291,7 +324,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                       const SizedBox(height: 4),
                                       Row(
                                         children: [
-                                          if (exam.examCode != null && exam.examCode!.isNotEmpty) ...[
+                                          if (exam.examCode != null &&
+                                              exam.examCode!.isNotEmpty) ...[
                                             Text(
                                               exam.examCode!,
                                               style: const TextStyle(
@@ -301,7 +335,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                               ),
                                             ),
                                             const SizedBox(width: 8),
-                                            const Text('•', style: TextStyle(color: AppColors.textMuted)),
+                                            const Text(
+                                              '•',
+                                              style: TextStyle(
+                                                color: AppColors.textMuted,
+                                              ),
+                                            ),
                                             const SizedBox(width: 8),
                                           ],
                                           Text(
@@ -320,10 +359,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: AppColors.success.withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(100),
+                                        color: AppColors.success.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          100,
+                                        ),
                                       ),
                                       child: Text(
                                         'สแกนแล้ว ${exam.scannedCount} ใบ',
@@ -335,7 +381,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 6),
-                                    const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMuted),
+                                    const Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: AppColors.textMuted,
+                                    ),
                                   ],
                                 ),
                               ],
