@@ -24,13 +24,13 @@ class OMRScanner:
     MK_SIZE = 8.0
     MK_OFF = 5.0
     BUB_R_MM = 2.0
-    BUB_DX_MM = 5.2
+    BUB_DX_MM = 5.5
     SEC_MK_MM = 3.0
 
     def __init__(self, q_count=50):
         self.q_count = q_count if q_count in [50, 100, 150] else 50
-        self.sid_dy_mm = 5.5 if self.q_count <= 100 else 5.0
-        self.ans_dy_mm = 5.5 if self.q_count <= 100 else 4.8
+        self.sid_dy_mm = 6 if self.q_count <= 100 else 6
+        self.ans_dy_mm = 5.9 if self.q_count <= 100 else 6
         self.section_gap_mm = 5.0 if self.q_count <= 100 else 4.0
 
     def mm2px(self, mm, axis='x'):
@@ -141,14 +141,23 @@ class OMRScanner:
         info_y = row2_y + 10 + 2
         y_div1 = info_y + 6
         sid_top = y_div1 + 3
-        sid_y_start = sid_top + 13
+        sid_y_start = sid_top + 8
 
-        sid_base_x_mm = self.MARG + 10.0
+        sid_base_x_mm = self.MARG + 3.5
         r_px = self.mm2px(self.BUB_R_MM * 1.1, 'x')
+        r_px_int = int(r_px)
 
         student_id = ""
         digits = 11
         digit_rows = 10
+
+        # Optional: draw big red bounding box around the whole student ID block
+        if debug_img is not None:
+            x_min = int(self.mm2px(sid_base_x_mm, 'x') - r_px - 9)
+            y_min = int(self.mm2px(sid_y_start, 'y') - r_px - 4)
+            x_max = int(self.mm2px(sid_base_x_mm + (digits - 1) * self.BUB_DX_MM, 'x') + r_px + 10)
+            y_max = int(self.mm2px(sid_y_start + (digit_rows - 1) * self.sid_dy_mm, 'y') + r_px + 1)
+            cv2.rectangle(debug_img, (x_min, y_min), (x_max, y_max), (0, 0, 255), 2)
 
         for col in range(digits):
             cx_mm = sid_base_x_mm + col * self.BUB_DX_MM
@@ -157,6 +166,13 @@ class OMRScanner:
                 cy_mm = sid_y_start + row * self.sid_dy_mm
                 cx_px = self.mm2px(cx_mm, 'x')
                 cy_px = self.mm2px(cy_mm, 'y')
+
+                # Draw individual red bounding box around every bubble
+                if debug_img is not None:
+                    cv2.rectangle(debug_img, 
+                                  (int(cx_px - r_px_int), int(cy_px - r_px_int)), 
+                                  (int(cx_px + r_px_int), int(cy_px + r_px_int)), 
+                                  (0, 0, 255), 1)
 
                 fill = self.read_bubbles_in_grid(bin_mat, cx_px, cy_px, r_px)
                 fills.append(fill)
@@ -173,7 +189,11 @@ class OMRScanner:
                 if debug_img is not None:
                     best_cx_px = int(self.mm2px(sid_base_x_mm + col * self.BUB_DX_MM, 'x'))
                     best_cy_px = int(self.mm2px(sid_y_start + best_row * self.sid_dy_mm, 'y'))
-                    cv2.circle(debug_img, (best_cx_px, best_cy_px), 6, (0, 255, 0), -1)
+                    # Draw a solid green box over the detected bubble
+                    cv2.rectangle(debug_img, 
+                                  (best_cx_px - r_px_int + 1, best_cy_px - r_px_int + 1), 
+                                  (best_cx_px + r_px_int - 1, best_cy_px + r_px_int - 1), 
+                                  (0, 255, 0), -1)
             else:
                 student_id += "?"
 
@@ -186,23 +206,31 @@ class OMRScanner:
         info_y = row2_y + 10 + 2
         y_div1 = info_y + 6
         sid_top = y_div1 + 3
-        sid_y_start = sid_top + 13
+        sid_y_start = sid_top + 9.5
 
         digits = 11
         sid_base_x = self.MARG + 10.0
         key_x = sid_base_x + digits * self.BUB_DX_MM + 8.0
-        key_bub_x = key_x + 3.0
-        key_start_y = sid_y_start + 3.0
-        key_dy = 7.0
+        key_bub_x = key_x + -1.5
+        key_start_y = sid_y_start + 1.0
+        key_dy = 7.5
 
         options = ['A', 'B', 'C', 'D']
         r_px = self.mm2px(self.BUB_R_MM * 1.1, 'x')
+        r_px_int = int(r_px)
         fills = []
 
         for ki, opt in enumerate(options):
             ky_mm = key_start_y + ki * key_dy
             cx_px = self.mm2px(key_bub_x, 'x')
             cy_px = self.mm2px(ky_mm, 'y')
+
+            # Draw individual red bounding box around every Exam Set option
+            if debug_img is not None:
+                cv2.rectangle(debug_img, 
+                              (int(cx_px - r_px_int), int(cy_px - r_px_int)), 
+                              (int(cx_px + r_px_int), int(cy_px + r_px_int)), 
+                              (0, 0, 255), 1)
 
             fill = self.read_bubbles_in_grid(bin_mat, cx_px, cy_px, r_px)
             fills.append(fill)
@@ -216,7 +244,11 @@ class OMRScanner:
             if debug_img is not None:
                 cx_px = int(self.mm2px(key_bub_x, 'x'))
                 cy_px = int(self.mm2px(key_start_y + best_idx * key_dy, 'y'))
-                cv2.circle(debug_img, (cx_px, cy_px), 6, (255, 165, 0), -1)
+                # Draw a solid green box over the detected option
+                cv2.rectangle(debug_img, 
+                              (cx_px - r_px_int + 1, cy_px - r_px_int + 1), 
+                              (cx_px + r_px_int - 1, cy_px + r_px_int - 1), 
+                              (0, 255, 0), -1)
             return options[best_idx]
         
         return 'A' # Default to A if unspecified
@@ -232,7 +264,7 @@ class OMRScanner:
         digit_rows = 10
         sid_block_bottom = sid_y_start + (digit_rows - 1) * self.sid_dy_mm + self.BUB_R_MM + 2
         y_divider2 = sid_block_bottom + 2
-        ans_start_y = y_divider2 + 3
+        ans_start_y = y_divider2 + -3
 
         if self.q_count == 50:
             sections = [{'cols': 5, 'rows': 10, 'start': 1}]
@@ -251,6 +283,7 @@ class OMRScanner:
         n_opts = len(opts)
         usable_w = 210.0 - self.MARG * 2
         r_px = self.mm2px(self.BUB_R_MM * 1.1, 'x')
+        r_px_int = int(r_px)
 
         current_y = ans_start_y
         answers = {}
@@ -259,7 +292,7 @@ class OMRScanner:
             n_cols = sec['cols']
             rows = sec['rows']
             q_start = sec['start']
-            col_w = usable_w / n_cols
+            col_w = (usable_w / n_cols) + 2
             q_label_w = 9.0
             content_w = q_label_w + (n_opts - 1) * self.BUB_DX_MM
             offset_x = (col_w - content_w) / 2.0
@@ -268,7 +301,31 @@ class OMRScanner:
             q = q_start
 
             for c in range(n_cols):
-                base_x = self.MARG + c * col_w + offset_x
+                # 1. กำหนดระยะขยับ (หน่วยมิลลิเมตร) แยกตามคอลัมน์ (คอลัมน์ 1, 2, 3, 4, 5)
+                # ค่าลบ = ขยับซ้าย / ค่าบวก = ขยับขวา
+                adjust_x_list = [
+                    -7.5,  # คอลัมน์ที่ 1 (ข้อ 1-10) -> ขยับซ้าย 7.5 มม.
+                    -6.5,  # คอลัมน์ที่ 2 (ข้อ 11-20) -> ขยับซ้าย 6.5 มม.
+                    -5.0,  # คอลัมน์ที่ 3 (ข้อ 21-30) -> ขยับซ้าย 5 มม.
+                    -3.5,  # คอลัมน์ที่ 4 (ข้อ 31-40) -> ขยับซ้าย 3.5 มม.
+                    -2.0   # คอลัมน์ที่ 5 (ข้อ 41-50) -> ขยับซ้าย 2 มม.
+                ]
+                
+                # ดึงค่าปรับตามคอลัมน์ปัจจุบัน c (0 ถึง 4)
+                adjust_x = adjust_x_list[c] if c < len(adjust_x_list) else 0.0
+
+                # 2. นำค่าปรับมาบวกเข้ากับ base_x
+                base_x = self.MARG + c * col_w + offset_x + adjust_x
+
+                # Draw section bounding box around the column options if debug is enabled
+                if debug_img is not None:
+                    # Calculate boundary of this column block
+                    bx_min = int(self.mm2px(base_x + q_label_w, 'x') - r_px - 2)
+                    by_min = int(self.mm2px(first_row_y, 'y') - r_px - 2)
+                    bx_max = int(self.mm2px(base_x + q_label_w + (n_opts - 1) * self.BUB_DX_MM, 'x') + r_px + 5.5)
+                    by_max = int(self.mm2px(first_row_y + (rows - 1) * self.ans_dy_mm, 'y') + r_px + 2)
+                    cv2.rectangle(debug_img, (bx_min, by_min), (bx_max, by_max), (0, 0, 255), 1)
+
                 for r in range(rows):
                     if q > self.q_count:
                         break
@@ -276,17 +333,25 @@ class OMRScanner:
                     qy_mm = first_row_y + r * self.ans_dy_mm
                     fills = []
 
+                    # 3. กำหนดระยะขยับแยกรายช้อยส์ (หน่วย มม.): [ก (A), ข (B), ค (C), ง (D), จ (E)]
+                    # ค่าลบ = ขยับซ้าย / ค่าบวก = ขยับขวา
+                    choice_adjustments = [0.0, 0.0, 0.0, 0.0, 0.0]
+
                     for oi, opt in enumerate(opts):
-                        bx_mm = base_x + q_label_w + oi * self.BUB_DX_MM
+                        adjust_choice = choice_adjustments[oi] if oi < len(choice_adjustments) else 0.0
+                        bx_mm = base_x + q_label_w + oi * self.BUB_DX_MM + adjust_choice
                         cx_px = self.mm2px(bx_mm, 'x')
                         cy_px = self.mm2px(qy_mm, 'y')
 
+                        # Draw individual red bounding box around every bubble
+                        if debug_img is not None:
+                            cv2.rectangle(debug_img, 
+                                          (int(cx_px - r_px_int), int(cy_px - r_px_int)), 
+                                          (int(cx_px + r_px_int), int(cy_px + r_px_int)), 
+                                          (0, 0, 255), 1)
+
                         fill = self.read_bubbles_in_grid(bin_mat, cx_px, cy_px, r_px)
                         fills.append(fill)
-
-                        if debug_img is not None:
-                            # draw tiny red dot at sampling centers
-                            cv2.circle(debug_img, (int(cx_px), int(cy_px)), 2, (0, 0, 255), -1)
 
                     best_idx = int(np.argmax(fills))
                     best_fill = fills[best_idx]
@@ -296,10 +361,15 @@ class OMRScanner:
                     if best_fill >= 0.35 and (second_best < 0.01 or (best_fill / max(0.001, second_best)) >= 1.6):
                         answers[str(q)] = opts[best_idx]
                         if debug_img is not None:
-                            bx_mm = base_x + q_label_w + best_idx * self.BUB_DX_MM
+                            best_adjust_choice = choice_adjustments[best_idx] if best_idx < len(choice_adjustments) else 0.0
+                            bx_mm = base_x + q_label_w + best_idx * self.BUB_DX_MM + best_adjust_choice
                             cx_px = int(self.mm2px(bx_mm, 'x'))
                             cy_px = int(self.mm2px(qy_mm, 'y'))
-                            cv2.circle(debug_img, (cx_px, cy_px), 5, (0, 255, 0), -1)
+                            # Draw a solid green box over the detected option
+                            cv2.rectangle(debug_img, 
+                                          (cx_px - r_px_int + 1, cy_px - r_px_int + 1), 
+                                          (cx_px + r_px_int - 1, cy_px + r_px_int - 1), 
+                                          (0, 255, 0), -1)
 
                     q += 1
 

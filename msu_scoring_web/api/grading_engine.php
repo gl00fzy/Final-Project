@@ -16,13 +16,21 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
     $actual_score = 0;
     
     // Parse the full exam key and extract the specific set
-    $all_keys = json_decode($answer_key_json ?? '{}', true);
+    if (is_array($answer_key_json)) {
+        $all_keys = $answer_key_json;
+    } else {
+        $all_keys = json_decode($answer_key_json ?? '{}', true);
+    }
     if (!$all_keys) $all_keys = [];
     
     // Check if the key has sets (A, B, C) or is a flat legacy key
     $answer_key = isset($all_keys['A']) ? ($all_keys[$exam_set] ?? []) : $all_keys;
     
-    $raw_arr = json_decode($raw_answers_json, true);
+    if (is_array($raw_answers_json)) {
+        $raw_arr = $raw_answers_json;
+    } else {
+        $raw_arr = json_decode($raw_answers_json, true);
+    }
     if (!is_array($raw_arr)) {
         return (float)$fallback_score;
     }
