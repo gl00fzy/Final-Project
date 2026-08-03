@@ -153,17 +153,29 @@ class OMRScanner:
 
         # Optional: draw big red bounding box around the whole student ID block
         if debug_img is not None:
-            x_min = int(self.mm2px(sid_base_x_mm, 'x') - r_px - 9)
+            x_min = int(self.mm2px(sid_base_x_mm, 'x') - r_px - 10)
             y_min = int(self.mm2px(sid_y_start, 'y') - r_px - 4)
-            x_max = int(self.mm2px(sid_base_x_mm + (digits - 1) * self.BUB_DX_MM, 'x') + r_px + 10)
-            y_max = int(self.mm2px(sid_y_start + (digit_rows - 1) * self.sid_dy_mm, 'y') + r_px + 1)
+            x_max = int(self.mm2px(sid_base_x_mm + (digits - 1) * self.BUB_DX_MM, 'x') + r_px + 7)
+            y_max = int(self.mm2px(sid_y_start + (digit_rows - 1) * self.sid_dy_mm, 'y') + r_px + -5)
             cv2.rectangle(debug_img, (x_min, y_min), (x_max, y_max), (0, 0, 255), 2)
 
+        # 1. กำหนดระยะขยับซ้าย/ขวา แยกตามคอลัมน์รหัสนิสิต (หลักที่ 1 ถึง 11) (หน่วย มม.)
+        # ค่าลบ = ขยับซ้าย / ค่าบวก = ขยับขวา
+        sid_col_adjust_x = [-1, -1, -0.7, -0.7, -0.3, 0.0, 0.0, 0.0, 0.0, 0.5, 0.7]
+
+        # 2. กำหนดระยะขยับขึ้น/ลง แยกตามแถวตัวเลขรหัสนิสิต (เลข 0 ถึง 9) (หน่วย มม.)
+        # ค่าลบ = ขยับขึ้น / ค่าบวก = ขยับลง
+        sid_row_adjust_y = [-0.5, -0.5, -0.75, -0.75, -0.85, -1, -1.3, -1.3, -1.7, -1.9]
+
         for col in range(digits):
-            cx_mm = sid_base_x_mm + col * self.BUB_DX_MM
+            col_adj_x = sid_col_adjust_x[col] if col < len(sid_col_adjust_x) else 0.0
+            cx_mm = sid_base_x_mm + col * self.BUB_DX_MM + col_adj_x
+
             fills = []
             for row in range(digit_rows):
-                cy_mm = sid_y_start + row * self.sid_dy_mm
+                row_adj_y = sid_row_adjust_y[row] if row < len(sid_row_adjust_y) else 0.0
+                cy_mm = sid_y_start + row * self.sid_dy_mm + row_adj_y
+
                 cx_px = self.mm2px(cx_mm, 'x')
                 cy_px = self.mm2px(cy_mm, 'y')
 
@@ -187,8 +199,9 @@ class OMRScanner:
             if best_fill >= 0.35 and (second_best < 0.01 or (best_fill / max(0.001, second_best)) >= 1.6):
                 student_id += str(best_row)
                 if debug_img is not None:
-                    best_cx_px = int(self.mm2px(sid_base_x_mm + col * self.BUB_DX_MM, 'x'))
-                    best_cy_px = int(self.mm2px(sid_y_start + best_row * self.sid_dy_mm, 'y'))
+                    best_row_adj_y = sid_row_adjust_y[best_row] if best_row < len(sid_row_adjust_y) else 0.0
+                    best_cx_px = int(self.mm2px(sid_base_x_mm + col * self.BUB_DX_MM + col_adj_x, 'x'))
+                    best_cy_px = int(self.mm2px(sid_y_start + best_row * self.sid_dy_mm + best_row_adj_y, 'y'))
                     # Draw a solid green box over the detected bubble
                     cv2.rectangle(debug_img, 
                                   (best_cx_px - r_px_int + 1, best_cy_px - r_px_int + 1), 
@@ -335,7 +348,7 @@ class OMRScanner:
 
                     # 3. กำหนดระยะขยับแยกรายช้อยส์ (หน่วย มม.): [ก (A), ข (B), ค (C), ง (D), จ (E)]
                     # ค่าลบ = ขยับซ้าย / ค่าบวก = ขยับขวา
-                    choice_adjustments = [0.0, 0.0, 0.0, 0.0, 0.0]
+                    choice_adjustments = [0.0, 0.5, 0.5, 0.5, .5]
 
                     for oi, opt in enumerate(opts):
                         adjust_choice = choice_adjustments[oi] if oi < len(choice_adjustments) else 0.0
