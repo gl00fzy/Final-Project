@@ -415,6 +415,21 @@ const PX = 600 / 210;
 const PY = 848 / 297;
 function mm2px(mm, axis) { return mm * (axis === 'x' ? PX : PY); }
 
+// Dynamic question count from PHP hidden input
+function getQCount() {
+    const el = document.getElementById('qCount');
+    return el ? parseInt(el.value, 10) || 50 : 50;
+}
+
+// Section configurations matching generate_pdf.php
+function getSections(q_count) {
+    if (q_count === 150) return [{cols:5, rows:15, start:1}, {cols:5, rows:15, start:76}];
+    if (q_count === 100) return [{cols:5, rows:10, start:1}, {cols:5, rows:10, start:51}];
+    return [{cols:5, rows:10, start:1}]; // 50
+}
+function getAnsDy(q_count) { return q_count <= 100 ? 5.5 : 4.8; }
+function getSectionGap(q_count) { return q_count <= 100 ? 5 : 4; }
+
 const _MARG      = 12;
 const _MK_SIZE   = 8;
 const _MK_OFF    = 5;
@@ -438,47 +453,61 @@ const _first_row_y   = _ans_start_y + _SEC_MK_MM + 3;
 const _ans_dy        = 5.5;
 
 function readAllBubbles(binMat, W, H, warpedMat) {
-    const opts = ['A','B','C','D','E'], n_opts = 5, n_cols = 5, rows_per = 10, q_count = 50;
-    const usable_w  = 210 - _MARG * 2;
-    const col_w_mm  = usable_w / n_cols;
+    const q_count = getQCount();
+    const sections = getSections(q_count);
+    const ans_dy = getAnsDy(q_count);
+    const sec_gap = getSectionGap(q_count);
+    const opts = ['A','B','C','D','E'], n_opts = 5;
+    const usable_w = 210 - _MARG * 2;
     const q_label_w = 9;
-    const content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
-    const offset_x  = (col_w_mm - content_w) / 2;
-    let answers = {}, q = 1;
-    for (let c = 0; c < n_cols && q <= q_count; c++) {
-        let base_x_mm = _MARG + c * col_w_mm + offset_x;
-        for (let r = 0; r < rows_per && q <= q_count; r++) {
-            let qy_mm = _first_row_y + r * _ans_dy;
-            let fills = [];
-            for (let oi = 0; oi < n_opts; oi++) {
-                let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
-                let bx_px = Math.round(mm2px(bx_mm, 'x'));
-                let by_px = Math.round(mm2px(qy_mm,  'y'));
-                let r_px  = Math.round(_BUB_PX);
-                let x1 = Math.max(0, bx_px - r_px), y1 = Math.max(0, by_px - r_px);
-                let x2 = Math.min(W-1, bx_px + r_px), y2 = Math.min(H-1, by_px + r_px);
-                if (x2 <= x1 || y2 <= y1) { fills.push(0); continue; }
-                let roi = binMat.roi(new cv.Rect(x1, y1, x2-x1, y2-y1));
-                let frac = cv.countNonZero(roi) / (roi.rows * roi.cols);
-                roi.delete();
-                fills.push(frac);
-            }
+    let answers = {};
+    let current_y = _ans_start_y;
 
-            // Relative threshold: best must exceed FILL_FRAC AND be ≥ 1.8x the second-best
-            let bestIdx = 0, bestFill = fills[0];
-            for (let i = 1; i < fills.length; i++) {
-                if (fills[i] > bestFill) { bestFill = fills[i]; bestIdx = i; }
-            }
-            let secondBest = 0;
-            for (let i = 0; i < fills.length; i++) {
-                if (i !== bestIdx && fills[i] > secondBest) secondBest = fills[i];
-            }
+    for (let si = 0; si < sections.length; si++) {
+        let sec = sections[si];
+        let n_cols = sec.cols, rows = sec.rows, q_start = sec.start;
+        let col_w_mm = usable_w / n_cols;
+        let content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
+        let offset_x = (col_w_mm - content_w) / 2;
+        let first_row_y = current_y + _SEC_MK_MM + 3;
+        let q = q_start;
 
-            if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.8)) {
-                answers[q] = opts[bestIdx];
+        for (let c = 0; c < n_cols && q <= q_count; c++) {
+            let base_x_mm = _MARG + c * col_w_mm + offset_x;
+            for (let r = 0; r < rows && q <= q_count; r++) {
+                let qy_mm = first_row_y + r * ans_dy;
+                let fills = [];
+                for (let oi = 0; oi < n_opts; oi++) {
+                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
+                    let bx_px = Math.round(mm2px(bx_mm, 'x'));
+                    let by_px = Math.round(mm2px(qy_mm,  'y'));
+                    let r_px  = Math.round(_BUB_PX);
+                    let x1 = Math.max(0, bx_px - r_px), y1 = Math.max(0, by_px - r_px);
+                    let x2 = Math.min(W-1, bx_px + r_px), y2 = Math.min(H-1, by_px + r_px);
+                    if (x2 <= x1 || y2 <= y1) { fills.push(0); continue; }
+                    let roi = binMat.roi(new cv.Rect(x1, y1, x2-x1, y2-y1));
+                    let frac = cv.countNonZero(roi) / (roi.rows * roi.cols);
+                    roi.delete();
+                    fills.push(frac);
+                }
+
+                let bestIdx = 0, bestFill = fills[0];
+                for (let i = 1; i < fills.length; i++) {
+                    if (fills[i] > bestFill) { bestFill = fills[i]; bestIdx = i; }
+                }
+                let secondBest = 0;
+                for (let i = 0; i < fills.length; i++) {
+                    if (i !== bestIdx && fills[i] > secondBest) secondBest = fills[i];
+                }
+
+                if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.8)) {
+                    answers[q] = opts[bestIdx];
+                }
+                q++;
             }
-            q++;
         }
+        let last_row_y = first_row_y + (rows - 1) * ans_dy;
+        current_y = last_row_y + _BUB_R_MM + sec_gap;
     }
     return answers;
 }
@@ -524,29 +553,43 @@ function readStudentId(binMat, W, H, warpedMat) {
 
 // ── Debug overlay: draw red dots on warped image where bubbles are sampled ──
 function drawBubbleDebugOverlay(dbgCtx, answers, W, H) {
-    const opts = ['A','B','C','D','E'], n_opts = 5, n_cols = 5, rows_per = 10, q_count = 50;
-    const usable_w  = 210 - _MARG * 2;
-    const col_w_mm  = usable_w / n_cols;
+    const q_count = getQCount();
+    const sections = getSections(q_count);
+    const ans_dy = getAnsDy(q_count);
+    const sec_gap = getSectionGap(q_count);
+    const opts = ['A','B','C','D','E'], n_opts = 5;
+    const usable_w = 210 - _MARG * 2;
     const q_label_w = 9;
-    const content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
-    const offset_x  = (col_w_mm - content_w) / 2;
-    let q = 1;
-    for (let c = 0; c < n_cols && q <= q_count; c++) {
-        let base_x_mm = _MARG + c * col_w_mm + offset_x;
-        for (let r = 0; r < rows_per && q <= q_count; r++) {
-            let qy_mm = _first_row_y + r * _ans_dy;
-            for (let oi = 0; oi < n_opts; oi++) {
-                let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
-                let bx_px = Math.round(mm2px(bx_mm, 'x'));
-                let by_px = Math.round(mm2px(qy_mm,  'y'));
-                let isSelected = answers[q] === opts[oi];
-                dbgCtx.fillStyle = isSelected ? 'rgba(16,185,129,0.7)' : 'rgba(255,0,0,0.3)';
-                dbgCtx.beginPath();
-                dbgCtx.arc(bx_px, by_px, isSelected ? 5 : 2, 0, 2 * Math.PI);
-                dbgCtx.fill();
+    let current_y = _ans_start_y;
+
+    for (let si = 0; si < sections.length; si++) {
+        let sec = sections[si];
+        let n_cols = sec.cols, rows = sec.rows, q_start = sec.start;
+        let col_w_mm = usable_w / n_cols;
+        let content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
+        let offset_x = (col_w_mm - content_w) / 2;
+        let first_row_y = current_y + _SEC_MK_MM + 3;
+        let q = q_start;
+
+        for (let c = 0; c < n_cols && q <= q_count; c++) {
+            let base_x_mm = _MARG + c * col_w_mm + offset_x;
+            for (let r = 0; r < rows && q <= q_count; r++) {
+                let qy_mm = first_row_y + r * ans_dy;
+                for (let oi = 0; oi < n_opts; oi++) {
+                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
+                    let bx_px = Math.round(mm2px(bx_mm, 'x'));
+                    let by_px = Math.round(mm2px(qy_mm,  'y'));
+                    let isSelected = answers[q] === opts[oi];
+                    dbgCtx.fillStyle = isSelected ? 'rgba(16,185,129,0.7)' : 'rgba(255,0,0,0.3)';
+                    dbgCtx.beginPath();
+                    dbgCtx.arc(bx_px, by_px, isSelected ? 5 : 2, 0, 2 * Math.PI);
+                    dbgCtx.fill();
+                }
+                q++;
             }
-            q++;
         }
+        let last_row_y = first_row_y + (rows - 1) * ans_dy;
+        current_y = last_row_y + _BUB_R_MM + sec_gap;
     }
 }
 

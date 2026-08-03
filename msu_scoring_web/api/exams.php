@@ -13,8 +13,15 @@ $user_id = $_SESSION['user_id'];
 
 try {
     if ($action === 'list') {
-        $stmt = $pdo->prepare("SELECT * FROM exams WHERE owner_id = ? ORDER BY created_at DESC");
-        $stmt->execute([$user_id]);
+        $stmt = $pdo->prepare("
+            SELECT e.*, 'owner' AS access_type FROM exams e WHERE e.owner_id = ?
+            UNION
+            SELECT e.*, 'shared' AS access_type FROM exams e
+            INNER JOIN exam_shares es ON es.exam_id = e.exam_id
+            WHERE es.shared_to_user_id = ?
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([$user_id, $user_id]);
         $exams = $stmt->fetchAll();
         echo json_encode(['status' => 'success', 'data' => $exams]);
 

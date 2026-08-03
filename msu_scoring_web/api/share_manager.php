@@ -34,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Find target user by email (stored as username in DB)
-    $stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ?");
-    $stmt->execute([$username]);
+    $stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ? OR email = ?");
+    $stmt->execute([$username, $username]);
     $target_user = $stmt->fetch();
 
     if (!$target_user) {

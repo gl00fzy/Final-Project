@@ -168,7 +168,6 @@ if (!isset($_SESSION['user_id'])) {
             to { transform: rotate(360deg); }
         }
     </style>
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-['Sarabun'] min-h-screen flex flex-col">
     <nav class="bg-gray-800 text-white shadow-md">

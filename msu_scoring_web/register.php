@@ -4,6 +4,20 @@ if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit;
 }
+
+// Load .env for Google Client ID
+$env_file = __DIR__ . '/.env';
+$google_client_id = '6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com'; // fallback
+if (file_exists($env_file)) {
+    $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos($line, '#') === 0) continue;
+        if (strpos($line, 'GOOGLE_CLIENT_ID') !== false) {
+            list(, $val) = explode('=', $line, 2);
+            $google_client_id = trim($val, " \t\n\r\"'");
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -106,7 +120,7 @@ if (isset($_SESSION['user_id'])) {
 
             <!-- TODO: Replace YOUR_GOOGLE_CLIENT_ID with your actual Client ID -->
             <div id="g_id_onload"
-                 data-client_id="6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com"
+                 data-client_id="<?= htmlspecialchars($google_client_id) ?>"
                  data-context="signin"
                  data-ux_mode="popup"
                  data-callback="handleCredentialResponse"

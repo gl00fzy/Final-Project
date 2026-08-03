@@ -43,8 +43,8 @@ if ($action === 'grant_admin') {
         exit;
     }
 
-    $stmt = $pdo->prepare("SELECT user_id, name, role FROM users WHERE username = ?");
-    $stmt->execute([$email]);
+    $stmt = $pdo->prepare("SELECT user_id, name, role FROM users WHERE username = ? OR email = ?");
+    $stmt->execute([$email, $email]);
     $target = $stmt->fetch();
 
     if (!$target) {
@@ -80,8 +80,8 @@ if ($action === 'revoke_admin') {
         exit;
     }
 
-    $stmt = $pdo->prepare("SELECT user_id, name, role FROM users WHERE username = ?");
-    $stmt->execute([$email]);
+    $stmt = $pdo->prepare("SELECT user_id, name, role FROM users WHERE username = ? OR email = ?");
+    $stmt->execute([$email, $email]);
     $target = $stmt->fetch();
 
     if (!$target) {

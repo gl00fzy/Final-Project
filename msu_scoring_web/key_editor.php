@@ -10,9 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 $exam_id = $_GET['exam_id'] ?? 0;
 $user_id = $_SESSION['user_id'];
 
-// Fetch exam details
-$stmt = $pdo->prepare("SELECT * FROM exams WHERE exam_id = ? AND owner_id = ?");
-$stmt->execute([$exam_id, $user_id]);
+// Fetch exam details (allow owner OR shared user)
+$stmt = $pdo->prepare("
+    SELECT e.* FROM exams e WHERE e.exam_id = ? AND (
+        e.owner_id = ?
+        OR EXISTS (SELECT 1 FROM exam_shares es WHERE es.exam_id = e.exam_id AND es.shared_to_user_id = ?)
+    )
+");
+$stmt->execute([$exam_id, $user_id, $user_id]);
 $exam = $stmt->fetch();
 
 if (!$exam) {
