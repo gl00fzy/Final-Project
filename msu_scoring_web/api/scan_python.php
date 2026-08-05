@@ -10,6 +10,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// CSRF Protection
+if (!verify_csrf_token()) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+    exit;
+}
+
 require_once '../config/database.php';
 require_once 'grading_engine.php';
 
@@ -22,12 +28,20 @@ if ($exam_id <= 0) {
 }
 
 // Fetch exam details and answer key
-$stmt = $pdo->prepare("SELECT exam_title, answer_key, question_count FROM exams WHERE exam_id = ?");
-$stmt->execute([$exam_id]);
+// Verify user has access to this exam (owner or shared)
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("
+    SELECT exam_title, answer_key, question_count FROM exams 
+    WHERE exam_id = ? AND (
+        owner_id = ? 
+        OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+    )
+");
+$stmt->execute([$exam_id, $user_id, $exam_id, $user_id]);
 $exam = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$exam) {
-    echo json_encode(['status' => 'error', 'message' => 'Exam not found']);
+    echo json_encode(['status' => 'error', 'message' => 'ไม่พบชุดข้อสอบหรือคุณไม่มีสิทธิ์เข้าถึง']);
     exit;
 }
 
@@ -131,7 +145,7 @@ try {
 
     if ($existing) {
         $stmt = $pdo->prepare("UPDATE student_scores SET score = ?, exam_set = ?, raw_answers = ?, image_path = ?, scanned_at = NOW() WHERE score_id = ?");
-        $stmt->execute([$calculated_score, $exam_set, $raw_json, $saved_filename, $existing['score_id']]);
+        $stmt->execute([$calculated_score, $exam_set, $raw_json, "uploads/exams/" . $saved_filename, $existing['score_id']]);
         
         echo json_encode([
             'status' => 'success',
@@ -145,7 +159,7 @@ try {
         ]);
     } else {
         $stmt = $pdo->prepare("INSERT INTO student_scores (exam_id, student_id, score, exam_set, raw_answers, image_path, scanned_by, scanned_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$exam_id, $student_id, $calculated_score, $exam_set, $raw_json, $saved_filename, $scanned_by]);
+        $stmt->execute([$exam_id, $student_id, $calculated_score, $exam_set, $raw_json, "uploads/exams/" . $saved_filename, $scanned_by]);
 
         echo json_encode([
             'status' => 'success',
@@ -159,5 +173,5 @@ try {
         ]);
     }
 } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    safe_db_error($e, 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
 }

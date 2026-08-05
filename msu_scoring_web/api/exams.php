@@ -53,6 +53,13 @@ try {
         $exam_id = (int)($_POST['exam_id'] ?? 0);
         $answer_key = $_POST['answer_key'] ?? '{}';
 
+        // Validate JSON format before saving
+        $decoded_key = json_decode($answer_key, true);
+        if ($answer_key !== '{}' && $decoded_key === null) {
+            echo json_encode(['status' => 'error', 'message' => 'รูปแบบ JSON ของเฉลยไม่ถูกต้อง']);
+            exit;
+        }
+
         // Verify ownership
         $stmt = $pdo->prepare("SELECT exam_id FROM exams WHERE exam_id = ? AND owner_id = ?");
         $stmt->execute([$exam_id, $user_id]);

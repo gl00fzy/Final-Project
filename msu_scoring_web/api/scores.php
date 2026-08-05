@@ -24,6 +24,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Verify user has access to this exam (owner or shared)
+    $authStmt = $pdo->prepare("
+        SELECT 1 FROM exams WHERE exam_id = ? AND (
+            owner_id = ? 
+            OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+        )
+    ");
+    $authStmt->execute([$exam_id, $user_id, $exam_id, $user_id]);
+    if (!$authStmt->fetch()) {
+        echo json_encode(['status' => 'error', 'message' => 'ไม่พบชุดข้อสอบหรือคุณไม่มีสิทธิ์เข้าถึง']);
+        exit;
+    }
+
     $raw_answers = $_POST['raw_answers'] ?? null;
     $image_base64 = $_POST['image'] ?? null;
     $image_path = null;

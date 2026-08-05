@@ -9,6 +9,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token()) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+        exit;
+    }
+
     $exam_id = $_POST['exam_id'] ?? 0;
     $exam_set = $_POST['exam_set'] ?? 'A';
     $raw_answers = $_POST['raw_answers'] ?? '{}';
@@ -89,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['status' => 'success', 'message' => 'บันทึกเฉลยเรียบร้อย', 'regraded_count' => $regraded_count]);
 
     } catch (PDOException $e) {
-        echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+        safe_db_error($e, 'เกิดข้อผิดพลาดในการบันทึกเฉลย');
     }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request']);

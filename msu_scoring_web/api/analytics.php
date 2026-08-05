@@ -16,13 +16,20 @@ if (!$exam_id) {
 }
 
 try {
-    // --- Exam details & answer key ---
-    $stmt = $pdo->prepare("SELECT exam_title, question_count, answer_key FROM exams WHERE exam_id = ?");
-    $stmt->execute([$exam_id]);
+    // --- Exam details & answer key (verify access) ---
+    $user_id = $_SESSION['user_id'];
+    $stmt = $pdo->prepare("
+        SELECT exam_title, question_count, answer_key FROM exams 
+        WHERE exam_id = ? AND (
+            owner_id = ? 
+            OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+        )
+    ");
+    $stmt->execute([$exam_id, $user_id, $exam_id, $user_id]);
     $exam = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$exam) {
-        echo json_encode(['status' => 'error', 'message' => 'Exam not found']);
+        echo json_encode(['status' => 'error', 'message' => 'ไม่พบชุดข้อสอบหรือคุณไม่มีสิทธิ์เข้าถึง']);
         exit;
     }
 

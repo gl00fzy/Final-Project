@@ -11,14 +11,21 @@ if (!isset($_GET['exam_id'])) {
 }
 
 $exam_id = (int)$_GET['exam_id'];
+$user_id = $_SESSION['user_id'];
 
-// Check if exam exists and get title
-$stmt = $pdo->prepare("SELECT exam_title, exam_code FROM exams WHERE exam_id = ?");
-$stmt->execute([$exam_id]);
+// Check if exam exists AND user has access (owner or shared)
+$stmt = $pdo->prepare("
+    SELECT exam_title, exam_code FROM exams 
+    WHERE exam_id = ? AND (
+        owner_id = ? 
+        OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+    )
+");
+$stmt->execute([$exam_id, $user_id, $exam_id, $user_id]);
 $exam = $stmt->fetch();
 
 if (!$exam) {
-    die("Exam not found");
+    die("ไม่พบชุดข้อสอบ หรือคุณไม่มีสิทธิ์เข้าถึง");
 }
 
 $filename = "scores_exam_" . $exam_id . "_" . date('Y-md-Hi') . ".csv";

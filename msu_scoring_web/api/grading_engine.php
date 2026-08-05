@@ -24,6 +24,7 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
     if (!$all_keys) $all_keys = [];
     
     // Check if the key has sets (A, B, C) or is a flat legacy key
+    $exam_set = strtoupper($exam_set); // Normalize to uppercase to prevent case-sensitivity bugs
     $answer_key = isset($all_keys['A']) ? ($all_keys[$exam_set] ?? []) : $all_keys;
     
     if (is_array($raw_answers_json)) {
@@ -45,7 +46,8 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
             // Check if it's the old format (string) or new advanced format (array)
             if (is_string($key_data)) {
                 // Backward compatibility: Old simple format (e.g., "A")
-                if (in_array($key_data, $student_answers)) {
+                // Student must bubble exactly this one answer, no extra choices
+                if (count($student_answers) === 1 && $student_answers[0] === $key_data) {
                     $actual_score += 1;
                 }
             } else if (is_array($key_data)) {
@@ -72,8 +74,9 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
                     }
                 } else {
                     // OR logic (Default): Any intersection means correct
+                    // But if student bubbled more choices than correct answers, it's wrong (prevents guessing by filling all)
                     $intersection = array_intersect($student_answers, $correct_answers);
-                    if (count($intersection) > 0) {
+                    if (count($intersection) > 0 && count($student_answers) <= count($correct_answers)) {
                         $is_correct = true;
                     }
                 }
