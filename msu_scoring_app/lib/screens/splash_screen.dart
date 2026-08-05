@@ -46,7 +46,7 @@ class SplashScreen extends ConsumerWidget {
                     color: AppColors.gold.withValues(alpha: 0.35),
                     blurRadius: 30,
                     spreadRadius: 2,
-                  )
+                  ),
                 ],
               ),
               child: const Center(

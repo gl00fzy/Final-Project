@@ -16,7 +16,8 @@ class KeyEditorScreen extends ConsumerStatefulWidget {
 
 class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
   String _selectedSet = 'A';
-  late Map<String, Map<int, List<String>>> _setKeys; // {'A': {1: ['A'], 2: ['B']}}
+  late Map<String, Map<int, List<String>>>
+  _setKeys; // {'A': {1: ['A'], 2: ['B']}}
   bool _isSaving = false;
 
   @override
@@ -88,7 +89,10 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
     });
 
     try {
-      final success = await ApiService.saveAnswerKey(widget.exam.examId, formattedData);
+      final success = await ApiService.saveAnswerKey(
+        widget.exam.examId,
+        formattedData,
+      );
       if (!mounted) return;
       setState(() => _isSaving = false);
 
@@ -126,7 +130,10 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.gold,
+                    ),
                   )
                 : const Icon(Icons.check_rounded, color: AppColors.gold),
             onPressed: _isSaving ? null : _saveKey,
@@ -151,7 +158,9 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
                       'ชุดข้อสอบ $set',
                       style: GoogleFonts.sarabun(
                         fontWeight: FontWeight.bold,
-                        color: isSelected ? AppColors.navyBackground : AppColors.textPrimary,
+                        color: isSelected
+                            ? AppColors.navyBackground
+                            : AppColors.textPrimary,
                       ),
                     ),
                     selected: isSelected,
@@ -180,7 +189,10 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
                   color: AppColors.navyCard,
                   margin: EdgeInsets.zero,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: Row(
                       children: [
                         // Question Number Badge
@@ -218,18 +230,24 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: isSelected ? AppColors.gold : AppColors.navySurface,
+                                    color: isSelected
+                                        ? AppColors.gold
+                                        : AppColors.navySurface,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: isSelected ? AppColors.gold : AppColors.navyBorder,
+                                      color: isSelected
+                                          ? AppColors.gold
+                                          : AppColors.navyBorder,
                                       width: isSelected ? 2 : 1,
                                     ),
                                     boxShadow: isSelected
                                         ? [
                                             BoxShadow(
-                                              color: AppColors.gold.withValues(alpha: 0.3),
+                                              color: AppColors.gold.withValues(
+                                                alpha: 0.3,
+                                              ),
                                               blurRadius: 8,
-                                            )
+                                            ),
                                           ]
                                         : null,
                                   ),
@@ -239,7 +257,9 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
                                       style: GoogleFonts.outfit(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
-                                        color: isSelected ? AppColors.navyBackground : AppColors.textPrimary,
+                                        color: isSelected
+                                            ? AppColors.navyBackground
+                                            : AppColors.textPrimary,
                                       ),
                                     ),
                                   ),
@@ -266,7 +286,9 @@ class _KeyEditorScreenState extends ConsumerState<KeyEditorScreen> {
               minimumSize: const Size(double.infinity, 50),
             ),
             child: _isSaving
-                ? const CircularProgressIndicator(color: AppColors.navyBackground)
+                ? const CircularProgressIndicator(
+                    color: AppColors.navyBackground,
+                  )
                 : const Text('บันทึกเฉลยทั้งหมด (Auto-Regrade)'),
           ),
         ),

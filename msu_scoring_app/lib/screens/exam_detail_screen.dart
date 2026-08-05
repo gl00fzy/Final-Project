@@ -18,7 +18,6 @@ class ExamDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
-
   void _showManualScoreDialog(ExamModel exam) {
     final studentIdController = TextEditingController();
     final scoreController = TextEditingController();
@@ -31,7 +30,10 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'กรอกคะแนนด้วยตนเอง',
-          style: GoogleFonts.sarabun(fontWeight: FontWeight.bold, color: AppColors.gold),
+          style: GoogleFonts.sarabun(
+            fontWeight: FontWeight.bold,
+            color: AppColors.gold,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -58,7 +60,10 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('ยกเลิก', style: TextStyle(color: AppColors.textMuted)),
+            child: const Text(
+              'ยกเลิก',
+              style: TextStyle(color: AppColors.textMuted),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -78,12 +83,18 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                 Navigator.pop(dialogCtx);
                 ref.invalidate(scoresListProvider(exam.examId));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('บันทึกคะแนนเรียบร้อยแล้ว'), backgroundColor: AppColors.success),
+                  const SnackBar(
+                    content: Text('บันทึกคะแนนเรียบร้อยแล้ว'),
+                    backgroundColor: AppColors.success,
+                  ),
                 );
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+                  SnackBar(
+                    content: Text(e.toString()),
+                    backgroundColor: AppColors.error,
+                  ),
                 );
               }
             },
@@ -101,9 +112,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.navyBackground,
-      appBar: AppBar(
-        title: const Text('รายละเอียดชุดข้อสอบ'),
-      ),
+      appBar: AppBar(title: const Text('รายละเอียดชุดข้อสอบ')),
       body: examAsync.when(
         data: (exam) {
           return RefreshIndicator(
@@ -141,7 +150,8 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            if (exam.examCode != null && exam.examCode!.isNotEmpty) ...[
+                            if (exam.examCode != null &&
+                                exam.examCode!.isNotEmpty) ...[
                               Text(
                                 exam.examCode!,
                                 style: const TextStyle(
@@ -150,12 +160,17 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Text('•', style: TextStyle(color: AppColors.textMuted)),
+                              const Text(
+                                '•',
+                                style: TextStyle(color: AppColors.textMuted),
+                              ),
                               const SizedBox(width: 8),
                             ],
                             Text(
                               '${exam.questionCount} ข้อ',
-                              style: const TextStyle(color: AppColors.textMuted),
+                              style: const TextStyle(
+                                color: AppColors.textMuted,
+                              ),
                             ),
                           ],
                         ),
@@ -200,12 +215,21 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                               ),
                             );
                           },
-                          icon: const Icon(Icons.vpn_key_rounded, size: 18, color: AppColors.gold),
-                          label: const Text('แก้ไขเฉลย', style: TextStyle(color: AppColors.textPrimary)),
+                          icon: const Icon(
+                            Icons.vpn_key_rounded,
+                            size: 18,
+                            color: AppColors.gold,
+                          ),
+                          label: const Text(
+                            'แก้ไขเฉลย',
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             side: const BorderSide(color: AppColors.navyBorder),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
@@ -220,22 +244,36 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                               ),
                             );
                           },
-                          icon: const Icon(Icons.bar_chart_rounded, size: 18, color: AppColors.gold),
-                          label: const Text('สถิติ & สเปก', style: TextStyle(color: AppColors.textPrimary)),
+                          icon: const Icon(
+                            Icons.bar_chart_rounded,
+                            size: 18,
+                            color: AppColors.gold,
+                          ),
+                          label: const Text(
+                            'สถิติ & สเปก',
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             side: const BorderSide(color: AppColors.navyBorder),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 10),
                       IconButton.outlined(
                         onPressed: () => _showManualScoreDialog(exam),
-                        icon: const Icon(Icons.edit_note_rounded, color: AppColors.gold),
+                        icon: const Icon(
+                          Icons.edit_note_rounded,
+                          color: AppColors.gold,
+                        ),
                         style: IconButton.styleFrom(
                           side: const BorderSide(color: AppColors.navyBorder),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           padding: const EdgeInsets.all(12),
                         ),
                         tooltip: 'กรอกคะแนนด้วยตนเอง',
@@ -266,11 +304,16 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 40),
                             child: Column(
                               children: [
-                                const Text('📷', style: TextStyle(fontSize: 40)),
+                                const Text(
+                                  '📷',
+                                  style: TextStyle(fontSize: 40),
+                                ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'ยังไม่มีผลการสแกน',
-                                  style: GoogleFonts.sarabun(color: AppColors.textMuted),
+                                  style: GoogleFonts.sarabun(
+                                    color: AppColors.textMuted,
+                                  ),
                                 ),
                               ],
                             ),
@@ -291,8 +334,14 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                _buildStatItem('รวมสแกน', '${summary['total_students']} ใบ'),
-                                _buildStatItem('เฉลี่ย', '${summary['mean']} คะแนน'),
+                                _buildStatItem(
+                                  'รวมสแกน',
+                                  '${summary['total_students']} ใบ',
+                                ),
+                                _buildStatItem(
+                                  'เฉลี่ย',
+                                  '${summary['mean']} คะแนน',
+                                ),
                                 _buildStatItem('สูงสุด', '${summary['max']}'),
                                 _buildStatItem('ต่ำสุด', '${summary['min']}'),
                               ],
@@ -304,13 +353,17 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: scores.length,
-                            separatorBuilder: (_, _) => const SizedBox(height: 10),
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 10),
                             itemBuilder: (ctx, idx) {
                               final sc = scores[idx];
                               return Card(
                                 margin: EdgeInsets.zero,
                                 child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 6,
+                                  ),
                                   title: Text(
                                     sc.studentId,
                                     style: GoogleFonts.outfit(
@@ -321,7 +374,10 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                                   ),
                                   subtitle: Text(
                                     'ชุด ${sc.examSet} • ${sc.scannedAt ?? ''}',
-                                    style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textMuted,
+                                    ),
                                   ),
                                   trailing: Text(
                                     '${sc.score}',
@@ -338,16 +394,24 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                         ],
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
-                    error: (err, stack) => const Text('Error loading scores', style: TextStyle(color: AppColors.error)),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(color: AppColors.gold),
+                    ),
+                    error: (err, stack) => const Text(
+                      'Error loading scores',
+                      style: TextStyle(color: AppColors.error),
+                    ),
                   ),
                 ],
               ),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
-        error: (err, stack) => const Center(child: Text('Error loading exam detail')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.gold),
+        ),
+        error: (err, stack) =>
+            const Center(child: Text('Error loading exam detail')),
       ),
     );
   }
@@ -355,9 +419,19 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
   Widget _buildStatItem(String label, String value) {
     return Column(
       children: [
-        Text(value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.gold)),
+        Text(
+          value,
+          style: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.gold,
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+        ),
       ],
     );
   }
