@@ -26,9 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!verify_csrf_token()) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+    exit;
+}
+
 $action   = trim($_POST['action']  ?? '');
 $email    = trim($_POST['email']   ?? '');
 $admin_id = $_SESSION['user_id'];
+
+try {
+
 
 // ── Action: grant_admin ───────────────────────────────────────────────────
 if ($action === 'grant_admin') {
@@ -105,3 +113,7 @@ if ($action === 'revoke_admin') {
 }
 
 echo json_encode(['status' => 'error', 'message' => 'Unknown action']);
+} catch (PDOException $e) {
+    safe_db_error($e);
+}
+

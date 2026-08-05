@@ -5,43 +5,60 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-if (!isset($_GET['exam_id'])) {
-    die("Missing exam_id");
+require_once 'config/database.php';
+
+$exam_id = (int)($_GET['exam_id'] ?? 0);
+if (!$exam_id) {
+    echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'><title>ระบุรหัสวิชา</title><link rel='stylesheet' href='dist/output.css'></head><body class='bg-gray-50 flex items-center justify-center min-h-screen p-4'><div class='bg-white p-8 rounded-2xl shadow-sm border border-gray-200 text-center max-w-md'><h2 class='text-xl font-bold text-red-600 mb-2'>ไม่พบชุดข้อสอบ</h2><p class='text-gray-500 mb-6'>โปรดระบุ exam_id ที่ถูกต้อง</p><a href='dashboard.php' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold px-6 py-2.5 rounded-xl transition-all'>&larr; กลับหน้า Dashboard</a></div></body></html>";
+    exit;
 }
-$exam_id = (int)$_GET['exam_id'];
+$csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>ผลการสอบและการวิเคราะห์ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dist/output.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter'] min-h-screen flex flex-col">
-    <nav class="bg-gray-800 text-white shadow-md">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+    <!-- Sticky Navigation Bar -->
+    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2 font-sans">
+                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     MSU Scoring
                 </a>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <span class="text-sm hidden sm:block font-medium"><?= htmlspecialchars($_SESSION['name']) ?></span>
+                    <?php if (($_SESSION['role'] ?? 'user') === 'admin'): ?>
+                    <a href="admin_dashboard.php"
+                       class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        Admin
+                    </a>
+                    <?php endif; ?>
+                    <span class="text-sm hidden sm:block font-medium">สวัสดี, <?= htmlspecialchars($_SESSION['name']) ?></span>
                     <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกจากระบบ</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-            <h2 id="pageTitle" class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900">กำลังโหลดข้อมูล...</h2>
-            <a href="dashboard.php" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-xl shadow-sm active:scale-95 transition-all w-full sm:w-auto text-center">&larr; กลับหน้าหลัก</a>
+            <h2 id="pageTitle" class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 font-sans">กำลังโหลดข้อมูล...</h2>
+            <a href="dashboard.php" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-xl shadow-sm active:scale-95 transition-all w-full sm:w-auto text-center text-sm">&larr; กลับหน้าหลัก</a>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsGrid">
@@ -51,22 +68,33 @@ $exam_id = (int)$_GET['exam_id'];
         <!-- Tab Navigation -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
             <div class="flex border-b border-gray-100 px-6 pt-4 gap-6 overflow-x-auto">
-                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-900 border-b-[3px] border-yellow-500 font-bold active:scale-95 transition-all" data-tab="tab-histogram">📊 กราฟคะแนน</button>
-                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all" data-tab="tab-item">🔬 วิเคราะห์ข้อสอบ (Item Analysis)</button>
-                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all" data-tab="tab-students">📋 รายชื่อผู้เข้าสอบ</button>
+                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-900 border-b-[3px] border-yellow-500 font-bold active:scale-95 transition-all flex items-center gap-2" data-tab="tab-histogram">
+                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    กราฟคะแนน
+                </button>
+                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all flex items-center gap-2" data-tab="tab-item">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    วิเคราะห์ข้อสอบ (Item Analysis)
+                </button>
+                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all flex items-center gap-2" data-tab="tab-students">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    รายชื่อผู้เข้าสอบ
+                </button>
             </div>
 
             <!-- Tab: Score Distribution -->
-            <div id="tab-histogram" class="tab-content p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">การกระจายตัวของคะแนน</h3>
-                <canvas id="histogramChart" class="w-full max-h-[300px]"></canvas>
+            <div id="tab-histogram" class="tab-content p-6 transition-opacity duration-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 font-sans">การกระจายตัวของคะแนน</h3>
+                <div class="relative w-full h-[320px]">
+                    <canvas id="histogramChart" class="w-full h-full"></canvas>
+                </div>
             </div>
 
             <!-- Tab: Item Analysis -->
-            <div id="tab-item" class="tab-content p-6 hidden">
+            <div id="tab-item" class="tab-content p-6 hidden transition-opacity duration-200">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">วิเคราะห์ข้อสอบ (Item Analysis)</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 font-sans">วิเคราะห์ข้อสอบ (Item Analysis)</h3>
                         <p class="text-gray-500 text-sm mt-1">คอลัมน์ที่มีสีเขียวคือตัวเลือกที่ถูกต้อง</p>
                     </div>
                     <div class="flex items-center gap-3 text-xs flex-wrap">
@@ -76,10 +104,8 @@ $exam_id = (int)$_GET['exam_id'];
                     </div>
                 </div>
 
-                <!-- Summary Quality Badges -->
                 <div id="qualitySummary" class="mb-5 flex flex-wrap gap-2"></div>
 
-                <!-- Item Analysis Table (desktop) / Cards (mobile) -->
                 <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-xl border border-gray-100">
                     <table class="w-full text-sm text-left border-collapse" id="itemAnalysisTable">
                         <thead class="bg-gray-50 text-gray-600 sticky top-0 shadow-[0_1px_0_0_#e5e7eb] z-10">
@@ -100,20 +126,27 @@ $exam_id = (int)$_GET['exam_id'];
                         </tbody>
                     </table>
                 </div>
-                <!-- fallback for empty -->
                 <div id="itemAnalysisEmpty" class="hidden py-12 text-center text-gray-400">ยังไม่มีข้อมูลการฝนคำตอบ</div>
             </div>
 
             <!-- Tab: Student List -->
-            <div id="tab-students" class="tab-content hidden">
+            <div id="tab-students" class="tab-content hidden transition-opacity duration-200">
                 <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-xl border border-gray-100">
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-gray-50 text-gray-700 text-sm sticky top-0 shadow-[0_1px_0_0_#e5e7eb] z-10">
                             <tr>
-                                <th class="py-4 px-6 font-semibold bg-gray-50">รหัสนิสิต</th>
-                                <th class="py-4 px-6 font-semibold bg-gray-50">ชุด</th>
-                                <th class="py-4 px-6 font-semibold bg-gray-50">คะแนน</th>
-                                <th class="py-4 px-6 font-semibold bg-gray-50">เวลาที่สแกน</th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('student_id')">
+                                    รหัสนิสิต <span id="sort-student_id" class="text-xs text-gray-400">↕</span>
+                                </th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('exam_set')">
+                                    ชุด <span id="sort-exam_set" class="text-xs text-gray-400">↕</span>
+                                </th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('score')">
+                                    คะแนน <span id="sort-score" class="text-xs text-gray-400">↕</span>
+                                </th>
+                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('scanned_at')">
+                                    เวลาที่สแกน <span id="sort-scanned_at" class="text-xs text-gray-400">↕</span>
+                                </th>
                                 <th class="py-4 px-6 font-semibold text-center bg-gray-50">กระดาษคำตอบ</th>
                             </tr>
                         </thead>
@@ -136,12 +169,13 @@ $exam_id = (int)$_GET['exam_id'];
         </div>
     </dialog>
 
+    <script src="js/shared.js"></script>
     <script>
         const examId = <?= $exam_id ?>;
     </script>
     <script src="js/charts.js"></script>
     <script>
-        // ─── Tab switching ───────────────────────────────────────────
+        // ─── Tab switching with crossfade ───────────────────────────
         const activeClasses = ['text-gray-900', 'border-yellow-500', 'font-bold'];
         const inactiveClasses = ['text-gray-500', 'border-transparent', 'font-medium'];
         
@@ -154,7 +188,9 @@ $exam_id = (int)$_GET['exam_id'];
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                 btn.classList.remove(...inactiveClasses);
                 btn.classList.add(...activeClasses);
-                document.getElementById(btn.dataset.tab).classList.remove('hidden');
+                
+                const targetTab = document.getElementById(btn.dataset.tab);
+                targetTab.classList.remove('hidden');
             });
         });
 
@@ -171,7 +207,7 @@ $exam_id = (int)$_GET['exam_id'];
     </script>
 
     <!-- Global Footer -->
-    <footer class="mt-auto border-t border-gray-200 py-6 text-center">
+    <footer class="w-full border-t border-gray-200 py-6 text-center bg-white mt-8">
         <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
     </footer>
 </body>

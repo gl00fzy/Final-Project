@@ -9,7 +9,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $exam_id = $_POST['exam_id'] ?? 0;
+    if (!verify_csrf_token()) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+        exit;
+    }
+
+    $exam_id = (int)($_POST['exam_id'] ?? 0);
     $username = trim($_POST['username'] ?? '');
     $user_id = $_SESSION['user_id'];
 
@@ -22,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit;
     }
+
 
     // Verify ownership
     $stmt = $pdo->prepare("SELECT owner_id FROM exams WHERE exam_id = ?");

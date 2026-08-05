@@ -3,10 +3,15 @@ session_start();
 header('Content-Type: application/json');
 require_once '../config/database.php';
 
-$SECRET_INVITE_CODE = "OMR-PRO-2026";
+$SECRET_INVITE_CODE = env('INVITE_CODE', 'OMR-PRO-2026');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+    exit;
+}
+
+if (!verify_csrf_token()) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
     exit;
 }
 
@@ -52,5 +57,6 @@ try {
 
     echo json_encode(['status' => 'success', 'message' => 'สมัครสมาชิกสำเร็จ']);
 } catch (PDOException $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    safe_db_error($e);
 }
+

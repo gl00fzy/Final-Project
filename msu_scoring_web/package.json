@@ -1,0 +1,13 @@
+{
+  "name": "msu-scoring-web",
+  "version": "1.0.0",
+  "description": "MSU Scoring Web Application",
+  "main": "index.php",
+  "scripts": {
+    "build": "tailwindcss -i css/styles.css -o dist/output.css --minify",
+    "watch": "tailwindcss -i css/styles.css -o dist/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

@@ -1,1 +1,6 @@
-/* Tailwind CSS replaces these styles. Reserved for custom animations or edge-case overrides. */
+@import "./tokens.css";
+@import "./components.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

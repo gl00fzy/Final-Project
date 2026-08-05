@@ -25,6 +25,32 @@ function env(string $key, string $default = ''): string {
     return $_ENV[$key] ?? getenv($key) ?: $default;
 }
 
+// ── CSRF Protection Helpers ────────────────────────────────────
+function generate_csrf_token(): string {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function verify_csrf_token(?string $token = null): bool {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (empty($_SESSION['csrf_token'])) return false;
+    
+    if ($token === null) {
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    }
+    
+    return hash_equals($_SESSION['csrf_token'], (string)$token);
+}
+
+function safe_db_error(Exception $e, string $user_message = 'เกิดข้อผิดพลาดในการเชื่อมต่อหรือประมวลผลฐานข้อมูล'): void {
+    error_log("DB Error: " . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => $user_message]);
+    exit;
+}
+
 // ── ตั้งค่า MySQL Connection ──────────────────────────────────
 $db_host = env('DB_HOST', '127.0.0.1');
 $db_port = env('DB_PORT', '3306');
@@ -44,5 +70,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
 } catch(PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+    error_log("Database connection failed: " . $e->getMessage());
+    die("Database connection failed. Please check server logs.");
 }
+

@@ -1,0 +1,65 @@
+/* ═══════════════════════════════════════════════════════════════
+   MSU Scoring — Core Design Tokens (DESIGN.md)
+   Single sans-serif family (Inter / Sarabun), Restrained Yellow Palette
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Primary Brand Palette ───────────────────────────────── */
+  --color-yellow-primary: #EAB308; /* MSU Yellow accent (<= 10% surface) */
+  --color-yellow-hover:   #CA8A04; /* Primary hover state */
+  --color-yellow-surface: #FEF9C3; /* Callout background tint */
+  --color-yellow-text:    #854D0E; /* Accessible text on yellow surface */
+
+  /* ── Neutral Palette ─────────────────────────────────────── */
+  --color-ink:         #111827; /* gray-900: Headings, bold values */
+  --color-body:        #374151; /* gray-700: Default body text */
+  --color-muted:       #6B7280; /* gray-500: Tertiary text, timestamps */
+  --color-placeholder: #9CA3AF; /* gray-400: Placeholders, disabled text */
+  --color-border:      #E5E7EB; /* gray-200: Borders, table dividers */
+  --color-surface:     #F3F4F6; /* gray-100: Table headers, secondary buttons */
+  --color-canvas:      #F9FAFB; /* gray-50: Page body background */
+  --color-card:        #FFFFFF; /* white: Primary card and modal surfaces */
+  --color-nav:         #1F2937; /* gray-800: Top navigation bar */
+
+  /* ── Semantic Palette ────────────────────────────────────── */
+  --color-error:           #DC2626; /* red-600: Delete, error alerts */
+  --color-error-surface:   #FEF2F2; /* red-50: Error background tint */
+  --color-success:         #10B981; /* emerald-500: Success feedback */
+  --color-success-surface: #ECFDF5; /* emerald-50: Success background tint */
+  --color-admin:           #4F46E5; /* indigo-600: Admin actions/badges */
+  --color-admin-surface:   #EEF2FF; /* indigo-50: Admin background tint */
+
+  /* ── Typography System ───────────────────────────────────── */
+  --font-ui:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Sarabun', 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ── Spacing Scale ────────────────────────────────────────── */
+  --space-xs:      4px;
+  --space-sm:      8px;
+  --space-md:     16px;
+  --space-lg:     24px;
+  --space-xl:     32px;
+  --space-section: 40px;
+
+  /* ── Corner Radius Scale ─────────────────────────────────── */
+  --radius-sm:    8px;  /* Inputs, small controls */
+  --radius-md:   12px;  /* Buttons, dropdowns */
+  --radius-lg:   16px;  /* Cards, panels */
+  --radius-xl:   24px;  /* Hero panels, major containers */
+  --radius-full: 9999px;/* Bubbles, pill badges */
+
+  /* ── Elevation & Shadows ──────────────────────────────────── */
+  --shadow-card:       0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 12px 28px rgba(234, 179, 8, 0.18);
+  --shadow-modal:      0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-hud:        0 10px 25px -5px rgba(0, 0, 0, 0.5);
+
+  /* ── Semantic Layer Index (Z-Index Scale) ────────────────── */
+  --z-dropdown:       30;
+  --z-sticky:         40;
+  --z-modal-backdrop: 50;
+  --z-modal:          60;
+  --z-toast:          70;
+  --z-tooltip:        80;
+}

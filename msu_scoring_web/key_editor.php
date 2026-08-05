@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$exam_id = $_GET['exam_id'] ?? 0;
+$exam_id = (int)($_GET['exam_id'] ?? 0);
 $user_id = $_SESSION['user_id'];
 
 // Fetch exam details (allow owner OR shared user)
@@ -21,7 +21,8 @@ $stmt->execute([$exam_id, $user_id, $user_id]);
 $exam = $stmt->fetch();
 
 if (!$exam) {
-    die("ไม่พบชุดข้อสอบหรือคุณไม่มีสิทธิ์เข้าถึง");
+    echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'><title>ไม่พบข้อมูล</title><link rel='stylesheet' href='dist/output.css'></head><body class='bg-gray-50 flex items-center justify-center min-h-screen p-4'><div class='bg-white p-8 rounded-2xl shadow-sm border border-gray-200 text-center max-w-md'><h2 class='text-xl font-bold text-red-600 mb-2'>ไม่พบชุดข้อสอบ</h2><p class='text-gray-500 mb-6'>คุณไม่มีสิทธิ์เข้าถึงชุดข้อสอบนี้ หรือชุดข้อสอบถูกลบไปแล้ว</p><a href='dashboard.php' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold px-6 py-2.5 rounded-xl transition-all'>&larr; กลับหน้า Dashboard</a></div></body></html>";
+    exit;
 }
 
 $question_count = (int)$exam['question_count'];
@@ -39,7 +40,6 @@ foreach (['A', 'B', 'C'] as $set) {
         if (isset($set_data[$q_str])) {
             $val = $set_data[$q_str];
             if (is_string($val)) {
-                // Migrate legacy format
                 $normalized_key[$set][$q_str] = [
                     'answers' => [$val],
                     'logic' => 'OR',
@@ -48,11 +48,9 @@ foreach (['A', 'B', 'C'] as $set) {
                     'ignore' => false
                 ];
             } else {
-                // Already new format
                 $normalized_key[$set][$q_str] = $val;
             }
         } else {
-            // Default new initialization
             $normalized_key[$set][$q_str] = [
                 'answers' => [],
                 'logic' => 'OR',
@@ -64,94 +62,53 @@ foreach (['A', 'B', 'C'] as $set) {
     }
 }
 $answer_key = $normalized_key;
+$csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>จัดการเฉลย - <?= htmlspecialchars($exam['exam_title']) ?></title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Page-level toast notifications */
-        #toastContainer {
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9999;
-            pointer-events: none;
-            top: 20px;
-            right: 16px;
-        }
-        .toast {
-            pointer-events: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            max-width: 380px;
-            font-family: 'Sarabun', system-ui, sans-serif;
-            animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-        .toast.toast-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-        .toast.toast-out { animation: toastOut 0.2s ease-in forwards; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
-
-        /* Button loading state */
-        .btn-loading {
-            opacity: 0.7;
-            pointer-events: none;
-            position: relative;
-            color: transparent !important;
-        }
-        .btn-loading::after {
-            content: ''; width: 20px; height: 20px;
-            border: 2.5px solid #111827; border-top-color: transparent; border-radius: 50%;
-            display: inline-block;
-            position: absolute; left: 50%; top: 50%;
-            transform: translate(-50%, -50%);
-            animation: spin 0.6s linear infinite;
-        }
-        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dist/output.css">
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Sarabun'] min-h-screen flex flex-col">
-    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-10">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-all active:scale-95 text-sm flex items-center gap-2">
                     &larr; กลับ
                 </a>
-                <div class="font-bold text-lg hidden sm:block truncate px-4">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
+                <div class="font-bold text-lg hidden sm:block truncate px-4 font-sans">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
                 <div class="w-16"></div> <!-- spacer -->
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-100 pb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-6">
                 <div>
-                    <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 mb-1 sm:hidden"><?= htmlspecialchars($exam['exam_title']) ?></h2>
-                    <p class="text-gray-500">จำนวน <strong class="text-gray-900"><?= $question_count ?></strong> ข้อ</p>
+                    <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 mb-1 font-sans"><?= htmlspecialchars($exam['exam_title']) ?></h2>
+                    <p class="text-gray-500 text-sm">จำนวน <strong class="text-gray-900"><?= $question_count ?></strong> ข้อ | <span id="progressSummary" class="text-yellow-600 font-semibold">เฉลยแล้ว 0 ข้อ</span></p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full sm:w-64 bg-gray-100 h-2 rounded-full mt-2 overflow-hidden">
+                        <div id="progressBar" class="bg-yellow-500 h-full transition-all duration-300 rounded-full" style="width: 0%"></div>
+                    </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white font-medium text-gray-700">
+                    <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white font-medium text-gray-700 text-sm">
                         <option value="A">ชุดข้อสอบ A</option>
                         <option value="B">ชุดข้อสอบ B</option>
                         <option value="C">ชุดข้อสอบ C</option>
                     </select>
-                    <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-all active:scale-95 shadow-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
+                    <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-all active:scale-95 shadow-sm text-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
                 </div>
             </div>
 
@@ -160,10 +117,10 @@ $answer_key = $normalized_key;
                     <?php $options = ['A', 'B', 'C', 'D', 'E']; ?>
                     <div class="flex flex-col p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-yellow-300 transition-colors">
                         <div class="flex items-center justify-between">
-                            <span class="font-bold text-gray-700 w-8"><?= $i ?>.</span>
+                            <span class="font-bold text-gray-700 w-8 text-sm"><?= $i ?>.</span>
                             <div class="flex gap-1.5 options" data-q="<?= $i ?>">
                                 <?php foreach($options as $opt): ?>
-                                    <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-yellow-500 active:scale-90 transition-all opt-btn" data-val="<?= $opt ?>"><?= $opt ?></button>
+                                    <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-yellow-500 active:scale-90 transition-all opt-btn" data-val="<?= $opt ?>" aria-pressed="false"><?= $opt ?></button>
                                 <?php endforeach; ?>
                             </div>
                             
@@ -178,15 +135,15 @@ $answer_key = $normalized_key;
                             <div class="grid grid-cols-2 gap-2 text-sm">
                                 <div>
                                     <label class="block text-gray-500 mb-1 text-xs">คะแนน (Points)</label>
-                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-points" data-q="<?= $i ?>" value="1">
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-points text-sm" data-q="<?= $i ?>" value="1">
                                 </div>
                                 <div>
                                     <label class="block text-gray-500 mb-1 text-xs">หักคะแนน (Penalty)</label>
-                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 setting-penalty" data-q="<?= $i ?>" value="0">
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 setting-penalty text-sm" data-q="<?= $i ?>" value="0">
                                 </div>
                                 <div class="col-span-2 mt-1">
                                     <label class="block text-gray-500 mb-1 text-xs">เงื่อนไข (Logic)</label>
-                                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-logic" data-q="<?= $i ?>">
+                                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-logic text-xs" data-q="<?= $i ?>">
                                         <option value="OR">OR (ถูกวงใดวงหนึ่งได้คะแนน)</option>
                                         <option value="AND">AND (ต้องถูกทุกวงเท่านั้น)</option>
                                     </select>
@@ -203,44 +160,43 @@ $answer_key = $normalized_key;
         </div>
     </div>
 
-    <div id="toastContainer"></div>
+    <script src="js/shared.js"></script>
     <script>
-        // ── Toast Notification System ─────────────────────────────────────────
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            
-            const icon = type === 'success' 
-                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
-                : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('toast-out');
-                setTimeout(() => toast.remove(), 200);
-            }, 3000);
-        }
-
         let answerKey = <?= json_encode($answer_key) ?>;
         const examId = <?= $exam_id ?>;
+        const questionCount = <?= $question_count ?>;
         let currentSet = 'A';
+        let isDirty = false;
+
+        // Warn before leaving if changes are unsaved
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         function renderKey() {
-            // Update bubbles
+            let answeredCount = 0;
+
+            // Update bubbles & count answered
             document.querySelectorAll('.options').forEach(group => {
                 const q = group.getAttribute('data-q');
                 const config = answerKey[currentSet][q];
                 const answers = config.answers || [];
                 
+                if (answers.length > 0 || config.ignore) {
+                    answeredCount++;
+                }
+
                 group.querySelectorAll('.opt-btn').forEach(btn => {
                     const val = btn.getAttribute('data-val');
+                    const isSelected = answers.includes(val);
+                    btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
                     btn.classList.remove('bg-yellow-400', 'text-gray-900', 'border-yellow-500');
                     btn.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
                     
-                    if (answers.includes(val)) {
+                    if (isSelected) {
                         btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
                         btn.classList.add('bg-yellow-400', 'text-gray-900', 'border-yellow-500');
                     }
@@ -257,18 +213,23 @@ $answer_key = $normalized_key;
                 panel.querySelector('.setting-logic').value = config.logic;
                 panel.querySelector('.setting-ignore').checked = config.ignore;
             });
+
+            // Update progress indicator
+            const pct = Math.round((answeredCount / questionCount) * 100);
+            document.getElementById('progressSummary').textContent = `เฉลยแล้ว ${answeredCount} / ${questionCount} ข้อ (${pct}%)`;
+            document.getElementById('progressBar').style.width = `${pct}%`;
         }
 
         document.getElementById('examSetSelector').addEventListener('change', (e) => {
             currentSet = e.target.value;
             renderKey();
-            // Close all open setting panels when switching sets to avoid confusion
             document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
         });
 
         // Bubble Toggle Logic (Multiple Select)
         document.querySelectorAll('.opt-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                isDirty = true;
                 const group = e.target.closest('.options');
                 const q = group.getAttribute('data-q');
                 const val = btn.getAttribute('data-val');
@@ -276,11 +237,11 @@ $answer_key = $normalized_key;
                 
                 const index = answers.indexOf(val);
                 if (index > -1) {
-                    answers.splice(index, 1); // Remove if already selected
+                    answers.splice(index, 1);
                 } else {
-                    answers.push(val); // Add if not selected
+                    answers.push(val);
                 }
-                renderKey(); // Re-render to reflect changes visually
+                renderKey();
             });
         });
 
@@ -293,9 +254,10 @@ $answer_key = $normalized_key;
             });
         });
 
-        // Setup real-time listeners for Settings inputs
+        // Settings change listeners
         document.querySelectorAll('.setting-points').forEach(input => {
             input.addEventListener('change', (e) => {
+                isDirty = true;
                 const q = e.target.getAttribute('data-q');
                 answerKey[currentSet][q].points = parseFloat(e.target.value) || 0;
             });
@@ -303,6 +265,7 @@ $answer_key = $normalized_key;
 
         document.querySelectorAll('.setting-penalty').forEach(input => {
             input.addEventListener('change', (e) => {
+                isDirty = true;
                 const q = e.target.getAttribute('data-q');
                 answerKey[currentSet][q].penalty = parseFloat(e.target.value) || 0;
             });
@@ -310,6 +273,7 @@ $answer_key = $normalized_key;
 
         document.querySelectorAll('.setting-logic').forEach(select => {
             select.addEventListener('change', (e) => {
+                isDirty = true;
                 const q = e.target.getAttribute('data-q');
                 answerKey[currentSet][q].logic = e.target.value;
             });
@@ -317,12 +281,13 @@ $answer_key = $normalized_key;
 
         document.querySelectorAll('.setting-ignore').forEach(cb => {
             cb.addEventListener('change', (e) => {
+                isDirty = true;
                 const q = e.target.getAttribute('data-q');
                 answerKey[currentSet][q].ignore = e.target.checked;
+                renderKey();
             });
         });
 
-        // Initial render
         renderKey();
 
         document.getElementById('btnSaveKey').addEventListener('click', async () => {
@@ -335,13 +300,14 @@ $answer_key = $normalized_key;
             formData.append('answer_key', JSON.stringify(answerKey));
 
             try {
-                const res = await fetch('api/exams.php', {
+                const res = await fetchApi('api/exams.php', {
                     method: 'POST',
                     body: formData
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    showToast('บันทึกเฉลยเรียบร้อยแล้ว! อัปเดตคะแนนนิสิต ' + (data.regraded_count || 0) + ' คน');
+                    isDirty = false;
+                    showToast('บันทึกเฉลยเรียบร้อยแล้ว! อัปเดตคะแนนนิสิต ' + (data.regraded_count || 0) + ' คน', 'success');
                 } else {
                     showToast('Error: ' + data.message, 'error');
                 }
@@ -354,7 +320,7 @@ $answer_key = $normalized_key;
     </script>
 
     <!-- Global Footer -->
-    <footer class="mt-auto border-t border-gray-200 py-6 text-center">
+    <footer class="w-full border-t border-gray-200 py-6 text-center bg-white mt-8">
         <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
     </footer>
 </body>

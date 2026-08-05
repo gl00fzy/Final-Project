@@ -4,7 +4,7 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-$exam_id = $_GET['exam_id'] ?? 1;
+$exam_id = (int)($_GET['exam_id'] ?? 1);
 
 require_once 'config/database.php';
 $students = [];
@@ -15,19 +15,22 @@ $exam_row = $stmt->fetch(PDO::FETCH_ASSOC);
 if ($exam_row && !empty($exam_row['question_count'])) {
     $question_count = (int)$exam_row['question_count'];
 }
+$csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>สแกนกระดาษคำตอบ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dist/output.css">
     <style>
-        body { margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+        body { margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; touch-action: manipulation; }
 
         /* Feedback border on root container */
         #root-container.error  { box-shadow: inset 0 0 0 6px #EF4444; }
@@ -53,9 +56,9 @@ if ($exam_row && !empty($exam_row['question_count'])) {
             left: 8px;
             right: 8px;
             z-index: 500;
-            background: rgba(0,0,0,0.82);
+            background: rgba(0,0,0,0.85);
             border: 1px solid rgba(255,255,0,0.3);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 8px 10px;
             font-family: monospace;
             font-size: 11px;
@@ -69,6 +72,7 @@ if ($exam_row && !empty($exam_row['question_count'])) {
         #debugPanel .log-ok   { color: #34d399; }
         #debugPanel .log-warn { color: #fb923c; }
         #debugPanel .log-err  { color: #f87171; }
+        
         #debugToggleBtn {
             position: fixed;
             bottom: 50px;
@@ -81,43 +85,13 @@ if ($exam_row && !empty($exam_row['question_count'])) {
             padding: 4px 10px;
             border-radius: 20px;
             cursor: pointer;
+            display: none; /* Hidden by default in production; revealed via secret triple-tap gesture */
         }
 
         /* Smooth toggle transition */
         #modeStudentBtn, #modeKeyBtn {
             transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
         }
-
-        /* Page-level toast notifications */
-        #toastContainer {
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9999;
-            pointer-events: none;
-            top: 20px;
-            right: 16px;
-        }
-        .toast {
-            pointer-events: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            max-width: 380px;
-            font-family: 'Sarabun', system-ui, sans-serif;
-            animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .toast.toast-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-        .toast.toast-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-        .toast.toast-out { animation: toastOut 0.2s ease-in forwards; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden">
@@ -130,13 +104,15 @@ if ($exam_row && !empty($exam_row['question_count'])) {
         <!-- ============================================================ -->
         <!-- LAYER 1: CAMERA FEED                                         -->
         <!-- ============================================================ -->
-        <!-- ⚠️ id="video-wrapper" kept for JS compatibility              -->
         <div id="video-wrapper" class="absolute inset-0 w-full h-full z-0">
             <video id="video" autoplay playsinline
                    class="absolute inset-0 w-full h-full object-contain"></video>
             <canvas id="canvasOutput"
                     class="absolute inset-0 w-full h-full object-contain pointer-events-none"></canvas>
         </div>
+
+        <!-- Secret gesture zone (triple-tap top right to reveal debug button) -->
+        <div id="secretGestureZone" class="absolute top-0 right-0 w-24 h-24 z-30 cursor-pointer"></div>
 
         <!-- ============================================================ -->
         <!-- LAYER 2: VIEWFINDER / RETICLE                                -->
@@ -235,7 +211,7 @@ if ($exam_row && !empty($exam_row['question_count'])) {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                📸 อัปโหลดรูปสแกน (Python)
+                อัปโหลดรูปสแกน (Python)
             </button>
 
             <button id="btnManual"
@@ -254,19 +230,17 @@ if ($exam_row && !empty($exam_row['question_count'])) {
         <!-- Debug canvas (hidden by default) -->
         <canvas id="debug-canvas"></canvas>
 
-        <!-- On-screen debug toggle button -->
+        <!-- On-screen debug toggle button (revealed via secret triple-tap) -->
         <button id="debugToggleBtn" onclick="toggleDebugPanel()">🔍 DEBUG</button>
 
     </div><!-- /root-container -->
 
-    <!-- ============================================================ -->
-    <!-- SUCCESS CARD (z-[100] — above all HUD layers)                -->
-    <!-- ============================================================ -->
+    <!-- SUCCESS CARD -->
     <div id="scanResultCard"
          class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none bg-black/60 backdrop-blur-sm">
         <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 w-full max-w-[420px] max-h-[90vh] overflow-y-auto
                     text-center border border-white/30 pointer-events-auto flex flex-col items-center">
-            <h2 class="text-yellow-500 text-3xl font-bold mb-1 flex items-center justify-center gap-2">
+            <h2 class="text-yellow-500 text-3xl font-bold mb-1 flex items-center justify-center gap-2 font-sans">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                 </svg>
@@ -275,7 +249,7 @@ if ($exam_row && !empty($exam_row['question_count'])) {
             <div class="flex justify-around w-full my-3 py-2 bg-gray-50 rounded-2xl border border-gray-100">
                 <div>
                     <p class="text-gray-400 text-xs">รหัสนิสิต</p>
-                    <p id="resStudentId" class="text-2xl font-black text-gray-900 tracking-wider"></p>
+                    <p id="resStudentId" class="text-2xl font-black text-gray-900 tracking-wider font-mono"></p>
                 </div>
                 <div>
                     <p class="text-gray-400 text-xs">คะแนนที่ได้</p>
@@ -283,7 +257,6 @@ if ($exam_row && !empty($exam_row['question_count'])) {
                 </div>
             </div>
 
-            <!-- OMR Overlay Image Preview -->
             <div id="resOverlayWrapper" class="hidden w-full my-2">
                 <p class="text-xs text-gray-500 font-semibold mb-1">ภาพตรวจจับ OMR (จุดสีเขียว = คำตอบที่เลือก):</p>
                 <img id="resOverlayImg" class="w-full max-h-[300px] object-contain rounded-xl border border-gray-300 shadow-inner bg-black" src="" alt="OMR Overlay">
@@ -296,13 +269,11 @@ if ($exam_row && !empty($exam_row['question_count'])) {
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- MANUAL ENTRY MODAL (z-[1000])                                -->
-    <!-- ============================================================ -->
+    <!-- MANUAL ENTRY MODAL -->
     <dialog id="manualModal"
          class="backdrop:bg-black/80 backdrop:backdrop-blur-md bg-white rounded-3xl shadow-2xl w-[calc(100%-2rem)] max-w-md p-8 text-gray-900 border-0 m-auto">
         <div>
-            <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-red-600 mb-2 text-center">กรอกคะแนนด้วยตนเอง</h2>
+            <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-red-600 mb-2 text-center font-sans">กรอกคะแนนด้วยตนเอง</h2>
             <p class="text-center text-gray-500 mb-6 text-sm">ใช้ในกรณีที่กล้องสแกนไม่ติด หรือมีปัญหาแสงสว่าง</p>
             <form id="manualForm" class="flex flex-col gap-4">
                 <input type="hidden" id="examId" name="exam_id" value="<?= htmlspecialchars($exam_id) ?>">
@@ -315,7 +286,7 @@ if ($exam_row && !empty($exam_row['question_count'])) {
                 </div>
                 <div>
                     <label for="score" class="block text-sm font-medium text-gray-700 mb-1">คะแนนที่ได้</label>
-                    <input type="number" id="score" name="score" required min="0"
+                    <input type="number" id="score" name="score" required min="0" step="0.5"
                            class="w-full px-4 py-3 rounded-xl border border-gray-300
                                   focus:outline-none focus:ring-2 focus:ring-yellow-500
                                   font-bold text-2xl text-center text-yellow-600">
@@ -336,25 +307,38 @@ if ($exam_row && !empty($exam_row['question_count'])) {
         </div>
     </dialog>
 
-    <!-- On-screen debug panel (outside root-container so it overlays everything) -->
     <div id="debugPanel"></div>
 
-    <div id="toastContainer"></div>
+    <script src="js/shared.js"></script>
     <script>
+        // ── Secret Triple-Tap Gesture for Debug Button Reveal ────────────────
+        let tapCount = 0;
+        let tapTimer = null;
+        document.getElementById('secretGestureZone').addEventListener('click', () => {
+            tapCount++;
+            clearTimeout(tapTimer);
+            if (tapCount >= 3) {
+                const btn = document.getElementById('debugToggleBtn');
+                btn.style.display = btn.style.display === 'none' || !btn.style.display ? 'block' : 'none';
+                showToast(btn.style.display === 'block' ? 'เปิดปุ่ม Debug แล้ว' : 'ซ่อนปุ่ม Debug แล้ว', 'success');
+                tapCount = 0;
+            } else {
+                tapTimer = setTimeout(() => { tapCount = 0; }, 600);
+            }
+        });
+
         // ── On-screen Debug Log ───────────────────────────────────────────────
         const _debugPanel = document.getElementById('debugPanel');
         let _debugVisible = false;
-        let _logLines = [];
 
         window.dbg = function(msg, level) {
             level = level || 'info';
             const cls = level === 'ok' ? 'log-ok' : level === 'warn' ? 'log-warn' : level === 'err' ? 'log-err' : '';
             const now = new Date();
             const ts  = now.toTimeString().slice(0,8);
-            const line = `<div class="log-line ${cls}">[${ts}] ${msg}</div>`;
-            _logLines.push(line);
-            if (_logLines.length > 60) _logLines.shift();
-            _debugPanel.innerHTML = _logLines.join('');
+            const line = `<div class="log-line ${cls}">[${ts}] ${escapeHtml(msg)}</div>`;
+            _debugPanel.insertAdjacentHTML('beforeend', line);
+            if (_debugPanel.children.length > 60) _debugPanel.firstElementChild.remove();
             _debugPanel.scrollTop = _debugPanel.scrollHeight;
         };
 
@@ -364,30 +348,11 @@ if ($exam_row && !empty($exam_row['question_count'])) {
             document.getElementById('debugToggleBtn').textContent = _debugVisible ? '✕ ปิด DEBUG' : '🔍 DEBUG';
         };
 
-        // ── Toast Notification System ─────────────────────────────────────────
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            
-            const icon = type === 'success' 
-                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
-                : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('toast-out');
-                setTimeout(() => toast.remove(), 200);
-            }, 3000);
-        }
-
         // ── Upload Image to Python Backend Engine ─────────────────────────────
         async function uploadToPythonEngine(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
-            const examId = document.getElementById('examId')?.value || document.querySelector('input[name="exam_id"]')?.value || 1;
+            const examId = document.getElementById('examId')?.value || 1;
             const qCount = document.getElementById('qCount')?.value || 50;
             
             const statusIndicator = document.getElementById('statusIndicator');
@@ -400,14 +365,14 @@ if ($exam_row && !empty($exam_row['question_count'])) {
             formData.append('q_count', qCount);
 
             try {
-                const response = await fetch('api/scan_python.php', {
+                const response = await fetchApi('api/scan_python.php', {
                     method: 'POST',
                     body: formData
                 });
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    playBeep();
+                    if (typeof playBeep === 'function') playBeep();
                     showToast(`สแกนสำเร็จ! นิสิต: ${data.student_id} (คะแนน: ${data.score})`, 'success');
                     
                     const resultCard = document.getElementById('scanResultCard');
@@ -443,7 +408,6 @@ if ($exam_row && !empty($exam_row['question_count'])) {
                 statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
             }
             
-            // reset file input
             input.value = '';
             setTimeout(() => {
                 statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';

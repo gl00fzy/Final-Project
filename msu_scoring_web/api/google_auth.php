@@ -11,21 +11,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Verify token with Google's tokeninfo endpoint
-    $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . $credential;
-    $response = @file_get_contents($url);
+    // Verify token with Google's tokeninfo endpoint using cURL
+    $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
     
-    if ($response === false) {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid Google Token']);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($response === false || $httpCode !== 200) {
+        echo json_encode(['status' => 'error', 'message' => 'ไม่สามารถตรวจสอบสิทธิ์กับ Google ได้']);
         exit;
     }
 
     $payload = json_decode($response, true);
     
     if (!$payload || !isset($payload['email'])) {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid payload from Google']);
+        echo json_encode(['status' => 'error', 'message' => 'ข้อมูลผู้ใช้จาก Google ไม่ถูกต้อง']);
         exit;
     }
+
 
     $email = $payload['email'];
     $google_id = $payload['sub'];

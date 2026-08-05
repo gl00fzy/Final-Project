@@ -9,9 +9,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $exam_id = $_POST['exam_id'] ?? 0;
-    $student_id = $_POST['student_id'] ?? '';
-    $score = $_POST['score'] ?? 0;
+    if (!verify_csrf_token()) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+        exit;
+    }
+
+    $exam_id = (int)($_POST['exam_id'] ?? 0);
+    $student_id = trim($_POST['student_id'] ?? '');
+    $score = (float)($_POST['score'] ?? 0);
     $user_id = $_SESSION['user_id'];
 
     if (empty($student_id) || empty($exam_id)) {
@@ -32,8 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = base64_decode($image_base64);
 
             if ($data !== false) {
+                $uploadDir = "../uploads/exams/";
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
                 $filename = "exam_{$exam_id}_student_{$student_id}_" . time() . ".jpg";
-                $filepath = "../uploads/exams/" . $filename;
+                $filepath = $uploadDir . $filename;
                 if (file_put_contents($filepath, $data)) {
                     $image_path = "uploads/exams/" . $filename;
                 }
@@ -65,14 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo json_encode(['status' => 'success', 'message' => 'บันทึกคะแนนเรียบร้อย', 'calculated_score' => $actual_score]);
     } catch (PDOException $e) {
-        // SQLite constraint violation for UNIQUE(exam_id, student_id)
-        if ($e->getCode() == 23000) {
+        if ($e->getCode() == 23000 || str_contains($e->getMessage(), '1062')) {
             echo json_encode(['status' => 'duplicate', 'message' => 'รหัสนิสิตนี้ได้รับการตรวจและบันทึกคะแนนไปแล้ว']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+            safe_db_error($e);
         }
     }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
 }
+
 

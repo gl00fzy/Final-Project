@@ -13,7 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$exam_id = $_POST['exam_id'] ?? null;
+if (!verify_csrf_token()) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+    exit;
+}
+
+$exam_id = (int)($_POST['exam_id'] ?? 0);
 if (!$exam_id) {
     echo json_encode(['status' => 'error', 'message' => 'Missing exam ID']);
     exit;
@@ -60,6 +65,9 @@ try {
 
     echo json_encode(['status' => 'success']);
 } catch (PDOException $e) {
-    $pdo->rollBack();
-    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    safe_db_error($e);
 }
+

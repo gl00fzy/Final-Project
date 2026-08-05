@@ -26,8 +26,13 @@ try {
         echo json_encode(['status' => 'success', 'data' => $exams]);
 
     } elseif ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $title = $_POST['exam_title'] ?? '';
-        $code = $_POST['exam_code'] ?? '';
+        if (!verify_csrf_token()) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+            exit;
+        }
+
+        $title = trim($_POST['exam_title'] ?? '');
+        $code = trim($_POST['exam_code'] ?? '');
         $count = (int)($_POST['question_count'] ?? 50);
 
         if (empty($title)) {
@@ -40,14 +45,19 @@ try {
         echo json_encode(['status' => 'success']);
 
     } elseif ($action === 'save_key' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $exam_id = $_POST['exam_id'] ?? 0;
+        if (!verify_csrf_token()) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid or expired CSRF token']);
+            exit;
+        }
+
+        $exam_id = (int)($_POST['exam_id'] ?? 0);
         $answer_key = $_POST['answer_key'] ?? '{}';
 
         // Verify ownership
         $stmt = $pdo->prepare("SELECT exam_id FROM exams WHERE exam_id = ? AND owner_id = ?");
         $stmt->execute([$exam_id, $user_id]);
         if (!$stmt->fetch()) {
-            echo json_encode(['status' => 'error', 'message' => 'Exam not found or unauthorized']);
+            echo json_encode(['status' => 'error', 'message' => 'ไม่พบชุดข้อสอบหรือคุณไม่มีสิทธิ์แก้ไข']);
             exit;
         }
 
@@ -80,5 +90,6 @@ try {
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
     }
 } catch (PDOException $e) {
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    safe_db_error($e);
 }
+

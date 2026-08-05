@@ -1,3 +1,61 @@
+let globalStudentsData = [];
+let currentSortCol = 'scanned_at';
+let currentSortDir = 'desc';
+
+function renderStudentTable(students) {
+    const studentTbody = document.getElementById('studentTableBody');
+    if (!students || students.length === 0) {
+        studentTbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-gray-400">ยังไม่มีนิสิตที่ถูกสแกน</td></tr>`;
+        return;
+    }
+    
+    studentTbody.innerHTML = students.map(s => `
+        <tr class="hover:bg-gray-50 transition-colors">
+            <td class="py-3 px-6 font-semibold text-gray-900 font-mono">${escapeHtml(s.student_id)}</td>
+            <td class="py-3 px-6"><span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">${escapeHtml(s.exam_set || 'A')}</span></td>
+            <td class="py-3 px-6"><span class="text-xl font-black text-yellow-600">${s.score}</span></td>
+            <td class="py-3 px-6 text-sm text-gray-500">${s.scanned_at ? new Date(s.scanned_at).toLocaleString('th-TH') : '-'}</td>
+            <td class="py-3 px-6 text-center">
+                ${s.image_path
+                    ? `<button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium py-1.5 px-4 rounded-lg shadow-sm transition-colors" onclick="window.showImage('${escapeHtml(s.image_path)}')">ดูภาพ</button>`
+                    : '<span class="text-gray-400 text-sm italic">ไม่มีภาพ</span>'}
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.sortStudentTable = function(col) {
+    if (currentSortCol === col) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortCol = col;
+        currentSortDir = 'asc';
+    }
+
+    // Reset indicator icons
+    ['student_id', 'exam_set', 'score', 'scanned_at'].forEach(c => {
+        const el = document.getElementById(`sort-${c}`);
+        if (el) el.textContent = '↕';
+    });
+
+    const activeEl = document.getElementById(`sort-${col}`);
+    if (activeEl) activeEl.textContent = currentSortDir === 'asc' ? '↑' : '↓';
+
+    globalStudentsData.sort((a, b) => {
+        let valA = a[col];
+        let valB = b[col];
+        if (col === 'score') {
+            valA = parseFloat(valA) || 0;
+            valB = parseFloat(valB) || 0;
+        }
+        if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+        if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    renderStudentTable(globalStudentsData);
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch(`api/analytics.php?exam_id=${examId}`);
@@ -41,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     label: 'จำนวนนิสิต',
                     data: data.histogram.data,
                     backgroundColor: '#EAB308',   // yellow-500
-                    borderRadius: 4
+                    borderRadius: 6
                 }]
             },
             options: {
@@ -64,23 +122,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('itemAnalysisTable').classList.add('hidden');
             emptyDiv.classList.remove('hidden');
         } else {
-            // Count quality flags for summary
             let easyCount = 0, hardCount = 0;
 
             tbody.innerHTML = items.map(item => {
                 if (item.quality_flag === 'easy') easyCount++;
                 if (item.quality_flag === 'hard') hardCount++;
 
-                const correctAns = item.correct_ans; // e.g. "A" or "B+C"
+                const correctAns = item.correct_ans;
 
-                // Build bar for each option
                 function optionCell(opt) {
                     const d        = item.distribution_pct ? item.distribution_pct[opt] : { count: item.distribution[opt], pct: 0 };
                     const count    = d.count;
                     const pct      = d.pct ?? 0;
                     const isCorrect = correctAns && correctAns.includes(opt);
 
-                    const barColor  = isCorrect ? '#22C55E' : '#E5E7EB'; // green-500 : gray-200
+                    const barColor  = isCorrect ? '#22C55E' : '#E5E7EB';
                     const textColor = isCorrect ? 'text-green-700 font-bold' : 'text-gray-600';
 
                     return `
@@ -99,26 +155,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </td>`;
                 }
 
-                // Blank cell
                 const blankD   = item.distribution_pct ? item.distribution_pct['blank'] : { count: 0, pct: 0 };
                 const blankCell = `
                     <td class="py-2 px-4 text-xs text-gray-400 text-center">${blankD.count}<br><span class="text-gray-300">(${blankD.pct ?? 0}%)</span></td>`;
 
-                // P-value pill color
                 let pClass = 'bg-green-50 text-green-700 border border-green-200';
                 if (item.quality_flag === 'easy') pClass = 'bg-yellow-50 text-yellow-700 border border-yellow-300';
                 if (item.quality_flag === 'hard') pClass = 'bg-red-50 text-red-600 border border-red-200';
 
-                // Status badge
                 let statusBadge = '';
                 if (item.quality_flag === 'easy') {
-                    statusBadge = `<span class="text-xs bg-yellow-100 text-yellow-800 border border-yellow-300 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">ง่ายมาก</span>`;
+                    statusBadge = `<span class="text-xs bg-yellow-100 text-yellow-800 border border-yellow-300 font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap">ง่ายมาก</span>`;
                 } else if (item.quality_flag === 'hard') {
-                    statusBadge = `<span class="text-xs bg-red-100 text-red-700 border border-red-300 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">⚠ ควรทบทวน</span>`;
+                    statusBadge = `<span class="text-xs bg-red-100 text-red-700 border border-red-300 font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap">⚠ ควรทบทวน</span>`;
                 } else if (correctAns !== null) {
-                    statusBadge = `<span class="text-xs bg-green-50 text-green-700 border border-green-200 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">ปกติ</span>`;
+                    statusBadge = `<span class="text-xs bg-green-50 text-green-700 border border-green-200 font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap">ปกติ</span>`;
                 } else {
-                    statusBadge = `<span class="text-xs bg-gray-100 text-gray-400 border border-gray-200 px-2 py-0.5 rounded-full whitespace-nowrap">ยังไม่มีเฉลย</span>`;
+                    statusBadge = `<span class="text-xs bg-gray-100 text-gray-400 border border-gray-200 px-2.5 py-0.5 rounded-full whitespace-nowrap">ยังไม่มีเฉลย</span>`;
                 }
 
                 const rowBg = item.quality_flag === 'easy' ? 'bg-yellow-50/40' :
@@ -138,7 +191,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </tr>`;
             }).join('');
 
-            // Quality Summary Badges
             let summaryHtml = '';
             if (easyCount > 0) {
                 summaryHtml += `<span class="inline-flex items-center gap-1.5 bg-yellow-100 text-yellow-800 border border-yellow-300 text-sm font-semibold px-3 py-1.5 rounded-full">
@@ -158,25 +210,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             qualDiv.innerHTML = summaryHtml;
         }
 
-        // ─── Student Table ────────────────────────────────────────────
-        const studentTbody = document.getElementById('studentTableBody');
-        if (data.students.length === 0) {
-            studentTbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-gray-400">ยังไม่มีนิสิตที่ถูกสแกน</td></tr>`;
-        } else {
-            studentTbody.innerHTML = data.students.map(s => `
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="py-3 px-6 font-semibold text-gray-900">${s.student_id}</td>
-                    <td class="py-3 px-6"><span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-bold border border-gray-200">${s.exam_set || 'A'}</span></td>
-                    <td class="py-3 px-6"><span class="text-xl font-black text-yellow-600">${s.score}</span></td>
-                    <td class="py-3 px-6 text-sm text-gray-500">${new Date(s.scanned_at).toLocaleString('th-TH')}</td>
-                    <td class="py-3 px-6 text-center">
-                        ${s.image_path
-                            ? `<button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium py-1.5 px-4 rounded-lg shadow-sm transition-colors" onclick="window.showImage('${s.image_path}')">ดูภาพ</button>`
-                            : '<span class="text-gray-400 text-sm italic">ไม่มีภาพ</span>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
+        // ─── Student Table Render & Data init ─────────────────────────
+        globalStudentsData = data.students || [];
+        renderStudentTable(globalStudentsData);
 
     } catch (error) {
         console.error('Failed to fetch analytics:', error);
