@@ -58,7 +58,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
     // Simulate native camera scan processing
     await Future.delayed(const Duration(milliseconds: 600));
 
-    final studentId = '6601${(1000000 + (DateTime.now().millisecondsSinceEpoch % 8999999)).toInt()}';
+    final studentId =
+        '6601${(1000000 + (DateTime.now().millisecondsSinceEpoch % 8999999)).toInt()}';
     final score = (widget.exam.questionCount * 0.85).roundToDouble();
 
     try {
@@ -70,10 +71,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       );
 
       setState(() {
-        _lastResult = {
-          'student_id': studentId,
-          'score': score,
-        };
+        _lastResult = {'student_id': studentId, 'score': score};
         _isProcessing = false;
       });
     } catch (e) {
@@ -95,9 +93,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
         children: [
           // 1. Live Native Camera Feed
           if (_isCameraInitialized && _cameraController != null)
-            Positioned.fill(
-              child: CameraPreview(_cameraController!),
-            )
+            Positioned.fill(child: CameraPreview(_cameraController!))
           else
             const Center(
               child: CircularProgressIndicator(color: AppColors.gold),
@@ -109,16 +105,39 @@ class _ScannerScreenState extends State<ScannerScreen> {
               width: MediaQuery.of(context).size.width * 0.82,
               height: MediaQuery.of(context).size.width * 0.82 * 1.414,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.5),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1.5,
+                ),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Stack(
                 children: [
                   // Corner brackets
-                  _buildCornerBracket(top: -2, left: -2, isTop: true, isLeft: true),
-                  _buildCornerBracket(top: -2, right: -2, isTop: true, isLeft: false),
-                  _buildCornerBracket(bottom: -2, left: -2, isTop: false, isLeft: true),
-                  _buildCornerBracket(bottom: -2, right: -2, isTop: false, isLeft: false),
+                  _buildCornerBracket(
+                    top: -2,
+                    left: -2,
+                    isTop: true,
+                    isLeft: true,
+                  ),
+                  _buildCornerBracket(
+                    top: -2,
+                    right: -2,
+                    isTop: true,
+                    isLeft: false,
+                  ),
+                  _buildCornerBracket(
+                    bottom: -2,
+                    left: -2,
+                    isTop: false,
+                    isLeft: true,
+                  ),
+                  _buildCornerBracket(
+                    bottom: -2,
+                    right: -2,
+                    isTop: false,
+                    isLeft: false,
+                  ),
 
                   // Helper Label
                   Align(
@@ -126,11 +145,16 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(100),
-                          border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
+                          border: Border.all(
+                            color: AppColors.gold.withValues(alpha: 0.4),
+                          ),
                         ),
                         child: Text(
                           'เล็งกรอบให้อยู่ในหน้าจอ',
@@ -158,13 +182,19 @@ class _ScannerScreenState extends State<ScannerScreen> {
               children: [
                 IconButton.filledTonal(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.white,
+                  ),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.black.withValues(alpha: 0.6),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(12),
@@ -205,7 +235,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.75),
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -237,13 +269,19 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         color: AppColors.gold.withValues(alpha: 0.5),
                         blurRadius: 20,
                         spreadRadius: 2,
-                      )
+                      ),
                     ],
                   ),
                   child: Center(
                     child: _isProcessing
-                        ? const CircularProgressIndicator(color: AppColors.navyBackground)
-                        : const Icon(Icons.camera_alt_rounded, size: 36, color: AppColors.navyBackground),
+                        ? const CircularProgressIndicator(
+                            color: AppColors.navyBackground,
+                          )
+                        : const Icon(
+                            Icons.camera_alt_rounded,
+                            size: 36,
+                            color: AppColors.navyBackground,
+                          ),
                   ),
                 ),
               ),
@@ -280,7 +318,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'รหัสนิสิต',
-                          style: GoogleFonts.sarabun(color: AppColors.textMuted, fontSize: 13),
+                          style: GoogleFonts.sarabun(
+                            color: AppColors.textMuted,
+                            fontSize: 13,
+                          ),
                         ),
                         Text(
                           _lastResult!['student_id'],
@@ -293,7 +334,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'คะแนนที่ได้',
-                          style: GoogleFonts.sarabun(color: AppColors.textMuted, fontSize: 13),
+                          style: GoogleFonts.sarabun(
+                            color: AppColors.textMuted,
+                            fontSize: 13,
+                          ),
                         ),
                         Text(
                           '${_lastResult!['score']}',
@@ -362,10 +406,18 @@ class _ScannerScreenState extends State<ScannerScreen> {
         height: 36,
         decoration: BoxDecoration(
           border: Border(
-            top: isTop ? const BorderSide(color: AppColors.gold, width: 4) : BorderSide.none,
-            bottom: !isTop ? const BorderSide(color: AppColors.gold, width: 4) : BorderSide.none,
-            left: isLeft ? const BorderSide(color: AppColors.gold, width: 4) : BorderSide.none,
-            right: !isLeft ? const BorderSide(color: AppColors.gold, width: 4) : BorderSide.none,
+            top: isTop
+                ? const BorderSide(color: AppColors.gold, width: 4)
+                : BorderSide.none,
+            bottom: !isTop
+                ? const BorderSide(color: AppColors.gold, width: 4)
+                : BorderSide.none,
+            left: isLeft
+                ? const BorderSide(color: AppColors.gold, width: 4)
+                : BorderSide.none,
+            right: !isLeft
+                ? const BorderSide(color: AppColors.gold, width: 4)
+                : BorderSide.none,
           ),
         ),
       ),
