@@ -21,7 +21,7 @@ $stmt->execute([$exam_id, $user_id, $user_id]);
 $exam = $stmt->fetch();
 
 if (!$exam) {
-    echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'><title>ไม่พบข้อมูล</title><link rel='stylesheet' href='dist/output.css'></head><body class='bg-gray-50 flex items-center justify-center min-h-screen p-4'><div class='bg-white p-8 rounded-2xl shadow-sm border border-gray-200 text-center max-w-md'><h2 class='text-xl font-bold text-red-600 mb-2'>ไม่พบชุดข้อสอบ</h2><p class='text-gray-500 mb-6'>คุณไม่มีสิทธิ์เข้าถึงชุดข้อสอบนี้ หรือชุดข้อสอบถูกลบไปแล้ว</p><a href='dashboard.php' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold px-6 py-2.5 rounded-xl transition-all'>&larr; กลับหน้า Dashboard</a></div></body></html>";
+    echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'><title>ไม่พบข้อมูล</title><link rel='stylesheet' href='dist/output.css'></head><body class='bg-slate-50 flex items-center justify-center min-h-screen p-4 font-[\"Sarabun\"]'><div class='bg-white p-8 rounded-3xl shadow-xl border border-slate-200 text-center max-w-md'><div class='w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4'><svg class='w-8 h-8' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'></path></svg></div><h2 class='text-xl font-bold text-slate-900 mb-2 font-sans'>ไม่พบชุดข้อสอบ</h2><p class='text-slate-500 text-sm mb-6'>คุณไม่มีสิทธิ์เข้าถึงชุดข้อสอบนี้ หรือชุดข้อสอบถูกลบไปแล้ว</p><a href='dashboard.php' class='inline-block bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl transition-all shadow-md shadow-yellow-500/20'>&larr; กลับหน้า Dashboard</a></div></body></html>";
     exit;
 }
 
@@ -102,93 +102,136 @@ $answer_key = $normalized_key;
 $csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
-    <title>จัดการเฉลย - <?= htmlspecialchars($exam['exam_title']) ?></title>
+    <title>จัดการเฉลย - <?= htmlspecialchars($exam['exam_title']) ?> - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="dist/output.css">
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
-    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-40">
+<body class="bg-slate-50 text-slate-800 min-h-full flex flex-col justify-between font-['Sarabun'] selection:bg-yellow-400 selection:text-slate-900">
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="bg-slate-900/95 text-white shadow-md sticky top-0 z-40 backdrop-blur-md border-b border-yellow-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-all active:scale-95 text-sm flex items-center gap-2">
-                    &larr; กลับ
-                </a>
-                <div class="font-bold text-lg hidden sm:block truncate px-4 font-sans">จัดการเฉลย: <?= htmlspecialchars($exam['exam_title']) ?></div>
-                <div class="w-16"></div> <!-- spacer -->
+                <div class="flex items-center gap-3">
+                    <a href="dashboard.php" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white font-semibold py-2 px-3.5 rounded-xl transition-all text-xs sm:text-sm flex items-center gap-2 border border-slate-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span>กลับแดชบอร์ด</span>
+                    </a>
+                    <div class="font-bold text-base sm:text-lg hidden md:flex items-center gap-2 truncate text-slate-100 font-['Inter','Sarabun']">
+                        <span>จัดการเฉลยข้อสอบ:</span>
+                        <span class="text-amber-400 font-extrabold truncate"><?= htmlspecialchars($exam['exam_title']) ?></span>
+                        <?php if ($exam['exam_code']): ?>
+                            <span class="text-xs bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded-lg border border-slate-700">(<?= htmlspecialchars($exam['exam_code']) ?>)</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a href="scanner.php?exam_id=<?= $exam_id ?>" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-700 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                        <span class="hidden sm:inline">ไปหน้าสแกน</span>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-6">
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+        
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-8">
+            
+            <!-- Header Toolbar -->
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-5 border-b border-slate-200/80 pb-6">
                 <div>
-                    <h2 class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 mb-1 font-sans"><?= htmlspecialchars($exam['exam_title']) ?></h2>
-                    <p class="text-gray-500 text-sm">จำนวน <strong class="text-gray-900"><?= $question_count ?></strong> ข้อ | <span id="progressSummary" class="text-yellow-600 font-semibold">เฉลยแล้ว 0 ข้อ</span></p>
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 font-['Inter','Sarabun']"><?= htmlspecialchars($exam['exam_title']) ?></h1>
+                        <?php if ($exam['exam_code']): ?>
+                            <span class="text-xs bg-slate-100 text-slate-700 font-mono px-2.5 py-0.5 rounded-md font-bold border border-slate-200"><?= htmlspecialchars($exam['exam_code']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 text-xs sm:text-sm text-slate-500 mt-2">
+                        <span>จำนวนข้อสอบทั้งหมด <strong class="text-slate-900"><?= $question_count ?></strong> ข้อ</span>
+                        <span>•</span>
+                        <span id="progressSummary" class="text-amber-800 bg-amber-50 border border-amber-200 font-bold px-2.5 py-0.5 rounded-full">เฉลยแล้ว 0 ข้อ (0%)</span>
+                    </div>
                     
                     <!-- Progress Bar -->
-                    <div class="w-full sm:w-64 bg-gray-100 h-2 rounded-full mt-2 overflow-hidden">
-                        <div id="progressBar" class="bg-yellow-500 h-full transition-all duration-300 rounded-full" style="width: 0%"></div>
+                    <div class="w-full sm:w-80 bg-slate-100 h-2.5 rounded-full mt-3 overflow-hidden p-0.5 border border-slate-200">
+                        <div id="progressBar" class="bg-gradient-to-r from-yellow-400 to-yellow-500 h-full transition-all duration-300 rounded-full" style="width: 0%"></div>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white font-medium text-gray-700 text-sm">
-                        <option value="A" <?= $default_set === 'A' ? 'selected' : '' ?>>ชุดข้อสอบ A</option>
-                        <option value="B" <?= $default_set === 'B' ? 'selected' : '' ?>>ชุดข้อสอบ B</option>
-                        <option value="C" <?= $default_set === 'C' ? 'selected' : '' ?>>ชุดข้อสอบ C</option>
-                        <option value="D" <?= $default_set === 'D' ? 'selected' : '' ?>>ชุดข้อสอบ D</option>
-                    </select>
-                    <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-all active:scale-95 shadow-sm text-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
+
+                <!-- Controls & Save Button -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                    <div class="flex items-center gap-2">
+                        <label for="examSetSelector" class="text-xs font-bold uppercase tracking-wider text-slate-600 whitespace-nowrap hidden sm:block">ชุดข้อสอบ:</label>
+                        <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white font-bold text-slate-800 text-sm shadow-sm transition-all">
+                            <option value="A" <?= $default_set === 'A' ? 'selected' : '' ?>>ชุดข้อสอบ A (Set A)</option>
+                            <option value="B" <?= $default_set === 'B' ? 'selected' : '' ?>>ชุดข้อสอบ B (Set B)</option>
+                            <option value="C" <?= $default_set === 'C' ? 'selected' : '' ?>>ชุดข้อสอบ C (Set C)</option>
+                            <option value="D" <?= $default_set === 'D' ? 'selected' : '' ?>>ชุดข้อสอบ D (Set D)</option>
+                        </select>
+                    </div>
+
+                    <button id="btnSaveKey" class="w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] text-slate-950 font-bold py-2.5 px-6 rounded-xl shadow-md shadow-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/30 transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <span>บันทึกเฉลย & ตรวจคะแนนใหม่</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4" id="keyContainer">
+            <!-- Answer Key Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4" id="keyContainer">
                 <?php for($i = 1; $i <= $question_count; $i++): ?>
                     <?php $options = ['A', 'B', 'C', 'D', 'E']; ?>
-                    <div class="flex flex-col p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-yellow-300 transition-colors">
+                    <div class="flex flex-col p-3.5 bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/90 hover:border-yellow-400 hover:shadow-sm transition-all group">
                         <div class="flex items-center justify-between">
-                            <span class="font-bold text-gray-700 w-8 text-sm"><?= $i ?>.</span>
+                            <span class="font-bold text-slate-800 w-8 text-sm font-mono"><?= $i ?>.</span>
+                            
+                            <!-- Option Bubbles -->
                             <div class="flex gap-1.5 options" data-q="<?= $i ?>">
                                 <?php foreach($options as $opt): ?>
-                                    <button type="button" class="w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-600 font-medium text-sm focus:outline-none hover:border-yellow-500 active:scale-90 transition-all opt-btn" data-val="<?= $opt ?>" aria-pressed="false"><?= $opt ?></button>
+                                    <button type="button" class="w-8 h-8 rounded-full border border-slate-300 bg-white text-slate-700 font-bold text-xs sm:text-sm focus:outline-none hover:border-yellow-500 active:scale-90 transition-all opt-btn shadow-2xs" data-val="<?= $opt ?>" aria-pressed="false"><?= $opt ?></button>
                                 <?php endforeach; ?>
                             </div>
                             
                             <!-- Settings Gear Button -->
-                            <button type="button" title="ตั้งค่าข้อนี้" class="ml-2 p-1.5 text-gray-400 hover:text-yellow-600 active:scale-90 transition-all focus:outline-none gear-btn" data-q="<?= $i ?>">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <button type="button" title="ตั้งค่าคะแนนและเงื่อนไขข้อนี้" class="ml-2 p-1.5 text-slate-400 hover:text-amber-600 active:scale-90 transition-all focus:outline-none gear-btn rounded-lg hover:bg-slate-100" data-q="<?= $i ?>" aria-label="ตั้งค่าข้อที่ <?= $i ?>">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </button>
                         </div>
                         
                         <!-- Collapsible Settings Panel -->
-                        <div class="hidden mt-3 pt-3 border-t border-gray-200 settings-panel" data-q="<?= $i ?>">
-                            <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="hidden mt-3 pt-3 border-t border-slate-200 settings-panel" data-q="<?= $i ?>">
+                            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-100/70 p-2.5 rounded-xl border border-slate-200/80">
                                 <div>
-                                    <label class="block text-gray-500 mb-1 text-xs">คะแนน (Points)</label>
-                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-points text-sm" data-q="<?= $i ?>" value="1">
+                                    <label class="block font-semibold text-slate-600 mb-1">คะแนน (Points)</label>
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-yellow-500 focus:outline-none setting-points text-xs font-mono" data-q="<?= $i ?>" value="1">
                                 </div>
                                 <div>
-                                    <label class="block text-gray-500 mb-1 text-xs">หักคะแนน (Penalty)</label>
-                                    <input type="number" step="0.5" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 setting-penalty text-sm" data-q="<?= $i ?>" value="0">
+                                    <label class="block font-semibold text-slate-600 mb-1">หักคะแนน (Penalty)</label>
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-red-500 focus:outline-none setting-penalty text-xs font-mono" data-q="<?= $i ?>" value="0">
                                 </div>
                                 <div class="col-span-2 mt-1">
-                                    <label class="block text-gray-500 mb-1 text-xs">เงื่อนไข (Logic)</label>
-                                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-yellow-500 setting-logic text-xs" data-q="<?= $i ?>">
-                                        <option value="OR">OR (ถูกวงใดวงหนึ่งได้คะแนน)</option>
-                                        <option value="AND">AND (ต้องถูกทุกวงเท่านั้น)</option>
+                                    <label class="block font-semibold text-slate-600 mb-1">เงื่อนไขคำตอบ (Logic)</label>
+                                    <select class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-yellow-500 focus:outline-none setting-logic text-xs" data-q="<?= $i ?>">
+                                        <option value="OR">OR (ตอบถูกข้อใดข้อหนึ่งในตัวเลือก)</option>
+                                        <option value="AND">AND (ต้องตอบถูกครบทุกตัวเลือก)</option>
                                     </select>
                                 </div>
-                                <div class="col-span-2 mt-1 flex items-center gap-2 bg-rose-50 px-2 py-1.5 rounded border border-rose-100">
-                                    <input type="checkbox" id="ignore_<?= $i ?>" class="w-4 h-4 text-rose-600 rounded focus:ring-rose-500 setting-ignore" data-q="<?= $i ?>">
-                                    <label for="ignore_<?= $i ?>" class="text-xs text-rose-700 cursor-pointer font-medium">Ignore (ข้าม/ไม่คิดคะแนนข้อนี้)</label>
+                                <div class="col-span-2 mt-1 flex items-center gap-2 bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200">
+                                    <input type="checkbox" id="ignore_<?= $i ?>" class="w-3.5 h-3.5 text-rose-600 rounded focus:ring-rose-500 setting-ignore" data-q="<?= $i ?>">
+                                    <label for="ignore_<?= $i ?>" class="text-[11px] text-rose-800 cursor-pointer font-bold select-none">Ignore (ข้าม / ฟรีคะแนนข้อนี้)</label>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +239,7 @@ $csrf_token = generate_csrf_token();
                 <?php endfor; ?>
             </div>
         </div>
-    </div>
+    </main>
 
     <script src="js/shared.js"></script>
     <script>
@@ -231,12 +274,11 @@ $csrf_token = generate_csrf_token();
                     const val = btn.getAttribute('data-val');
                     const isSelected = answers.includes(val);
                     btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-                    btn.classList.remove('bg-yellow-400', 'text-gray-900', 'border-yellow-500');
-                    btn.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
                     
                     if (isSelected) {
-                        btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
-                        btn.classList.add('bg-yellow-400', 'text-gray-900', 'border-yellow-500');
+                        btn.className = 'w-8 h-8 rounded-full border border-yellow-500 bg-yellow-400 text-slate-950 font-black text-xs sm:text-sm focus:outline-none shadow-sm opt-btn transition-all';
+                    } else {
+                        btn.className = 'w-8 h-8 rounded-full border border-slate-300 bg-white text-slate-700 font-bold text-xs sm:text-sm focus:outline-none hover:border-yellow-500 active:scale-90 transition-all opt-btn shadow-2xs';
                     }
                 });
             });
@@ -357,9 +399,12 @@ $csrf_token = generate_csrf_token();
         });
     </script>
 
-    <!-- Global Footer -->
-    <footer class="w-full border-t border-gray-200 py-6 text-center bg-white mt-8">
-        <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+    <!-- Global Academic Footer -->
+    <footer class="w-full border-t border-slate-200/80 py-5 text-center bg-white mt-12">
+        <p class="text-xs text-slate-500 leading-relaxed">
+            &copy; 2026 ระบบตรวจข้อสอบ MSU Scoring | มหาวิทยาลัยมหาสารคาม<br class="sm:hidden">
+            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.
+        </p>
     </footer>
 </body>
 </html>

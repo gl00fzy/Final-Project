@@ -9,168 +9,228 @@ require_once 'config/database.php';
 
 $exam_id = (int)($_GET['exam_id'] ?? 0);
 if (!$exam_id) {
-    echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'><title>ระบุรหัสวิชา</title><link rel='stylesheet' href='dist/output.css'></head><body class='bg-gray-50 flex items-center justify-center min-h-screen p-4'><div class='bg-white p-8 rounded-2xl shadow-sm border border-gray-200 text-center max-w-md'><h2 class='text-xl font-bold text-red-600 mb-2'>ไม่พบชุดข้อสอบ</h2><p class='text-gray-500 mb-6'>โปรดระบุ exam_id ที่ถูกต้อง</p><a href='dashboard.php' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold px-6 py-2.5 rounded-xl transition-all'>&larr; กลับหน้า Dashboard</a></div></body></html>";
+    echo "<!DOCTYPE html><html lang='th'><head><meta charset='UTF-8'><title>ระบุรหัสวิชา</title><link rel='stylesheet' href='dist/output.css'></head><body class='bg-slate-50 flex items-center justify-center min-h-screen p-4 font-[\"Sarabun\"]'><div class='bg-white p-8 rounded-3xl shadow-xl border border-slate-200 text-center max-w-md'><div class='w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4'><svg class='w-8 h-8' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'></path></svg></div><h2 class='text-xl font-bold text-slate-900 mb-2 font-sans'>ไม่พบชุดข้อสอบ</h2><p class='text-slate-500 text-sm mb-6'>โปรดระบุรหัสชุดข้อสอบ (exam_id) ที่ถูกต้อง</p><a href='dashboard.php' class='inline-block bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl transition-all shadow-md shadow-yellow-500/20'>&larr; กลับหน้า Dashboard</a></div></body></html>";
     exit;
 }
 $csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
-    <title>ผลการสอบและการวิเคราะห์ - MSU Scoring</title>
+    <title>ผลการสอบและการวิเคราะห์สถิติ - MSU Scoring</title>
     <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="dist/output.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 min-h-full flex flex-col justify-between font-['Sarabun'] selection:bg-yellow-400 selection:text-slate-900">
+    
     <!-- Sticky Navigation Bar -->
-    <nav class="bg-gray-800 text-white shadow-md sticky top-0 z-40">
+    <nav class="bg-slate-900/95 text-white shadow-md sticky top-0 z-40 backdrop-blur-md border-b border-yellow-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="dashboard.php" class="text-xl font-bold tracking-wider flex items-center gap-2 font-sans">
-                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    MSU Scoring
+                <a href="dashboard.php" class="text-xl font-bold tracking-tight flex items-center gap-2.5 font-['Inter','Sarabun'] group">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center text-slate-950 shadow-sm group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span>MSU Scoring</span>
                 </a>
-                <div class="flex items-center space-x-2 sm:space-x-4">
+                
+                <div class="flex items-center space-x-2 sm:space-x-3">
                     <?php if (($_SESSION['role'] ?? 'user') === 'admin'): ?>
                     <a href="admin_dashboard.php"
-                       class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
+                       class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all border border-indigo-400/30">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
-                        Admin
+                        <span class="hidden sm:inline">Admin</span>
                     </a>
                     <?php endif; ?>
-                    <span class="text-sm hidden sm:block font-medium">สวัสดี, <?= htmlspecialchars($_SESSION['name']) ?></span>
-                    <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ออกจากระบบ</a>
+                    
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-200 text-xs font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span><?= htmlspecialchars($_SESSION['name']) ?></span>
+                    </div>
+
+                    <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80">
+                        ออกจากระบบ
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
-        <div class="mb-8">
-            <a href="dashboard.php" class="inline-flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-all text-sm mb-4">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                กลับหน้าหลัก
-            </a>
-            <h2 id="pageTitle" class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 font-sans">กำลังโหลดข้อมูล...</h2>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+        
+        <!-- Header & Action Buttons -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 pb-6 border-b border-slate-200/80">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <a href="dashboard.php" class="inline-flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 text-slate-700 font-bold py-1.5 px-3 rounded-xl shadow-xs transition-all text-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <span>กลับแดชบอร์ด</span>
+                    </a>
+                    <span class="text-xs text-slate-400">•</span>
+                    <span class="text-xs font-semibold text-slate-500">รายงานการวิเคราะห์ข้อสอบ</span>
+                </div>
+                <h1 id="pageTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-['Inter','Sarabun'] flex items-center gap-2.5">
+                    <span>กำลังโหลดผลการสอบ...</span>
+                </h1>
+            </div>
+
+            <!-- Quick Action Shortcuts -->
+            <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                <a href="scanner.php?exam_id=<?= $exam_id ?>" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-95 text-slate-950 font-bold py-2 px-4 rounded-xl shadow-md shadow-yellow-500/20 text-xs sm:text-sm flex items-center gap-1.5 transition-all">
+                    <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                    <span>ไปหน้าสแกน</span>
+                </a>
+                <a href="key_editor.php?exam_id=<?= $exam_id ?>" class="bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 text-slate-700 font-bold py-2 px-4 rounded-xl shadow-xs text-xs sm:text-sm flex items-center gap-1.5 transition-all">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <span>แก้ไขเฉลย</span>
+                </a>
+                <a href="api/export_csv.php?exam_id=<?= $exam_id ?>" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 active:scale-95 text-emerald-800 font-bold py-2 px-4 rounded-xl shadow-xs text-xs sm:text-sm flex items-center gap-1.5 transition-all">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>ดาวน์โหลด CSV</span>
+                </a>
+            </div>
         </div>
 
+        <!-- KPI Stats Grid -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsGrid">
-            <!-- Populated via JS -->
+            <!-- Populated via JS charts.js -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 text-center animate-pulse">
+                <div class="h-4 bg-slate-100 rounded w-20 mx-auto mb-2"></div>
+                <div class="h-8 bg-slate-100 rounded w-16 mx-auto"></div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 text-center animate-pulse">
+                <div class="h-4 bg-slate-100 rounded w-20 mx-auto mb-2"></div>
+                <div class="h-8 bg-slate-100 rounded w-16 mx-auto"></div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 text-center animate-pulse">
+                <div class="h-4 bg-slate-100 rounded w-20 mx-auto mb-2"></div>
+                <div class="h-8 bg-slate-100 rounded w-16 mx-auto"></div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 text-center animate-pulse">
+                <div class="h-4 bg-slate-100 rounded w-20 mx-auto mb-2"></div>
+                <div class="h-8 bg-slate-100 rounded w-16 mx-auto"></div>
+            </div>
         </div>
 
-        <!-- Tab Navigation -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
-            <div class="flex border-b border-gray-100 px-6 pt-4 gap-6 overflow-x-auto">
-                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-900 border-b-[3px] border-yellow-500 font-bold active:scale-95 transition-all flex items-center gap-2" data-tab="tab-histogram">
-                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    กราฟคะแนน
+        <!-- Tab Navigation & Card Container -->
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200/90 mb-8 overflow-hidden">
+            <div class="flex border-b border-slate-200/80 px-6 pt-4 gap-8 overflow-x-auto bg-slate-50/50">
+                <button class="tab-btn pb-3.5 text-sm whitespace-nowrap text-slate-900 border-b-[3px] border-yellow-500 font-extrabold active:scale-95 transition-all flex items-center gap-2" data-tab="tab-histogram">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    <span>กราฟการกระจายตัวของคะแนน</span>
                 </button>
-                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all flex items-center gap-2" data-tab="tab-item">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                    วิเคราะห์ข้อสอบ (Item Analysis)
+                <button class="tab-btn pb-3.5 text-sm whitespace-nowrap text-slate-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all flex items-center gap-2 hover:text-slate-800" data-tab="tab-item">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <span>วิเคราะห์รายข้อ (Item Analysis)</span>
                 </button>
-                <button class="tab-btn pb-3 text-sm whitespace-nowrap text-gray-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all flex items-center gap-2" data-tab="tab-students">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    รายชื่อผู้เข้าสอบ
+                <button class="tab-btn pb-3.5 text-sm whitespace-nowrap text-slate-500 font-medium border-b-[3px] border-transparent active:scale-95 transition-all flex items-center gap-2 hover:text-slate-800" data-tab="tab-students">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <span>รายชื่อผู้เข้าสอบ</span>
                 </button>
             </div>
 
-            <!-- Tab: Score Distribution -->
-            <div id="tab-histogram" class="tab-content p-6 transition-opacity duration-200">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 font-sans">การกระจายตัวของคะแนน</h3>
-                <div class="relative w-full h-[320px]">
+            <!-- Tab 1: Score Distribution Histogram -->
+            <div id="tab-histogram" class="tab-content p-6 sm:p-8 transition-opacity duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 font-['Inter','Sarabun']">แผนภูมิแท่งการกระจายตัวของคะแนนสอบ</h2>
+                    <span class="text-xs text-slate-400">แกนนอน: ช่วงคะแนน | แกนตั้ง: จำนวนนิสิต</span>
+                </div>
+                <div class="relative w-full h-[340px]">
                     <canvas id="histogramChart" class="w-full h-full"></canvas>
                 </div>
             </div>
 
-            <!-- Tab: Item Analysis -->
-            <div id="tab-item" class="tab-content p-6 hidden transition-opacity duration-200">
+            <!-- Tab 2: Item Analysis -->
+            <div id="tab-item" class="tab-content p-6 sm:p-8 hidden transition-opacity duration-200">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 font-sans">วิเคราะห์ข้อสอบ (Item Analysis)</h3>
-                        <p class="text-gray-500 text-sm mt-1">คอลัมน์ที่มีสีเขียวคือตัวเลือกที่ถูกต้อง</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 font-['Inter','Sarabun']">การวิเคราะห์คุณภาพข้อสอบรายข้อ (Item Analysis)</h2>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">คอลัมน์ที่มีแถบสีเขียวคือตัวเลือกเฉลยที่ถูกต้อง</p>
                     </div>
                     <div class="flex items-center gap-3 text-xs flex-wrap">
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-yellow-400 inline-block"></span> ง่ายมาก (P &gt; 0.8)</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-400 inline-block"></span> ยากเกินไป (P &lt; 0.2)</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-green-400 inline-block"></span> ตัวเลือกที่ถูกต้อง</span>
+                        <span class="flex items-center gap-1.5 bg-yellow-50 text-yellow-800 px-2.5 py-1 rounded-full border border-yellow-200"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span> ง่ายมาก (P &gt; 0.8)</span>
+                        <span class="flex items-center gap-1.5 bg-red-50 text-red-700 px-2.5 py-1 rounded-full border border-red-200"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> ยากเกินไป (P &lt; 0.2)</span>
+                        <span class="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> เฉลยถูกต้อง</span>
                     </div>
                 </div>
 
                 <div id="qualitySummary" class="mb-5 flex flex-wrap gap-2"></div>
 
-                <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-xl border border-gray-100">
+                <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-2xl border border-slate-200">
                     <table class="w-full text-sm text-left border-collapse" id="itemAnalysisTable">
-                        <thead class="bg-gray-50 text-gray-600 sticky top-0 shadow-[0_1px_0_0_#e5e7eb] z-10">
+                        <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider sticky top-0 border-b border-slate-200 shadow-sm z-10">
                             <tr>
-                                <th class="py-3 px-4 font-semibold bg-gray-50 w-12">ข้อ</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">P-value</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">A</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">B</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">C</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">D</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">E</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">ไม่ตอบ</th>
-                                <th class="py-3 px-4 font-semibold bg-gray-50">สถานะ</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50 w-14">ข้อที่</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">ค่าความยาก (P)</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">ตัวเลือก A</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">ตัวเลือก B</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">ตัวเลือก C</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">ตัวเลือก D</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">ตัวเลือก E</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50 text-center">ไม่ตอบ</th>
+                                <th class="py-3 px-4 font-bold bg-slate-50">สถานะคุณภาพ</th>
                             </tr>
                         </thead>
-                        <tbody id="itemAnalysisBody" class="divide-y divide-gray-50">
-                            <!-- Populated by JS -->
+                        <tbody id="itemAnalysisBody" class="divide-y divide-slate-100">
+                            <!-- Populated by JS charts.js -->
                         </tbody>
                     </table>
                 </div>
-                <div id="itemAnalysisEmpty" class="hidden py-12 text-center text-gray-400">ยังไม่มีข้อมูลการฝนคำตอบ</div>
+                <div id="itemAnalysisEmpty" class="hidden py-16 text-center text-slate-400">ยังไม่มีข้อมูลการฝนคำตอบสำหรับวิเคราะห์</div>
             </div>
 
-            <!-- Tab: Student List -->
+            <!-- Tab 3: Student List -->
             <div id="tab-students" class="tab-content hidden transition-opacity duration-200">
-                <div class="overflow-x-auto overflow-y-auto max-h-[600px] rounded-xl border border-gray-100">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 text-gray-700 text-sm sticky top-0 shadow-[0_1px_0_0_#e5e7eb] z-10">
+                <div class="overflow-x-auto overflow-y-auto max-h-[600px]">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-slate-50 text-slate-700 text-xs uppercase tracking-wider sticky top-0 border-b border-slate-200 shadow-sm z-10">
                             <tr>
-                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('student_id')">
-                                    รหัสนิสิต <span id="sort-student_id" class="text-xs text-gray-400">↕</span>
+                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors" onclick="sortStudentTable('student_id')">
+                                    รหัสนิสิต <span id="sort-student_id" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('exam_set')">
-                                    ชุด <span id="sort-exam_set" class="text-xs text-gray-400">↕</span>
+                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors text-center" onclick="sortStudentTable('exam_set')">
+                                    ชุดข้อสอบ <span id="sort-exam_set" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('score')">
-                                    คะแนน <span id="sort-score" class="text-xs text-gray-400">↕</span>
+                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors" onclick="sortStudentTable('score')">
+                                    คะแนนที่ได้ <span id="sort-score" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-4 px-6 font-semibold bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortStudentTable('scanned_at')">
-                                    เวลาที่สแกน <span id="sort-scanned_at" class="text-xs text-gray-400">↕</span>
+                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors" onclick="sortStudentTable('scanned_at')">
+                                    เวลาที่สแกน <span id="sort-scanned_at" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-4 px-6 font-semibold text-center bg-gray-50">กระดาษคำตอบ</th>
+                                <th class="py-3.5 px-6 font-bold text-center bg-slate-50">กระดาษคำตอบ</th>
                             </tr>
                         </thead>
-                        <tbody id="studentTableBody" class="divide-y divide-gray-100">
-                            <!-- Populated via JS -->
+                        <tbody id="studentTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated via JS charts.js -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Image Modal -->
-    <dialog id="imageModal" class="backdrop:bg-black/90 backdrop:backdrop-blur-sm bg-transparent border-0 w-[calc(100%-2rem)] max-w-2xl p-0 m-auto">
-        <div class="relative w-full bg-black rounded-2xl overflow-hidden shadow-2xl">
-            <button id="closeImageBtn" class="absolute top-4 right-4 bg-black/50 hover:bg-red-600 text-white backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-10 active:scale-95 transition-all">
+    <!-- Scanned Image Preview Modal -->
+    <dialog id="imageModal" class="backdrop:bg-slate-950/80 backdrop:backdrop-blur-md bg-transparent border-0 w-[calc(100%-2rem)] max-w-2xl p-0 m-auto overflow-hidden">
+        <div class="relative w-full bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-700">
+            <button id="closeImageBtn" class="absolute top-4 right-4 bg-slate-900/80 hover:bg-red-600 text-white backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-10 active:scale-95 transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <img id="scannedImage" src="" class="w-full h-auto block" alt="Scanned Answer Sheet">
+            <img id="scannedImage" src="" class="w-full h-auto block max-h-[85vh] object-contain mx-auto" alt="Scanned Answer Sheet">
         </div>
     </dialog>
 
@@ -180,9 +240,9 @@ $csrf_token = generate_csrf_token();
     </script>
     <script src="js/charts.js"></script>
     <script>
-        // ─── Tab switching with crossfade ───────────────────────────
-        const activeClasses = ['text-gray-900', 'border-yellow-500', 'font-bold'];
-        const inactiveClasses = ['text-gray-500', 'border-transparent', 'font-medium'];
+        // ─── Tab switching with active classes ───────────────────────────
+        const activeClasses = ['text-slate-900', 'border-yellow-500', 'font-extrabold'];
+        const inactiveClasses = ['text-slate-500', 'border-transparent', 'font-medium'];
         
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -245,9 +305,12 @@ $csrf_token = generate_csrf_token();
         };
     </script>
 
-    <!-- Global Footer -->
-    <footer class="w-full border-t border-gray-200 py-6 text-center bg-white mt-8">
-        <p class="text-sm text-gray-400">&copy; 2026 พัฒนาโดย นายสรอัฐ น้ำใส | ร่วมกับ สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</p>
+    <!-- Global Academic Footer -->
+    <footer class="w-full border-t border-slate-200/80 py-5 text-center bg-white mt-12">
+        <p class="text-xs text-slate-500 leading-relaxed">
+            &copy; 2026 ระบบตรวจข้อสอบ MSU Scoring | มหาวิทยาลัยมหาสารคาม<br class="sm:hidden">
+            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.
+        </p>
     </footer>
 </body>
 </html>
