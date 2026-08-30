@@ -2,6 +2,24 @@ let globalStudentsData = [];
 let currentSortCol = 'scanned_at';
 let currentSortDir = 'desc';
 
+function normalizeImagePath(path) {
+    if (!path) return '';
+    path = path.trim();
+    if (path.startsWith('data:image/') || path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+    if (path.startsWith('uploads/exams/')) {
+        return path;
+    }
+    if (path.startsWith('/uploads/exams/')) {
+        return path.substring(1);
+    }
+    if (path.startsWith('uploads/')) {
+        return path;
+    }
+    return 'uploads/exams/' + path.replace(/^[\/\\]+/, '');
+}
+
 function renderStudentTable(students) {
     const studentTbody = document.getElementById('studentTableBody');
     if (!students || students.length === 0) {
@@ -9,19 +27,31 @@ function renderStudentTable(students) {
         return;
     }
     
-    studentTbody.innerHTML = students.map(s => `
+    studentTbody.innerHTML = students.map(s => {
+        const normPath = s.image_path ? normalizeImagePath(s.image_path) : '';
+        return `
         <tr class="hover:bg-gray-50 transition-colors">
             <td class="py-3 px-6 font-semibold text-gray-900 font-mono">${escapeHtml(s.student_id)}</td>
             <td class="py-3 px-6"><span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">${escapeHtml(s.exam_set || 'A')}</span></td>
             <td class="py-3 px-6"><span class="text-xl font-black text-yellow-600">${s.score}</span></td>
             <td class="py-3 px-6 text-sm text-gray-500">${s.scanned_at ? new Date(s.scanned_at).toLocaleString('th-TH') : '-'}</td>
             <td class="py-3 px-6 text-center">
-                ${s.image_path
-                    ? `<button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium py-1.5 px-4 rounded-lg shadow-sm transition-colors" onclick="window.showImage('${escapeHtml(s.image_path)}')">ดูภาพ</button>`
+                ${normPath
+                    ? `<button type="button" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium py-1.5 px-4 rounded-lg shadow-sm transition-colors view-img-btn active:scale-95" data-img="${escapeHtml(normPath)}">ดูภาพ</button>`
                     : '<span class="text-gray-400 text-sm italic">ไม่มีภาพ</span>'}
             </td>
         </tr>
-    `).join('');
+    `}).join('');
+
+    studentTbody.querySelectorAll('.view-img-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const imgSrc = btn.getAttribute('data-img');
+            if (imgSrc && typeof window.showImage === 'function') {
+                window.showImage(imgSrc);
+            }
+        });
+    });
 }
 
 window.sortStudentTable = function(col) {

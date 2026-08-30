@@ -25,9 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Verify ownership and get current key
-        $stmtKey = $pdo->prepare("SELECT answer_key FROM exams WHERE exam_id = ? AND owner_id = ?");
-        $stmtKey->execute([$exam_id, $user_id]);
+        // Verify ownership or shared access and get current key
+        $stmtKey = $pdo->prepare("
+            SELECT answer_key FROM exams 
+            WHERE exam_id = ? AND (
+                owner_id = ? 
+                OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+            )
+        ");
+        $stmtKey->execute([$exam_id, $user_id, $exam_id, $user_id]);
         $exam_data = $stmtKey->fetch();
 
         if (!$exam_data) {
@@ -35,18 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $all_keys = json_decode($exam_data['answer_key'], true);
+        $all_keys = json_decode($exam_data['answer_key'] ?? '{}', true);
         if (!is_array($all_keys)) {
-            $all_keys = ['A' => [], 'B' => [], 'C' => []];
+            $all_keys = ['A' => [], 'B' => [], 'C' => [], 'D' => []];
         } else if (!isset($all_keys['A'])) {
             // Migrate legacy flat key
-            $all_keys = ['A' => $all_keys, 'B' => [], 'C' => []];
+            $all_keys = ['A' => $all_keys, 'B' => [], 'C' => [], 'D' => []];
         }
 
         // Parse scanned bubbles
         $scanned_arr = json_decode($raw_answers, true);
-        if (!is_array($scanned_arr)) {
-            $scanned_arr = [];
+        if (!is_array($scanned_arr) || empty($scanned_arr)) {
+            echo json_encode(['status' => 'error', 'message' => 'ไม่พบข้อมูลคำตอบเฉลยที่สแกน']);
+            exit;
         }
 
         $new_set_key = [];
@@ -91,7 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $regraded_count++;
         }
 
-        echo json_encode(['status' => 'success', 'message' => 'บันทึกเฉลยเรียบร้อย', 'regraded_count' => $regraded_count]);
+        echo json_encode([
+            'status' => 'success',
+            'scan_mode' => 'key',
+            'message' => "บันทึกเฉลยชุด $exam_set เรียบร้อยแล้ว (ตรวจใหม่อัตโนมัติ $regraded_count คน)",
+            'exam_set' => $exam_set,
+            'answers_count' => count($new_set_key),
+            'raw_answers' => $new_set_key,
+            'regraded_count' => $regraded_count
+        ]);
 
     } catch (PDOException $e) {
         safe_db_error($e, 'เกิดข้อผิดพลาดในการบันทึกเฉลย');

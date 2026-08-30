@@ -13,7 +13,7 @@ $desc=array (
 );
 $up=-70;
 $ut=98;
-$ttffile='C:\Final Project\tFPDF/font/unifont/tahomabd.ttf';
+$ttffile='C:\Final Project\msu_scoring_web\tFPDF/font/unifont/tahomabd.ttf';
 $originalsize=849284;
 $fontkey='tahomaB';
 ?>

@@ -87,6 +87,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo json_encode(['status' => 'success', 'message' => 'บันทึกคะแนนเรียบร้อย', 'calculated_score' => $actual_score]);
     } catch (PDOException $e) {
+        // ลบไฟล์รูปที่เซฟไปแล้วเมื่อ INSERT ล้มเหลว เพื่อไม่ให้เป็น orphan file
+        if (!empty($image_path)) {
+            $orphan_file = __DIR__ . '/../' . ltrim($image_path, '/');
+            if (file_exists($orphan_file)) {
+                @unlink($orphan_file);
+            }
+        }
+
         if ($e->getCode() == 23000 || str_contains($e->getMessage(), '1062')) {
             echo json_encode(['status' => 'duplicate', 'message' => 'รหัสนิสิตนี้ได้รับการตรวจและบันทึกคะแนนไปแล้ว']);
         } else {

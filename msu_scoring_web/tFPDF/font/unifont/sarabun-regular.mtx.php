@@ -13,7 +13,7 @@ $desc=array (
 );
 $up=-75;
 $ut=50;
-$ttffile='C:\Final Project\tFPDF/font/unifont/Sarabun-Regular.ttf';
+$ttffile='C:\Final Project\msu_scoring_web\tFPDF/font/unifont/Sarabun-Regular.ttf';
 $originalsize=90220;
 $fontkey='sarabun';
 ?>

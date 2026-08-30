@@ -83,21 +83,26 @@ $csrf_token = generate_csrf_token();
 <nav class="bg-gray-800 text-white sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <a href="admin_dashboard.php" class="flex items-center gap-2 text-xl font-bold tracking-wider font-sans">
-                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
-                Admin Panel
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="dashboard.php" class="flex items-center gap-1.5 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    กลับ
+                </a>
+                <a href="admin_dashboard.php" class="flex items-center gap-2 text-xl font-bold tracking-wider font-sans">
+                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    Admin Panel
+                </a>
+            </div>
             <div class="flex items-center gap-4">
                 <span class="text-sm text-gray-300 hidden sm:flex items-center gap-1.5 font-medium">
                     <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     <?= htmlspecialchars($_SESSION['name']) ?>
                 </span>
-                <a href="dashboard.php" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
-                    ← Dashboard
-                </a>
                 <a href="api/auth.php?logout=1" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                     ออกระบบ
                 </a>
@@ -113,10 +118,16 @@ $csrf_token = generate_csrf_token();
             <h1 class="text-[1.875rem] font-extrabold tracking-tight leading-[1.2] mb-1 font-sans">ภาพรวมระบบ</h1>
             <p class="text-gray-300 text-sm">ข้อมูล ณ วันที่ <?= date('d/m/Y H:i') ?> — สิทธิ์: <span class="bg-yellow-500 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">ADMIN</span></p>
         </div>
-        <button onclick="document.getElementById('roleModal').showModal()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-2 px-4 rounded-xl transition-colors text-sm flex items-center gap-2 backdrop-blur-sm">
-            <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            จัดการสิทธิ์ Admin
-        </button>
+        <div class="flex items-center gap-3">
+            <button onclick="checkOrphanImages()" class="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-white font-semibold py-2 px-4 rounded-xl transition-colors text-sm flex items-center gap-2 backdrop-blur-sm">
+                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                ล้างไฟล์ขยะ
+            </button>
+            <button onclick="document.getElementById('roleModal').showModal()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-2 px-4 rounded-xl transition-colors text-sm flex items-center gap-2 backdrop-blur-sm">
+                <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                จัดการสิทธิ์ Admin
+            </button>
+        </div>
     </div>
 </div>
 
@@ -304,8 +315,129 @@ $csrf_token = generate_csrf_token();
     </div>
 </dialog>
 
+<dialog id="cleanupModal" class="backdrop:bg-black/50 backdrop:backdrop-blur-sm rounded-2xl shadow-2xl border-0 p-0 w-full max-w-md m-auto">
+    <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-900 font-sans flex items-center gap-2">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                จัดการไฟล์รูปขยะ
+            </h2>
+            <button type="button" onclick="document.getElementById('cleanupModal').close()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div id="cleanupLoading" class="py-8 text-center text-gray-500 text-sm">
+            <svg class="w-8 h-8 animate-spin text-red-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            กำลังตรวจสอบไฟล์ขยะในระบบ...
+        </div>
+
+        <div id="cleanupContent" class="hidden space-y-4">
+            <div id="cleanupSummary" class="p-4 rounded-xl text-sm font-medium"></div>
+
+            <div id="cleanupFileList" class="max-h-48 overflow-y-auto text-xs text-gray-600 bg-gray-50 rounded-xl p-3 border border-gray-100 font-mono space-y-1 hidden"></div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="document.getElementById('cleanupModal').close()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg transition-colors">
+                    ยกเลิก
+                </button>
+                <button type="button" id="btnConfirmCleanup" onclick="executeCleanup()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    ลบไฟล์ขยะทั้งหมด
+                </button>
+            </div>
+        </div>
+    </div>
+</dialog>
+
 <script src="js/shared.js"></script>
 <script>
+    // ── Check Orphan Images ────────────────────────────────────────────────
+    async function checkOrphanImages() {
+        const modal = document.getElementById('cleanupModal');
+        const loading = document.getElementById('cleanupLoading');
+        const content = document.getElementById('cleanupContent');
+        const summary = document.getElementById('cleanupSummary');
+        const fileList = document.getElementById('cleanupFileList');
+        const btnDelete = document.getElementById('btnConfirmCleanup');
+
+        loading.classList.remove('hidden');
+        content.classList.add('hidden');
+        modal.showModal();
+
+        try {
+            const res = await fetch('api/cleanup_orphan_images.php');
+            const data = await res.json();
+
+            loading.classList.add('hidden');
+            content.classList.remove('hidden');
+
+            if (data.status === 'success') {
+                if (data.orphan_count === 0) {
+                    summary.className = 'p-4 rounded-xl text-sm font-medium bg-emerald-50 text-emerald-800 border border-emerald-200';
+                    summary.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>ไม่พบไฟล์รูปขยะในระบบ (ไฟล์ทั้งหมด ${data.kept_count} ไฟล์ใช้งานอยู่)</span>
+                        </div>`;
+                    fileList.classList.add('hidden');
+                    btnDelete.classList.add('hidden');
+                } else {
+                    summary.className = 'p-4 rounded-xl text-sm font-medium bg-red-50 text-red-800 border border-red-200';
+                    summary.innerHTML = `
+                        <p class="font-bold text-base mb-1">พบไฟล์รูปขยะ ${data.orphan_count} ไฟล์ (รวม ${data.total_size_mb} MB)</p>
+                        <p class="text-xs text-red-600">ไฟล์เหล่านี้เป็นรูปสแกนเก่าที่ไม่มีข้อมูลในระบบอ้างอิงถึงแล้ว สามารถลบทิ้งเพื่อคืนพื้นที่ดิสก์ได้</p>`;
+                    
+                    fileList.innerHTML = data.orphan_files.map(f => `<div class="truncate">• ${escapeHtml(f.filename)} (${(f.size_bytes / 1024).toFixed(1)} KB)</div>`).join('');
+                    fileList.classList.remove('hidden');
+                    btnDelete.classList.remove('hidden');
+                }
+            } else {
+                summary.className = 'p-4 rounded-xl text-sm font-medium bg-red-50 text-red-800 border border-red-200';
+                summary.textContent = data.message || 'เกิดข้อผิดพลาดในการตรวจสอบ';
+                fileList.classList.add('hidden');
+                btnDelete.classList.add('hidden');
+            }
+        } catch (e) {
+            loading.classList.add('hidden');
+            content.classList.remove('hidden');
+            summary.className = 'p-4 rounded-xl text-sm font-medium bg-red-50 text-red-800 border border-red-200';
+            summary.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์';
+            fileList.classList.add('hidden');
+            btnDelete.classList.add('hidden');
+        }
+    }
+
+    // ── Execute Cleanup ───────────────────────────────────────────────────
+    async function executeCleanup() {
+        const btn = document.getElementById('btnConfirmCleanup');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="animate-spin inline-block mr-1">⏳</span> กำลังลบ...';
+
+        try {
+            const formData = new FormData();
+            const res = await fetchApi('api/cleanup_orphan_images.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                showToast(data.message, 'success');
+                document.getElementById('cleanupModal').close();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showToast(data.message || 'เกิดข้อผิดพลาดในการลบไฟล์', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> ลบไฟล์ขยะทั้งหมด';
+            }
+        } catch (e) {
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> ลบไฟล์ขยะทั้งหมด';
+        }
+    }
+
     // ── Grant Admin ───────────────────────────────────────────────────────
     document.getElementById('grantAdminForm').addEventListener('submit', async (e) => {
         e.preventDefault();

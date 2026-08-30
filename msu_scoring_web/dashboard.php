@@ -156,7 +156,7 @@ $csrf_token = generate_csrf_token();
     </dialog>
 
     <!-- Print Answer Sheet Modal -->
-    <dialog id="printModal" aria-labelledby="printExamTitle" class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 border border-emerald-100 backdrop:bg-black/50 backdrop:backdrop-blur-sm m-auto">
+    <dialog id="printModal" aria-labelledby="printExamTitle" class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-emerald-100 backdrop:bg-black/50 backdrop:backdrop-blur-sm m-auto">
         <div class="flex items-center gap-3 mb-5">
             <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
@@ -167,22 +167,78 @@ $csrf_token = generate_csrf_token();
             </div>
         </div>
         <div class="flex flex-col gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">จำนวนข้อ</label>
-                <select id="printQCount" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm">
-                    <option value="50">50 ข้อ</option>
-                    <option value="100">100 ข้อ</option>
-                    <option value="150">150 ข้อ</option>
-                </select>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">จำนวนข้อ</label>
+                    <select id="printQCount" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans">
+                        <option value="50">50 ข้อ</option>
+                        <option value="100">100 ข้อ</option>
+                        <option value="150">150 ข้อ</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">ชุดข้อสอบ</label>
+                    <select id="printExamSet" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans">
+                        <option value="A">ชุด A</option>
+                        <option value="B">ชุด B</option>
+                        <option value="C">ชุด C</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">ชุดข้อสอบ</label>
-                <select id="printExamSet" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm">
-                    <option value="A">ชุด A</option>
-                    <option value="B">ชุด B</option>
-                    <option value="C">ชุด C</option>
-                </select>
+
+            <!-- Header Fields Customization -->
+            <div class="bg-gray-50/80 rounded-xl p-3.5 border border-gray-200/80">
+                <div class="flex items-center justify-between mb-2.5">
+                    <label class="text-sm font-bold text-gray-800 font-sans">ข้อมูลส่วนหัวกระดาษ</label>
+                    <span class="text-[11px] text-gray-400">ปรับขนาดกล่องอัตโนมัติ</span>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <!-- Name (Mandatory) -->
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 opacity-80 cursor-not-allowed select-none">
+                        <input type="checkbox" checked disabled class="w-4 h-4 text-emerald-600 rounded border-gray-300">
+                        <span class="font-medium text-gray-800">ชื่อ-สกุล (Name)</span>
+                        <span class="text-[10px] text-emerald-600 font-bold ml-auto bg-emerald-50 px-1.5 py-0.5 rounded">จำเป็น</span>
+                    </label>
+
+                    <!-- Date -->
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 cursor-pointer transition-colors select-none">
+                        <input type="checkbox" id="hdr_date" checked class="hdr-checkbox w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500" value="date">
+                        <span class="font-medium text-gray-700">วันที่ (Date)</span>
+                    </label>
+
+                    <!-- Room -->
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 cursor-pointer transition-colors select-none">
+                        <input type="checkbox" id="hdr_room" checked class="hdr-checkbox w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500" value="room">
+                        <span class="font-medium text-gray-700">ห้องสอบ (Room)</span>
+                    </label>
+
+                    <!-- Sec -->
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 cursor-pointer transition-colors select-none">
+                        <input type="checkbox" id="hdr_sec" checked class="hdr-checkbox w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500" value="sec">
+                        <span class="font-medium text-gray-700">กลุ่มเรียน (Sec)</span>
+                    </label>
+
+                    <!-- Tel -->
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 cursor-pointer transition-colors select-none">
+                        <input type="checkbox" id="hdr_tel" checked class="hdr-checkbox w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500" value="tel">
+                        <span class="font-medium text-gray-700">เบอร์โทร (Tel)</span>
+                    </label>
+
+                    <!-- Seat No. -->
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 cursor-pointer transition-colors select-none">
+                        <input type="checkbox" id="hdr_seat_no" checked class="hdr-checkbox w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500" value="seat_no">
+                        <span class="font-medium text-gray-700">เลขที่นั่ง (Seat No.)</span>
+                    </label>
+
+                    <!-- Exam No. -->
+                    <label class="col-span-2 flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 cursor-pointer transition-colors select-none">
+                        <input type="checkbox" id="hdr_exam_no" checked class="hdr-checkbox w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500" value="exam_no">
+                        <span class="font-medium text-gray-700">เลขข้อสอบ (Exam No.)</span>
+                    </label>
+                </div>
             </div>
+
             <div class="flex gap-3 mt-1">
                 <button onclick="closePrintModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 active:scale-[0.98] text-gray-700 font-semibold py-2.5 px-4 rounded-xl transition-all text-sm">ยกเลิก</button>
                 <button onclick="submitPrint()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white font-semibold py-2.5 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-1.5">
@@ -403,12 +459,25 @@ $csrf_token = generate_csrf_token();
         // ── Print Modal Helpers ───────────────────────────────────────────
         let _printExamId = null;
 
+        function loadPrintHeaderPreferences() {
+            const saved = localStorage.getItem('msu_omr_header_fields');
+            if (saved) {
+                try {
+                    const fields = JSON.parse(saved);
+                    document.querySelectorAll('.hdr-checkbox').forEach(cb => {
+                        cb.checked = fields.includes(cb.value);
+                    });
+                } catch(e) {}
+            }
+        }
+
         function openPrintModal(examId, defaultQCount) {
             _printExamId = examId;
             const sel = document.getElementById('printQCount');
             const opts = [50, 100, 150];
             const closest = opts.reduce((a, b) => Math.abs(b - defaultQCount) < Math.abs(a - defaultQCount) ? b : a);
             sel.value = String(closest);
+            loadPrintHeaderPreferences();
             const modal = document.getElementById('printModal');
             modal.showModal();
         }
@@ -421,7 +490,17 @@ $csrf_token = generate_csrf_token();
         function submitPrint() {
             const qCount  = document.getElementById('printQCount').value;
             const examSet = document.getElementById('printExamSet').value;
-            window.open(`generate_pdf.php?exam_id=${_printExamId}&q_count=${qCount}&exam_set=${examSet}`, '_blank');
+
+            const selectedFields = [];
+            document.querySelectorAll('.hdr-checkbox:checked').forEach(cb => {
+                selectedFields.push(cb.value);
+            });
+
+            // Save preferences to localStorage
+            localStorage.setItem('msu_omr_header_fields', JSON.stringify(selectedFields));
+
+            const fieldsParam = encodeURIComponent(selectedFields.join(','));
+            window.open(`generate_pdf.php?exam_id=${_printExamId}&q_count=${qCount}&exam_set=${examSet}&fields=${fieldsParam}`, '_blank');
             closePrintModal();
         }
 

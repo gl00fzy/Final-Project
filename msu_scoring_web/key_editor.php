@@ -28,17 +28,31 @@ if (!$exam) {
 $question_count = (int)$exam['question_count'];
 $raw_key = json_decode($exam['answer_key'] ?? '{}', true);
 
-// Normalize old flat structure to new Advanced JSON structure
-if (empty($raw_key)) $raw_key = [];
-$normalized_key = ['A' => [], 'B' => [], 'C' => []];
+if (!is_array($raw_key)) $raw_key = [];
 
-foreach (['A', 'B', 'C'] as $set) {
-    $set_data = $raw_key[$set] ?? (isset($raw_key['1']) && $set === 'A' ? $raw_key : []);
-    
+// Determine if raw_key is multi-set (A, B, C, D) or legacy flat key
+$is_multi_set = false;
+foreach (['A', 'B', 'C', 'D', 'a', 'b', 'c', 'd'] as $s_name) {
+    if (isset($raw_key[$s_name]) && is_array($raw_key[$s_name])) {
+        $is_multi_set = true;
+        break;
+    }
+}
+
+$normalized_key = ['A' => [], 'B' => [], 'C' => [], 'D' => []];
+
+foreach (['A', 'B', 'C', 'D'] as $set) {
+    if ($is_multi_set) {
+        $set_data = $raw_key[$set] ?? ($raw_key[strtolower($set)] ?? []);
+    } else {
+        $set_data = ($set === 'A') ? $raw_key : [];
+    }
+
     for ($i = 1; $i <= $question_count; $i++) {
         $q_str = (string)$i;
-        if (isset($set_data[$q_str])) {
-            $val = $set_data[$q_str];
+        $val = $set_data[$q_str] ?? ($set_data[$i] ?? null);
+
+        if ($val !== null) {
             if (is_string($val)) {
                 $normalized_key[$set][$q_str] = [
                     'answers' => [$val],
@@ -47,8 +61,16 @@ foreach (['A', 'B', 'C'] as $set) {
                     'penalty' => 0,
                     'ignore' => false
                 ];
-            } else {
-                $normalized_key[$set][$q_str] = $val;
+            } else if (is_array($val)) {
+                $ans = $val['answers'] ?? [];
+                if (is_string($ans)) $ans = [$ans];
+                $normalized_key[$set][$q_str] = [
+                    'answers' => is_array($ans) ? $ans : [],
+                    'logic' => $val['logic'] ?? 'OR',
+                    'points' => isset($val['points']) ? (float)$val['points'] : 1,
+                    'penalty' => isset($val['penalty']) ? (float)$val['penalty'] : 0,
+                    'ignore' => !empty($val['ignore'])
+                ];
             }
         } else {
             $normalized_key[$set][$q_str] = [
@@ -61,6 +83,21 @@ foreach (['A', 'B', 'C'] as $set) {
         }
     }
 }
+
+$default_set = strtoupper(trim($_GET['set'] ?? ''));
+if (!in_array($default_set, ['A', 'B', 'C', 'D'])) {
+    $default_set = 'A';
+    // Auto-select set with answers if set parameter is not explicitly provided
+    foreach (['A', 'B', 'C', 'D'] as $s) {
+        foreach ($normalized_key[$s] as $k => $cfg) {
+            if (!empty($cfg['answers']) || !empty($cfg['ignore'])) {
+                $default_set = $s;
+                break 2;
+            }
+        }
+    }
+}
+
 $answer_key = $normalized_key;
 $csrf_token = generate_csrf_token();
 ?>
@@ -104,9 +141,10 @@ $csrf_token = generate_csrf_token();
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <select id="examSetSelector" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white font-medium text-gray-700 text-sm">
-                        <option value="A">ชุดข้อสอบ A</option>
-                        <option value="B">ชุดข้อสอบ B</option>
-                        <option value="C">ชุดข้อสอบ C</option>
+                        <option value="A" <?= $default_set === 'A' ? 'selected' : '' ?>>ชุดข้อสอบ A</option>
+                        <option value="B" <?= $default_set === 'B' ? 'selected' : '' ?>>ชุดข้อสอบ B</option>
+                        <option value="C" <?= $default_set === 'C' ? 'selected' : '' ?>>ชุดข้อสอบ C</option>
+                        <option value="D" <?= $default_set === 'D' ? 'selected' : '' ?>>ชุดข้อสอบ D</option>
                     </select>
                     <button class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2.5 px-6 rounded-xl transition-all active:scale-95 shadow-sm text-sm" id="btnSaveKey">บันทึกเฉลย & ตรวจใหม่</button>
                 </div>
@@ -165,7 +203,7 @@ $csrf_token = generate_csrf_token();
         let answerKey = <?= json_encode($answer_key) ?>;
         const examId = <?= $exam_id ?>;
         const questionCount = <?= $question_count ?>;
-        let currentSet = 'A';
+        let currentSet = '<?= $default_set ?>';
         let isDirty = false;
 
         // Warn before leaving if changes are unsaved

@@ -109,7 +109,7 @@ const AREA_MAX   = 80000;
 const AR_MIN     = 0.4;
 const AR_MAX     = 2.5;
 const APPROX_EPS = 0.06;
-const FILL_FRAC  = 0.40;   // Raised from 0.35 → 0.40 to reduce false positives
+const FILL_FRAC  = 0.35;   // Matched to Python omr_scanner.py threshold
 
 function findSquareMarkers(binaryMat) {
     let contours  = new cv.MatVector();
@@ -396,7 +396,7 @@ function processSheet(corners, W, H, frameMat) {
 
         if (!isSubmitting) {
             if (scanMode === 'key') {
-                submitKey(JSON.stringify(rawAnswers));
+                submitKey(JSON.stringify(rawAnswers), base64Image);
             } else {
                 submitScore(studentId, Object.keys(rawAnswers).length, JSON.stringify(rawAnswers), base64Image);
             }
@@ -427,30 +427,30 @@ function getSections(q_count) {
     if (q_count === 100) return [{cols:5, rows:10, start:1}, {cols:5, rows:10, start:51}];
     return [{cols:5, rows:10, start:1}]; // 50
 }
-function getAnsDy(q_count) { return q_count <= 100 ? 5.5 : 4.8; }
+function getAnsDy(q_count) { return q_count <= 100 ? 5.9 : 6; }
 function getSectionGap(q_count) { return q_count <= 100 ? 5 : 4; }
 
 const _MARG      = 12;
 const _MK_SIZE   = 8;
 const _MK_OFF    = 5;
 const _BUB_R_MM  = 2.0;
-const _BUB_DX_MM = 5.2;
+const _BUB_DX_MM = 5.5;
 const _SEC_MK_MM = 3.0;
-const _BUB_PX    = mm2px(_BUB_R_MM * 1.15, 'x');
+const _BUB_PX    = mm2px(_BUB_R_MM * 1.1, 'x');
 
 const _header_top    = _MK_OFF + _MK_SIZE + 3;
 const _row2_y        = _header_top + 10 + 1;
 const _info_y        = _row2_y + 10 + 2;
 const _y_div1        = _info_y + 6;
 const _sid_top       = _y_div1 + 3;
-const _sid_y_start   = _sid_top + 13;
-const _sid_dy        = 5.5;
+const _sid_y_start   = _sid_top + 13;          // For answer-section base calculation (Python scan_answers)
+const _sid_y_start_id = _sid_top + 8;          // For Student ID grid Y start (Python scan_student_id: sid_top + 8)
+const _sid_base_x_id  = _MARG + 3.5;          // Student ID base X (Python: MARG + 3.5 = 15.5)
+const _sid_dy        = 6;                       // Student ID row spacing in mm (Python: 6)
 const _digit_rows    = 10;
 const _sid_block_bot = _sid_y_start + (_digit_rows - 1) * _sid_dy + _BUB_R_MM + 2;
 const _y_div2        = _sid_block_bot + 2;
-const _ans_start_y   = _y_div2 + 3;
-const _first_row_y   = _ans_start_y + _SEC_MK_MM + 3;
-const _ans_dy        = 5.5;
+const _ans_start_y   = _y_div2 - 3;           // Python uses y_divider2 + (-3)
 
 function readAllBubbles(binMat, W, H, warpedMat) {
     const q_count = getQCount();
@@ -463,22 +463,29 @@ function readAllBubbles(binMat, W, H, warpedMat) {
     let answers = {};
     let current_y = _ans_start_y;
 
+    // Per-column X adjustments from Python omr_scanner.py (mm)
+    const adjust_x_list = [-7.5, -6.5, -5.0, -3.5, -2.0];
+    // Per-choice X adjustments from Python omr_scanner.py (mm)
+    const choice_adjustments = [0.0, 0.5, 0.5, 0.5, 0.5];
+
     for (let si = 0; si < sections.length; si++) {
         let sec = sections[si];
         let n_cols = sec.cols, rows = sec.rows, q_start = sec.start;
-        let col_w_mm = usable_w / n_cols;
+        let col_w_mm = (usable_w / n_cols) + 2;  // Python: (usable_w / n_cols) + 2
         let content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
         let offset_x = (col_w_mm - content_w) / 2;
         let first_row_y = current_y + _SEC_MK_MM + 3;
         let q = q_start;
 
         for (let c = 0; c < n_cols && q <= q_count; c++) {
-            let base_x_mm = _MARG + c * col_w_mm + offset_x;
+            let adjust_x = c < adjust_x_list.length ? adjust_x_list[c] : 0.0;
+            let base_x_mm = _MARG + c * col_w_mm + offset_x + adjust_x;
             for (let r = 0; r < rows && q <= q_count; r++) {
                 let qy_mm = first_row_y + r * ans_dy;
                 let fills = [];
                 for (let oi = 0; oi < n_opts; oi++) {
-                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
+                    let adj_choice = oi < choice_adjustments.length ? choice_adjustments[oi] : 0.0;
+                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM + adj_choice;
                     let bx_px = Math.round(mm2px(bx_mm, 'x'));
                     let by_px = Math.round(mm2px(qy_mm,  'y'));
                     let r_px  = Math.round(_BUB_PX);
@@ -500,7 +507,7 @@ function readAllBubbles(binMat, W, H, warpedMat) {
                     if (i !== bestIdx && fills[i] > secondBest) secondBest = fills[i];
                 }
 
-                if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.8)) {
+                if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.6)) {
                     answers[q] = opts[bestIdx];
                 }
                 q++;
@@ -514,13 +521,20 @@ function readAllBubbles(binMat, W, H, warpedMat) {
 
 function readStudentId(binMat, W, H, warpedMat) {
     const digits = 11, digit_rows = 10;
-    const sid_base_x_mm = _MARG + 10;
+    const sid_base_x_mm = _sid_base_x_id;  // Python: MARG + 3.5 = 15.5
+
+    // Fine-tune adjustments from Python omr_scanner.py (mm)
+    const sid_col_adjust_x = [-1, -1, -0.7, -0.7, -0.3, 0.0, 0.0, 0.0, 0.0, 0.5, 0.7];
+    const sid_row_adjust_y = [-0.5, -0.5, -0.75, -0.75, -0.85, -1, -1.3, -1.3, -1.7, -1.9];
+
     let studentId = '';
     for (let col = 0; col < digits; col++) {
-        let cx_mm = sid_base_x_mm + col * _BUB_DX_MM;
+        let col_adj_x = col < sid_col_adjust_x.length ? sid_col_adjust_x[col] : 0.0;
+        let cx_mm = sid_base_x_mm + col * _BUB_DX_MM + col_adj_x;
         let fills = [];
         for (let row = 0; row < digit_rows; row++) {
-            let cy_mm = _sid_y_start + row * _sid_dy;
+            let row_adj_y = row < sid_row_adjust_y.length ? sid_row_adjust_y[row] : 0.0;
+            let cy_mm = _sid_y_start_id + row * _sid_dy + row_adj_y;
             let bx_px = Math.round(mm2px(cx_mm, 'x'));
             let by_px = Math.round(mm2px(cy_mm,  'y'));
             let r_px  = Math.round(_BUB_PX);
@@ -542,7 +556,7 @@ function readStudentId(binMat, W, H, warpedMat) {
             if (i !== bestRow && fills[i] > secondBest) secondBest = fills[i];
         }
 
-        if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.8)) {
+        if (bestFill >= FILL_FRAC && (secondBest < 0.01 || bestFill / secondBest >= 1.6)) {
             studentId += String(bestRow);
         } else {
             studentId += '?';
@@ -562,21 +576,27 @@ function drawBubbleDebugOverlay(dbgCtx, answers, W, H) {
     const q_label_w = 9;
     let current_y = _ans_start_y;
 
+    // Same adjustments as readAllBubbles (from Python omr_scanner.py)
+    const adjust_x_list = [-7.5, -6.5, -5.0, -3.5, -2.0];
+    const choice_adjustments = [0.0, 0.5, 0.5, 0.5, 0.5];
+
     for (let si = 0; si < sections.length; si++) {
         let sec = sections[si];
         let n_cols = sec.cols, rows = sec.rows, q_start = sec.start;
-        let col_w_mm = usable_w / n_cols;
+        let col_w_mm = (usable_w / n_cols) + 2;  // Python: (usable_w / n_cols) + 2
         let content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
         let offset_x = (col_w_mm - content_w) / 2;
         let first_row_y = current_y + _SEC_MK_MM + 3;
         let q = q_start;
 
         for (let c = 0; c < n_cols && q <= q_count; c++) {
-            let base_x_mm = _MARG + c * col_w_mm + offset_x;
+            let adjust_x = c < adjust_x_list.length ? adjust_x_list[c] : 0.0;
+            let base_x_mm = _MARG + c * col_w_mm + offset_x + adjust_x;
             for (let r = 0; r < rows && q <= q_count; r++) {
                 let qy_mm = first_row_y + r * ans_dy;
                 for (let oi = 0; oi < n_opts; oi++) {
-                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
+                    let adj_choice = oi < choice_adjustments.length ? choice_adjustments[oi] : 0.0;
+                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM + adj_choice;
                     let bx_px = Math.round(mm2px(bx_mm, 'x'));
                     let by_px = Math.round(mm2px(qy_mm,  'y'));
                     let isSelected = answers[q] === opts[oi];
@@ -605,43 +625,85 @@ window.setScanMode = function(mode) {
     scanMode = mode;
     const btnStudent = document.getElementById('modeStudentBtn');
     const btnKey     = document.getElementById('modeKeyBtn');
+    const pyBtnText  = document.getElementById('pyBtnText');
+    const examSet    = document.getElementById('examSetScanner')?.value || 'A';
+
     if (mode === 'student') {
-        btnStudent.className = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap bg-yellow-500 text-gray-900 shadow-md active:scale-95 transition-all';
-        btnKey.className     = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap text-gray-300 hover:text-white active:scale-95 transition-all';
-        statusIndicator.textContent = 'โหมดตรวจกระดาษคำตอบ';
+        if (btnStudent) btnStudent.className = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap bg-yellow-500 text-gray-900 shadow-md active:scale-95 transition-all';
+        if (btnKey) btnKey.className     = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap text-gray-300 hover:text-white active:scale-95 transition-all';
+        statusIndicator.textContent = 'โหมดตรวจกระดาษคำตอบนิสิต';
         statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        if (pyBtnText) pyBtnText.textContent = 'อัปโหลดรูปสแกน (Python)';
     } else {
-        btnKey.className     = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap bg-yellow-500 text-gray-900 shadow-md active:scale-95 transition-all';
-        btnStudent.className = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap text-gray-300 hover:text-white active:scale-95 transition-all';
-        statusIndicator.textContent = 'โหมดสร้างเฉลย (Scan as Key)';
+        if (btnKey) btnKey.className     = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap bg-yellow-500 text-gray-900 shadow-md active:scale-95 transition-all';
+        if (btnStudent) btnStudent.className = 'px-4 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap text-gray-300 hover:text-white active:scale-95 transition-all';
+        statusIndicator.textContent = `โหมดสร้างเฉลยชุด ${examSet} (Scan as Key)`;
         statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
+        if (pyBtnText) pyBtnText.textContent = `อัปโหลดเฉลยชุด ${examSet} (Python)`;
     }
 };
 
-async function submitKey(rawAnswers) {
+async function submitKey(rawAnswers, imageBase64) {
     if (isSubmitting) return;
     isSubmitting = true; _cooldown = true;
-    statusIndicator.textContent = 'กำลังบันทึกเฉลย...';
-    statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
     let examSet = document.getElementById('examSetScanner')?.value || 'A';
+    statusIndicator.textContent = `กำลังบันทึกเฉลยชุด ${examSet}...`;
+    statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
+    
     const fd = new FormData();
-    fd.append('exam_id', examId); fd.append('exam_set', examSet); fd.append('raw_answers', rawAnswers);
+    fd.append('exam_id', examId); 
+    fd.append('exam_set', examSet); 
+    fd.append('raw_answers', rawAnswers);
+    if (imageBase64) fd.append('image', imageBase64);
+
     try {
-        const res  = await fetch('api/scan_key.php', { method: 'POST', body: fd });
+        const res  = await fetchApi('api/scan_key.php', { method: 'POST', body: fd });
         const data = await res.json();
         if (data.status === 'success') {
             playBeep();
-            statusIndicator.textContent = 'บันทึกเฉลยชุด ' + examSet + ' และตรวจใหม่ ' + data.regraded_count + ' คน';
+            const ansCount = data.answers_count || Object.keys(JSON.parse(rawAnswers || '{}')).length;
+            statusIndicator.textContent = `บันทึกเฉลยชุด ${examSet} สำเร็จ! (${ansCount} ข้อ)`;
             statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
+
+            if (typeof showToast === 'function') {
+                showToast(`บันทึกเฉลยชุด ${examSet} สำเร็จ! (${ansCount} ข้อ, ตรวจใหม่ ${data.regraded_count || 0} คน)`, 'success');
+            }
+
+            if (typeof showScanResultModal === 'function') {
+                showScanResultModal({
+                    title: 'บันทึกเฉลยสำเร็จ!',
+                    labelLeft: 'ชุดข้อสอบ',
+                    valueLeft: 'ชุด ' + examSet,
+                    labelRight: 'จำนวนข้อเฉลย',
+                    valueRight: ansCount + ' ข้อ',
+                    subText: data.regraded_count !== undefined ? `ตรวจคะแนนใหม่อัตโนมัติ: ${data.regraded_count} คน` : '',
+                    image: imageBase64 || '',
+                    editKeyUrl: `key_editor.php?exam_id=${examId}&set=${examSet}`
+                });
+            }
         } else {
-            statusIndicator.textContent = data.message;
+            statusIndicator.textContent = data.message || 'บันทึกเฉลยไม่สำเร็จ';
             statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+            if (typeof showToast === 'function') showToast(data.message || 'บันทึกเฉลยไม่สำเร็จ', 'error');
         }
     } catch (e) {
         statusIndicator.textContent = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้';
         statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
+        if (typeof showToast === 'function') showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
     }
-    setTimeout(() => { isSubmitting = false; _cooldown = false; setScanMode('key'); }, 2000);
+    setTimeout(() => { 
+        isSubmitting = false; 
+        _cooldown = false; 
+        if (scanMode === 'key') {
+            let activeSet = document.getElementById('examSetScanner')?.value || 'A';
+            statusIndicator.textContent = `โหมดสร้างเฉลยชุด ${activeSet} - เล็งกล้องที่กระดาษเฉลย...`;
+            statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
+        } else {
+            statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            statusIndicator.textContent = 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
+            document.getElementById('root-container').classList.remove('success', 'error');
+        }
+    }, 3000);
 }
 
 async function submitScore(studentId, score, rawAnswers, imageBase64) {
@@ -671,19 +733,29 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
     fd.append('exam_id', examId); fd.append('student_id', studentId); fd.append('score', score);
     fd.append('exam_set', examSet); fd.append('raw_answers', rawAnswers); fd.append('image', imageBase64);
     try {
-        const res  = await fetch('api/scores.php', { method: 'POST', body: fd });
+        const res  = await fetchApi('api/scores.php', { method: 'POST', body: fd });
         const data = await res.json();
         if (data.status === 'success') {
             scannedStudentIds.add(studentId);
             playBeep();
             statusIndicator.textContent = 'บันทึกคะแนนสำเร็จ';
             statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
-            const resultCard = document.getElementById('scanResultCard');
-            if (resultCard) {
-                function escHtml(t) { return String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-                document.getElementById('resStudentId').innerHTML = escHtml(studentId);
-                document.getElementById('resScore').textContent = data.calculated_score !== undefined ? data.calculated_score : score;
-                resultCard.classList.remove('hidden');
+            
+            const calculatedScore = data.calculated_score !== undefined ? data.calculated_score : score;
+            if (typeof showToast === 'function') {
+                showToast(`สแกนสำเร็จ! นิสิต: ${studentId} (คะแนน: ${calculatedScore})`, 'success');
+            }
+
+            if (typeof showScanResultModal === 'function') {
+                showScanResultModal({
+                    title: 'สำเร็จ!',
+                    labelLeft: 'รหัสนิสิต',
+                    valueLeft: studentId,
+                    labelRight: 'คะแนนที่ได้',
+                    valueRight: calculatedScore,
+                    subText: '',
+                    image: imageBase64 || ''
+                });
             }
         } else if (data.status === 'duplicate') {
             scannedStudentIds.add(studentId);
@@ -710,13 +782,15 @@ const manualModal     = document.getElementById('manualModal');
 const btnManual       = document.getElementById('btnManual');
 const btnCancelManual = document.getElementById('btnCancelManual');
 const manualForm      = document.getElementById('manualForm');
-btnManual.addEventListener('click', () => manualModal.showModal());
-btnCancelManual.addEventListener('click', () => manualModal.close());
-manualForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const studentId = document.getElementById('studentId').value;
-    const score     = document.getElementById('score').value;
-    manualModal.close();
-    await submitScore(studentId, score);
-    manualForm.reset();
-});
+if (btnManual) btnManual.addEventListener('click', () => manualModal.showModal());
+if (btnCancelManual) btnCancelManual.addEventListener('click', () => manualModal.close());
+if (manualForm) {
+    manualForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const studentId = document.getElementById('studentId').value;
+        const score     = document.getElementById('score').value;
+        manualModal.close();
+        await submitScore(studentId, score);
+        manualForm.reset();
+    });
+}

@@ -203,6 +203,7 @@ $csrf_token = generate_csrf_token();
             <input type="file" id="pyUploadInput" accept="image/*" capture="environment" class="hidden" onchange="uploadToPythonEngine(this)">
 
             <button onclick="document.getElementById('pyUploadInput').click()"
+                    id="pyUploadBtn"
                     class="inline-flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-400
                            text-gray-900 font-bold text-xs md:text-sm px-4 py-2 rounded-full shadow-xl
                            border border-yellow-300 hover:scale-105 active:scale-95
@@ -211,7 +212,7 @@ $csrf_token = generate_csrf_token();
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                อัปโหลดรูปสแกน (Python)
+                <span id="pyBtnText">อัปโหลดรูปสแกน (Python)</span>
             </button>
 
             <button id="btnManual"
@@ -241,31 +242,37 @@ $csrf_token = generate_csrf_token();
         <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 w-full max-w-[420px] max-h-[90vh] overflow-y-auto
                     text-center border border-white/30 pointer-events-auto flex flex-col items-center">
             <h2 class="text-yellow-500 text-3xl font-bold mb-1 flex items-center justify-center gap-2 font-sans">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                 </svg>
-                สำเร็จ!
+                <span id="resModalTitleText">สำเร็จ!</span>
             </h2>
             <div class="flex justify-around w-full my-3 py-2 bg-gray-50 rounded-2xl border border-gray-100">
                 <div>
-                    <p class="text-gray-400 text-xs">รหัสนิสิต</p>
+                    <p id="resLabelLeft" class="text-gray-400 text-xs">รหัสนิสิต</p>
                     <p id="resStudentId" class="text-2xl font-black text-gray-900 tracking-wider font-mono"></p>
                 </div>
                 <div>
-                    <p class="text-gray-400 text-xs">คะแนนที่ได้</p>
+                    <p id="resLabelRight" class="text-gray-400 text-xs">คะแนนที่ได้</p>
                     <p id="resScore" class="text-4xl font-black text-yellow-500 leading-none"></p>
                 </div>
             </div>
+            <p id="resSubText" class="text-xs text-emerald-600 font-semibold hidden mb-2"></p>
 
             <div id="resOverlayWrapper" class="hidden w-full my-2">
                 <p class="text-xs text-gray-500 font-semibold mb-1">ภาพตรวจจับ OMR (จุดสีเขียว = คำตอบที่เลือก):</p>
                 <img id="resOverlayImg" class="w-full max-h-[300px] object-contain rounded-xl border border-gray-300 shadow-inner bg-black" src="" alt="OMR Overlay">
             </div>
 
-            <button onclick="document.getElementById('scanResultCard').classList.add('hidden')"
-                    class="mt-3 px-6 py-2 bg-gray-900 text-white text-xs font-bold rounded-full shadow hover:bg-gray-800 active:scale-95 transition-all">
-                ปิดหน้าต่างนี้
-            </button>
+            <div class="mt-3 flex flex-col sm:flex-row gap-2 w-full justify-center">
+                <a id="resEditKeyBtn" href="#" class="hidden px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-gray-900 text-xs font-bold rounded-full shadow active:scale-95 transition-all text-center">
+                    ✏️ เปิดดู/แก้ไขเฉลยในระบบ
+                </a>
+                <button onclick="document.getElementById('scanResultCard').classList.add('hidden')"
+                        class="px-6 py-2 bg-gray-900 text-white text-xs font-bold rounded-full shadow hover:bg-gray-800 active:scale-95 transition-all">
+                    ปิดหน้าต่างนี้
+                </button>
+            </div>
         </div>
     </div>
 
@@ -348,21 +355,81 @@ $csrf_token = generate_csrf_token();
             document.getElementById('debugToggleBtn').textContent = _debugVisible ? '✕ ปิด DEBUG' : '🔍 DEBUG';
         };
 
+        // ── Show Scan Result Modal Helper ────────────────────────────────────
+        window.showScanResultModal = function(opts) {
+            const card = document.getElementById('scanResultCard');
+            if (!card) return;
+
+            const titleEl = document.getElementById('resModalTitleText');
+            if (titleEl && opts.title) titleEl.textContent = opts.title;
+
+            const labelLeftEl = document.getElementById('resLabelLeft');
+            if (labelLeftEl && opts.labelLeft) labelLeftEl.textContent = opts.labelLeft;
+
+            const valLeftEl = document.getElementById('resStudentId');
+            if (valLeftEl && opts.valueLeft !== undefined) valLeftEl.textContent = opts.valueLeft;
+
+            const labelRightEl = document.getElementById('resLabelRight');
+            if (labelRightEl && opts.labelRight) labelRightEl.textContent = opts.labelRight;
+
+            const valRightEl = document.getElementById('resScore');
+            if (valRightEl && opts.valueRight !== undefined) valRightEl.textContent = opts.valueRight;
+
+            const subTextEl = document.getElementById('resSubText');
+            if (subTextEl) {
+                if (opts.subText) {
+                    subTextEl.textContent = opts.subText;
+                    subTextEl.classList.remove('hidden');
+                } else {
+                    subTextEl.classList.add('hidden');
+                }
+            }
+
+            const editKeyBtn = document.getElementById('resEditKeyBtn');
+            if (editKeyBtn) {
+                if (opts.editKeyUrl) {
+                    editKeyBtn.href = opts.editKeyUrl;
+                    editKeyBtn.classList.remove('hidden');
+                } else {
+                    editKeyBtn.classList.add('hidden');
+                }
+            }
+
+            const overlayWrapper = document.getElementById('resOverlayWrapper');
+            const overlayImg = document.getElementById('resOverlayImg');
+            if (overlayWrapper && overlayImg) {
+                if (opts.image) {
+                    overlayImg.src = opts.image;
+                    overlayWrapper.classList.remove('hidden');
+                } else {
+                    overlayWrapper.classList.add('hidden');
+                }
+            }
+
+            card.classList.remove('hidden');
+        };
+
         // ── Upload Image to Python Backend Engine ─────────────────────────────
         async function uploadToPythonEngine(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
             const examId = document.getElementById('examId')?.value || 1;
             const qCount = document.getElementById('qCount')?.value || 50;
+            const currentMode = typeof scanMode !== 'undefined' ? scanMode : 'student';
+            const examSet = document.getElementById('examSetScanner')?.value || 'A';
             
             const statusIndicator = document.getElementById('statusIndicator');
-            statusIndicator.textContent = `⏳ กำลังประมวลผลกระดาษคำตอบ (${qCount} ข้อ) ผ่าน Python...`;
+            statusIndicator.textContent = currentMode === 'key'
+                ? `⏳ กำลังประมวลผลเฉลยชุด ${examSet} (${qCount} ข้อ) ผ่าน Python...`
+                : `⏳ กำลังประมวลผลกระดาษคำตอบ (${qCount} ข้อ) ผ่าน Python...`;
             statusIndicator.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
 
             const formData = new FormData();
             formData.append('image', file);
             formData.append('exam_id', examId);
             formData.append('q_count', qCount);
+            formData.append('scan_mode', currentMode);
+            formData.append('exam_set', examSet);
 
             try {
                 const response = await fetchApi('api/scan_python.php', {
@@ -373,25 +440,39 @@ $csrf_token = generate_csrf_token();
 
                 if (data.status === 'success') {
                     if (typeof playBeep === 'function') playBeep();
-                    showToast(`สแกนสำเร็จ! นิสิต: ${data.student_id} (คะแนน: ${data.score})`, 'success');
                     
-                    const resultCard = document.getElementById('scanResultCard');
-                    if (resultCard) {
-                        document.getElementById('resStudentId').textContent = data.student_id;
-                        document.getElementById('resScore').textContent = data.score;
+                    if (data.scan_mode === 'key') {
+                        showToast(`บันทึกเฉลยชุด ${data.exam_set} สำเร็จ! (${data.answers_count} ข้อ)`, 'success');
                         
-                        const overlayWrapper = document.getElementById('resOverlayWrapper');
-                        const overlayImg = document.getElementById('resOverlayImg');
-                        if (overlayWrapper && overlayImg && data.processed_image) {
-                            overlayImg.src = data.processed_image;
-                            overlayWrapper.classList.remove('hidden');
-                        }
+                        showScanResultModal({
+                            title: 'บันทึกเฉลยสำเร็จ!',
+                            labelLeft: 'ชุดข้อสอบ',
+                            valueLeft: 'ชุด ' + data.exam_set,
+                            labelRight: 'จำนวนข้อเฉลย',
+                            valueRight: data.answers_count + ' ข้อ',
+                            subText: data.regraded_count !== undefined ? `ตรวจคะแนนใหม่อัตโนมัติ: ${data.regraded_count} คน` : '',
+                            image: data.processed_image,
+                            editKeyUrl: `key_editor.php?exam_id=${examId}&set=${data.exam_set}`
+                        });
 
-                        resultCard.classList.remove('hidden');
+                        statusIndicator.textContent = `📸 บันทึกเฉลยชุด ${data.exam_set} สำเร็จ! (${data.answers_count} ข้อ)`;
+                        statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
+                    } else {
+                        showToast(`สแกนสำเร็จ! นิสิต: ${data.student_id} (คะแนน: ${data.score})`, 'success');
+                        
+                        showScanResultModal({
+                            title: 'สำเร็จ!',
+                            labelLeft: 'รหัสนิสิต',
+                            valueLeft: data.student_id,
+                            labelRight: 'คะแนนที่ได้',
+                            valueRight: data.score,
+                            subText: '',
+                            image: data.processed_image
+                        });
+
+                        statusIndicator.textContent = '📸 สแกนสำเร็จ!';
+                        statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
                     }
-
-                    statusIndicator.textContent = '📸 สแกนสำเร็จ!';
-                    statusIndicator.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
                 } else if (data.status === 'warning') {
                     showToast(data.message, 'error');
                     statusIndicator.textContent = data.message;
@@ -410,10 +491,21 @@ $csrf_token = generate_csrf_token();
             
             input.value = '';
             setTimeout(() => {
-                statusIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
-                statusIndicator.textContent = 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
+                const isKeyMode = typeof scanMode !== 'undefined' && scanMode === 'key';
+                const activeSet = document.getElementById('examSetScanner')?.value || 'A';
+                statusIndicator.style.backgroundColor = isKeyMode ? 'rgba(37, 99, 235, 0.9)' : 'rgba(0,0,0,0.7)';
+                statusIndicator.textContent = isKeyMode 
+                    ? `โหมดสร้างเฉลยชุด ${activeSet} - เล็งกล้องที่กระดาษเฉลย...`
+                    : 'เล็งกล้องให้เห็นสี่เหลี่ยมครบ 4 มุม...';
             }, 4000);
         }
+
+        // ── Dropdown Change Sync ─────────────────────────────────────────────
+        document.getElementById('examSetScanner')?.addEventListener('change', () => {
+            if (typeof scanMode !== 'undefined' && scanMode === 'key') {
+                setScanMode('key');
+            }
+        });
 
         const studentDirectory = <?= json_encode($students) ?>;
     </script>

@@ -56,9 +56,14 @@ $csrf_token = generate_csrf_token();
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div class="mb-8">
+            <a href="dashboard.php" class="inline-flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-all text-sm mb-4">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                กลับหน้าหลัก
+            </a>
             <h2 id="pageTitle" class="text-[1.5rem] font-bold tracking-tight leading-[1.3] text-gray-900 font-sans">กำลังโหลดข้อมูล...</h2>
-            <a href="dashboard.php" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 rounded-xl shadow-sm active:scale-95 transition-all w-full sm:w-auto text-center text-sm">&larr; กลับหน้าหลัก</a>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsGrid">
@@ -195,14 +200,48 @@ $csrf_token = generate_csrf_token();
         });
 
         // ─── Image modal ─────────────────────────────────────────────
-        document.getElementById('closeImageBtn').addEventListener('click', () => {
-            document.getElementById('imageModal').close();
-        });
+        const imageModal = document.getElementById('imageModal');
+        const closeImageBtn = document.getElementById('closeImageBtn');
+        const scannedImg = document.getElementById('scannedImage');
+
+        if (closeImageBtn && imageModal) {
+            closeImageBtn.addEventListener('click', () => {
+                imageModal.close();
+            });
+        }
+        if (imageModal) {
+            imageModal.addEventListener('click', (e) => {
+                if (e.target === imageModal) {
+                    imageModal.close();
+                }
+            });
+        }
+
+        if (scannedImg) {
+            scannedImg.onerror = function() {
+                if (typeof showToast === 'function') {
+                    showToast('ไม่สามารถโหลดรูปภาพได้ (อาจไม่มีไฟล์บนเซิร์ฟเวอร์)', 'error');
+                } else {
+                    alert('ไม่สามารถโหลดรูปภาพได้');
+                }
+                if (imageModal && imageModal.open) {
+                    imageModal.close();
+                }
+            };
+        }
+
         window.showImage = function(src) {
-            const img   = document.getElementById('scannedImage');
-            const modal = document.getElementById('imageModal');
-            img.src = src;
-            modal.showModal();
+            if (!src) return;
+            if (scannedImg) {
+                scannedImg.src = src;
+            }
+            if (imageModal) {
+                if (typeof imageModal.showModal === 'function') {
+                    imageModal.showModal();
+                } else {
+                    window.open(src, '_blank');
+                }
+            }
         };
     </script>
 

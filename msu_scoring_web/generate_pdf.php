@@ -9,7 +9,9 @@
  *
  * Outputs an inline A4 PDF directly to the browser.
  */
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
@@ -25,6 +27,20 @@ $exam_set = strtoupper(trim($_GET['exam_set'] ?? 'A'));
 
 if (!in_array($q_count,  [50, 100, 150], true)) { $q_count  = 50; }
 if (!in_array($exam_set, ['A', 'B', 'C'], true)) { $exam_set = 'A'; }
+
+// ── Header Fields Selection ───────────────────────────────────────────────
+// 'name' is always mandatory. Allowed optional fields:
+$all_allowed_fields = ['date', 'room', 'sec', 'tel', 'seat_no', 'exam_no'];
+if (isset($_GET['fields'])) {
+    $raw_fields = array_filter(array_map('trim', explode(',', strtolower($_GET['fields']))));
+    $selected_fields = array_values(array_intersect($all_allowed_fields, $raw_fields));
+} else {
+    // Default: include all optional fields
+    $selected_fields = $all_allowed_fields;
+}
+$has_field = function($f) use ($selected_fields) {
+    return in_array($f, $selected_fields, true);
+};
 
 // ── Fetch exam info ───────────────────────────────────────────────────────
 $exam = ['exam_title' => 'ข้อสอบ', 'exam_code' => '', 'question_count' => $q_count];
@@ -146,36 +162,85 @@ foreach ($corners as [$mx, $my]) {
 // 2. HEADER — Form boxes (ZipGrade style)
 // ════════════════════════════════════════════════════════════════════════
 $header_top = MK_OFF + MK_SIZE + 3;  // just below top markers
-
-$left_w  = 118;                                        // Name / Class column width
-$right_w = PW - MARG * 2 - $left_w - 3;               // Date / Quiz column width
-$right_x = MARG + $left_w + 3;                         // right column x
-$box_h   = 10;                                         // box height (mm)
+$box_h      = 10;                     // box height (mm)
+$total_w    = PW - MARG * 2;          // 186 mm
+$row2_y     = $header_top + $box_h + 1;
 
 $pdf->SetDrawColor(0, 0, 0);
 $pdf->SetLineWidth(0.3);
-
-// ── Row 1: Name | Date ──────────────────────────────────────────────
-$pdf->Rect(MARG, $header_top, $left_w, $box_h);
 $pdf->SetFont('sarabun', 'B', 9);
 $pdf->SetTextColor(100, 100, 100);
-$pdf->SetXY(MARG + 1.5, $header_top + 0.5);
-$pdf->Cell(20, 4, 'Name', 0, 0, 'L');
 
-$pdf->Rect($right_x, $header_top, $right_w, $box_h);
-$pdf->SetXY($right_x + 1.5, $header_top + 0.5);
-$pdf->Cell(20, 4, 'Date', 0, 0, 'L');
+// ── Row 1: Name (Mandatory) & Date (Optional) ─────────────────────────
+if ($has_field('date')) {
+    $gap_r1 = 3.0;
+    $date_w = 65.0;
+    $name_w = $total_w - $date_w - $gap_r1; // 118 mm
+    $date_x = MARG + $name_w + $gap_r1;
 
-// ── Row 2: Class | Quiz ─────────────────────────────────────────────
-$row2_y = $header_top + $box_h + 1;
+    $pdf->Rect(MARG, $header_top, $name_w, $box_h);
+    $pdf->SetXY(MARG + 1.5, $header_top + 0.5);
+    $pdf->Cell($name_w - 3, 4, 'Name', 0, 0, 'L');
 
-$pdf->Rect(MARG, $row2_y, $left_w, $box_h);
-$pdf->SetXY(MARG + 1.5, $row2_y + 0.5);
-$pdf->Cell(20, 4, 'Class', 0, 0, 'L');
+    $pdf->Rect($date_x, $header_top, $date_w, $box_h);
+    $pdf->SetXY($date_x + 1.5, $header_top + 0.5);
+    $pdf->Cell($date_w - 3, 4, 'Date', 0, 0, 'L');
+} else {
+    // Name expands to fill the entire row width
+    $pdf->Rect(MARG, $header_top, $total_w, $box_h);
+    $pdf->SetXY(MARG + 1.5, $header_top + 0.5);
+    $pdf->Cell($total_w - 3, 4, 'Name', 0, 0, 'L');
+}
 
-$pdf->Rect($right_x, $row2_y, $right_w, $box_h);
-$pdf->SetXY($right_x + 1.5, $row2_y + 0.5);
-$pdf->Cell(20, 4, 'Quiz', 0, 0, 'L');
+// ── Row 2: Selected Optional Fields ───────────────────────────────────
+// Definitions with relative weights for proportional sizing
+$row2_defs = [
+    'room'    => ['label' => 'Room',     'weight' => 1.0],
+    'sec'     => ['label' => 'Sec',      'weight' => 0.8],
+    'tel'     => ['label' => 'Tel',      'weight' => 1.4],
+    'seat_no' => ['label' => 'Seat No.', 'weight' => 0.9],
+    'exam_no' => ['label' => 'Exam No.', 'weight' => 0.9],
+];
+
+$row2_active = [];
+$total_weight = 0.0;
+foreach ($row2_defs as $k => $def) {
+    if ($has_field($k)) {
+        $row2_active[$k] = $def;
+        $total_weight += $def['weight'];
+    }
+}
+
+if (!empty($row2_active)) {
+    $n = count($row2_active);
+    $gap2 = 2.0;
+    $total_gaps = ($n - 1) * $gap2;
+    $avail_w = $total_w - $total_gaps;
+
+    // Calculate proportional widths
+    $row2_widths = [];
+    $allocated_w = 0.0;
+    $keys = array_keys($row2_active);
+    for ($idx = 0; $idx < $n; $idx++) {
+        $k = $keys[$idx];
+        if ($idx === $n - 1) {
+            // Last element absorbs remaining width to guarantee exact total_w
+            $row2_widths[$k] = round($avail_w - $allocated_w, 2);
+        } else {
+            $w = round(($row2_active[$k]['weight'] / $total_weight) * $avail_w, 2);
+            $row2_widths[$k] = $w;
+            $allocated_w += $w;
+        }
+    }
+
+    $cur_x = MARG;
+    foreach ($row2_widths as $k => $w) {
+        $pdf->Rect($cur_x, $row2_y, $w, $box_h);
+        $pdf->SetXY($cur_x + 1.5, $row2_y + 0.5);
+        $pdf->Cell($w - 3, 4, $row2_active[$k]['label'], 0, 0, 'L');
+        $cur_x += $w + $gap2;
+    }
+}
 
 // ── Exam info text ──────────────────────────────────────────────────
 $info_y = $row2_y + $box_h + 2;
