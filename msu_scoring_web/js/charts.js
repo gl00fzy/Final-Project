@@ -31,17 +31,17 @@ function renderStudentTable(students) {
         const normPath = s.image_path ? normalizeImagePath(s.image_path) : '';
         return `
         <tr class="hover:bg-slate-50/80 transition-colors">
-            <td class="py-3.5 px-6 font-bold text-slate-900 font-mono text-sm">${escapeHtml(s.student_id)}</td>
-            <td class="py-3.5 px-6 text-center"><span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold border border-slate-200">ชุด ${escapeHtml(s.exam_set || 'A')}</span></td>
-            <td class="py-3.5 px-6 font-sans"><span class="text-xl font-extrabold text-amber-600 font-mono">${s.score}</span></td>
-            <td class="py-3.5 px-6 text-xs text-slate-500">${s.scanned_at ? new Date(s.scanned_at).toLocaleString('th-TH') : '-'}</td>
-            <td class="py-3.5 px-6 text-center">
+            <td class="py-3 px-2.5 sm:px-6 font-bold text-slate-900 font-mono text-xs sm:text-sm whitespace-nowrap">${escapeHtml(s.student_id)}</td>
+            <td class="py-3 px-2.5 sm:px-6 text-center"><span class="inline-flex items-center justify-center bg-slate-100 text-slate-700 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold border border-slate-200 whitespace-nowrap">ชุด ${escapeHtml(s.exam_set || 'A')}</span></td>
+            <td class="py-3 px-2.5 sm:px-6 font-sans"><span class="text-lg sm:text-xl font-extrabold text-amber-600 font-mono">${s.score}</span></td>
+            <td class="py-3 px-2.5 sm:px-6 text-xs text-slate-500 whitespace-nowrap">${s.scanned_at ? new Date(s.scanned_at).toLocaleString('th-TH') : '-'}</td>
+            <td class="py-3 px-2.5 sm:px-6 text-center">
                 ${normPath
-                    ? `<button type="button" class="bg-white border border-slate-300 hover:bg-slate-50 hover:border-yellow-400 text-slate-700 text-xs font-bold py-1.5 px-3.5 rounded-xl shadow-2xs transition-all view-img-btn active:scale-95 flex items-center gap-1.5 mx-auto" data-img="${escapeHtml(normPath)}">
-                        <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        <span>ดูภาพ</span>
+                    ? `<button type="button" class="bg-white border border-slate-300 hover:bg-slate-50 hover:border-yellow-400 text-slate-700 text-xs font-bold py-1.5 px-2.5 sm:px-3.5 rounded-xl shadow-2xs transition-all view-img-btn active:scale-95 flex items-center justify-center gap-1 mx-auto whitespace-nowrap" data-img="${escapeHtml(normPath)}">
+                        <svg class="w-3.5 h-3.5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="whitespace-nowrap">ดูภาพ</span>
                        </button>`
-                    : '<span class="text-slate-400 text-xs italic">ไม่มีภาพ</span>'}
+                    : '<span class="text-slate-400 text-xs italic whitespace-nowrap">ไม่มีภาพ</span>'}
             </td>
         </tr>
     `}).join('');

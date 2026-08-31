@@ -201,19 +201,19 @@ $csrf_token = generate_csrf_token();
                     <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-50 text-slate-700 text-xs uppercase tracking-wider sticky top-0 border-b border-slate-200 shadow-sm z-10">
                             <tr>
-                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors" onclick="sortStudentTable('student_id')">
+                                <th class="py-3.5 px-3 sm:px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors whitespace-nowrap" onclick="sortStudentTable('student_id')">
                                     รหัสนิสิต <span id="sort-student_id" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors text-center" onclick="sortStudentTable('exam_set')">
+                                <th class="py-3.5 px-3 sm:px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors text-center whitespace-nowrap" onclick="sortStudentTable('exam_set')">
                                     ชุดข้อสอบ <span id="sort-exam_set" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors" onclick="sortStudentTable('score')">
+                                <th class="py-3.5 px-3 sm:px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors whitespace-nowrap" onclick="sortStudentTable('score')">
                                     คะแนนที่ได้ <span id="sort-score" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-3.5 px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors" onclick="sortStudentTable('scanned_at')">
+                                <th class="py-3.5 px-3 sm:px-6 font-bold bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors whitespace-nowrap" onclick="sortStudentTable('scanned_at')">
                                     เวลาที่สแกน <span id="sort-scanned_at" class="text-xs text-slate-400">↕</span>
                                 </th>
-                                <th class="py-3.5 px-6 font-bold text-center bg-slate-50">กระดาษคำตอบ</th>
+                                <th class="py-3.5 px-3 sm:px-6 font-bold text-center bg-slate-50 whitespace-nowrap">กระดาษคำตอบ</th>
                             </tr>
                         </thead>
                         <tbody id="studentTableBody" class="divide-y divide-slate-100">
