@@ -106,7 +106,7 @@ $csrf_token = generate_csrf_token();
                     <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
                     <span><?= htmlspecialchars($_SESSION['name']) ?></span>
                 </div>
-                <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80">
+                <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80 whitespace-nowrap">
                     ออกจากระบบ
                 </a>
             </div>

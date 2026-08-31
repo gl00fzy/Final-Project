@@ -46,12 +46,13 @@ $csrf_token = generate_csrf_token();
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <?php if (($_SESSION['role'] ?? 'user') === 'admin'): ?>
                     <a href="admin_dashboard.php"
-                       class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all border border-indigo-400/30">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all border border-indigo-400/30 whitespace-nowrap">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
-                        <span class="hidden sm:inline">Admin</span>
+                        <span class="hidden sm:inline">แผงควบคุม Admin</span>
+                        <span class="sm:hidden">Admin</span>
                     </a>
                     <?php endif; ?>
                     
@@ -60,7 +61,7 @@ $csrf_token = generate_csrf_token();
                         <span><?= htmlspecialchars($_SESSION['name']) ?></span>
                     </div>
 
-                    <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80">
+                    <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80 whitespace-nowrap">
                         ออกจากระบบ
                     </a>
                 </div>
