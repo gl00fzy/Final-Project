@@ -457,7 +457,7 @@ crontab -e
 
 หากพบปัญหาในการติดตั้ง การตั้งค่าระบบ หรือมีข้อเสนอแนะ กรุณาติดต่อ:
 
-- **ผู้พัฒนาระบบ:** นายสรอัฐ น้ำใส (Mr. Sora-at Namsai)
+- **ผู้พัฒนาระบบ:** นายสรอัฐ น้ำใส (Mr. Soraat Namsai)
 - **หน่วยงาน:** สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม (Computer Center, Mahasarakham University)
 - **เว็บไซต์ระบบ:** [https://msuscore.msu.ac.th](https://msuscore.msu.ac.th)
 - **Repository:** [https://github.com/gl00fzy/Final-Project](https://github.com/gl00fzy/Final-Project)
