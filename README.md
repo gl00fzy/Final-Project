@@ -50,7 +50,7 @@ docker-compose up -d --build
 
 ## 📞 ข้อมูลติดต่อและผู้พัฒนา (Contact & Developer)
 
-- **ผู้พัฒนาระบบ:** นายสรอัฐ น้ำใส (Mr. Sora-at Namsai)
+- **ผู้พัฒนาระบบ:** นายสรอัฐ น้ำใส (Mr. Soraat Namsai)
 - **หน่วยงาน:** สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม (Computer Center, Mahasarakham University)
 - **URL ระบบงานจริง:** [https://msuscore.msu.ac.th](https://msuscore.msu.ac.th)
 

@@ -115,8 +115,6 @@ $csrf_token = generate_csrf_token();
                     class="absolute inset-0 w-full h-full object-contain pointer-events-none"></canvas>
         </div>
 
-        <!-- Secret gesture zone (triple-tap top right to reveal debug button) -->
-        <div id="secretGestureZone" class="absolute top-0 right-0 w-24 h-24 z-30 cursor-pointer" title="Gesture Zone"></div>
 
         <!-- ============================================================ -->
         <!-- LAYER 2: VIEWFINDER / RETICLE                                -->
@@ -242,10 +240,6 @@ $csrf_token = generate_csrf_token();
 
         <!-- Debug Canvas (Hidden) -->
         <canvas id="debug-canvas"></canvas>
-
-        <!-- On-screen debug toggle button -->
-        <button id="debugToggleBtn" onclick="toggleDebugPanel()">🔍 DEBUG</button>
-
     </div><!-- /root-container -->
 
     <!-- SUCCESS / SCAN RESULT MODAL -->
@@ -334,46 +328,7 @@ $csrf_token = generate_csrf_token();
         </div>
     </dialog>
 
-    <div id="debugPanel"></div>
-
     <script src="js/shared.js"></script>
-    <script>
-        // ── Secret Triple-Tap Gesture for Debug Button Reveal ────────────────
-        let tapCount = 0;
-        let tapTimer = null;
-        document.getElementById('secretGestureZone').addEventListener('click', () => {
-            tapCount++;
-            clearTimeout(tapTimer);
-            if (tapCount >= 3) {
-                const btn = document.getElementById('debugToggleBtn');
-                btn.style.display = btn.style.display === 'none' || !btn.style.display ? 'block' : 'none';
-                showToast(btn.style.display === 'block' ? 'เปิดปุ่ม Debug แล้ว' : 'ซ่อนปุ่ม Debug แล้ว', 'success');
-                tapCount = 0;
-            } else {
-                tapTimer = setTimeout(() => { tapCount = 0; }, 600);
-            }
-        });
-
-        // ── On-screen Debug Log ───────────────────────────────────────────────
-        const _debugPanel = document.getElementById('debugPanel');
-        let _debugVisible = false;
-
-        window.dbg = function(msg, level) {
-            level = level || 'info';
-            const cls = level === 'ok' ? 'log-ok' : level === 'warn' ? 'log-warn' : level === 'err' ? 'log-err' : '';
-            const now = new Date();
-            const ts  = now.toTimeString().slice(0,8);
-            const line = `<div class="log-line ${cls}">[${ts}] ${escapeHtml(msg)}</div>`;
-            _debugPanel.insertAdjacentHTML('beforeend', line);
-            if (_debugPanel.children.length > 60) _debugPanel.firstElementChild.remove();
-            _debugPanel.scrollTop = _debugPanel.scrollHeight;
-        };
-
-        window.toggleDebugPanel = function() {
-            _debugVisible = !_debugVisible;
-            _debugPanel.style.display = _debugVisible ? 'block' : 'none';
-            document.getElementById('debugToggleBtn').textContent = _debugVisible ? '✕ ปิด DEBUG' : '🔍 DEBUG';
-        };
 
         // ── Show Scan Result Modal Helper ────────────────────────────────────
         window.showScanResultModal = function(opts) {

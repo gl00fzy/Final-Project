@@ -65,9 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $exam_set = $_POST['exam_set'] ?? 'A';
 
-    // Calculate actual score from raw_answers
-    $actual_score = $score; // Fallback
-    if ($raw_answers) {
+    // Calculate actual score from raw_answers (only if non-empty raw_answers provided)
+    $actual_score = $score; // Fallback to passed manual score
+    $has_raw = !empty($raw_answers) && $raw_answers !== '{}';
+    if ($has_raw) {
         $stmtKey = $pdo->prepare("SELECT answer_key FROM exams WHERE exam_id = ?");
         $stmtKey->execute([$exam_id]);
         $exam_data = $stmtKey->fetch();
@@ -78,28 +79,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO student_scores (exam_id, student_id, score, raw_answers, image_path, exam_set, scanned_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$exam_id, $student_id, $actual_score, $raw_answers, $image_path, $exam_set, $user_id]);
+        $checkStmt = $pdo->prepare("SELECT score_id FROM student_scores WHERE exam_id = ? AND student_id = ?");
+        $checkStmt->execute([$exam_id, $student_id]);
+        $existing = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-        // ── Log this scan to system_logs ──────────────────────────────
-        $pdo->prepare("INSERT INTO system_logs (user_id, action, exam_id) VALUES (?, 'scan_success', ?)")
-            ->execute([$user_id, $exam_id]);
+        if ($existing) {
+            $raw_answers_to_save = $has_raw ? $raw_answers : null;
+            $updateStmt = $pdo->prepare("UPDATE student_scores SET score = ?, exam_set = ?, raw_answers = COALESCE(?, raw_answers), image_path = COALESCE(?, image_path), scanned_at = NOW() WHERE score_id = ?");
+            $updateStmt->execute([$actual_score, $exam_set, $raw_answers_to_save, $image_path, $existing['score_id']]);
 
-        echo json_encode(['status' => 'success', 'message' => 'บันทึกคะแนนเรียบร้อย', 'calculated_score' => $actual_score]);
+            echo json_encode([
+                'status' => 'success',
+                'mode' => 'updated',
+                'message' => 'อัปเดตผลคะแนนของรหัสนิสิต ' . $student_id . ' เรียบร้อยแล้ว',
+                'calculated_score' => $actual_score
+            ]);
+        } else {
+            $raw_answers_to_save = $has_raw ? $raw_answers : null;
+            $stmt = $pdo->prepare("INSERT INTO student_scores (exam_id, student_id, score, raw_answers, image_path, exam_set, scanned_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$exam_id, $student_id, $actual_score, $raw_answers_to_save, $image_path, $exam_set, $user_id]);
+
+            // ── Log this scan to system_logs ──────────────────────────────
+            $pdo->prepare("INSERT INTO system_logs (user_id, action, exam_id) VALUES (?, 'scan_success', ?)")
+                ->execute([$user_id, $exam_id]);
+
+            echo json_encode([
+                'status' => 'success',
+                'mode' => 'inserted',
+                'message' => 'บันทึกคะแนนเรียบร้อย',
+                'calculated_score' => $actual_score
+            ]);
+        }
     } catch (PDOException $e) {
-        // ลบไฟล์รูปที่เซฟไปแล้วเมื่อ INSERT ล้มเหลว เพื่อไม่ให้เป็น orphan file
+        // ลบไฟล์รูปที่เซฟไปแล้วเมื่อ INSERT/UPDATE ล้มเหลว
         if (!empty($image_path)) {
             $orphan_file = __DIR__ . '/../' . ltrim($image_path, '/');
             if (file_exists($orphan_file)) {
                 @unlink($orphan_file);
             }
         }
-
-        if ($e->getCode() == 23000 || str_contains($e->getMessage(), '1062')) {
-            echo json_encode(['status' => 'duplicate', 'message' => 'รหัสนิสิตนี้ได้รับการตรวจและบันทึกคะแนนไปแล้ว']);
-        } else {
-            safe_db_error($e);
-        }
+        safe_db_error($e);
     }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request']);

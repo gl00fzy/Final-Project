@@ -707,10 +707,11 @@ async function submitKey(rawAnswers, imageBase64) {
 }
 
 async function submitScore(studentId, score, rawAnswers, imageBase64) {
-    rawAnswers  = rawAnswers  || '{}';
+    const isManual = !rawAnswers || rawAnswers === '{}';
+    rawAnswers  = isManual ? '' : rawAnswers;
     imageBase64 = imageBase64 || '';
     if (isSubmitting) return;
-    if (scannedStudentIds.has(studentId)) {
+    if (!isManual && scannedStudentIds.has(studentId)) {
         statusIndicator.textContent = 'รหัสนิสิตนี้ตรวจไปแล้ว (สแกนซ้ำ)';
         statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
         
@@ -743,7 +744,7 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
             
             const calculatedScore = data.calculated_score !== undefined ? data.calculated_score : score;
             if (typeof showToast === 'function') {
-                showToast(`สแกนสำเร็จ! นิสิต: ${studentId} (คะแนน: ${calculatedScore})`, 'success');
+                showToast(`บันทึกสำเร็จ! นิสิต: ${studentId} (คะแนน: ${calculatedScore})`, 'success');
             }
 
             if (typeof showScanResultModal === 'function') {
@@ -753,7 +754,7 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
                     valueLeft: studentId,
                     labelRight: 'คะแนนที่ได้',
                     valueRight: calculatedScore,
-                    subText: '',
+                    subText: isManual ? 'กรอกคะแนนด้วยตนเอง' : '',
                     image: imageBase64 || ''
                 });
             }
@@ -762,7 +763,8 @@ async function submitScore(studentId, score, rawAnswers, imageBase64) {
             statusIndicator.textContent = data.message;
             statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
         } else {
-            statusIndicator.textContent = data.message;
+            statusIndicator.textContent = data.message || 'บันทึกคะแนนไม่สำเร็จ';
+            statusIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
         }
     } catch (e) { 
         statusIndicator.textContent = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'; 
@@ -790,7 +792,7 @@ if (manualForm) {
         const studentId = document.getElementById('studentId').value;
         const score     = document.getElementById('score').value;
         manualModal.close();
-        await submitScore(studentId, score);
+        await submitScore(studentId, score, '', '');
         manualForm.reset();
     });
 }

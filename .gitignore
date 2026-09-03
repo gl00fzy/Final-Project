@@ -7,8 +7,8 @@ config/database.sqlite
 data/
 
 # ── ไฟล์ที่ Upload มา ─────────────────────────────────────────
-uploads/*
-!uploads/.gitkeep
+**/uploads/*
+!**/uploads/.gitkeep
 
 # ── Editor / OS files ─────────────────────────────────────────
 .DS_Store
@@ -20,3 +20,10 @@ Thumbs.db
 
 # ── Logs ──────────────────────────────────────────────────────
 *.log
+
+# ── Agent Skills / AI Assistant files ─────────────────────────
+.agents/
+.gemini/
+.impeccable/
+.codex/
+
