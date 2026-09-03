@@ -223,7 +223,7 @@ sudo chmod -R 775 uploads
 
 | ตัวแปร (Variable) | ค่าเริ่มต้น (Default) | คำอธิบาย |
 |---|---|---|
-| `APP_URL` | `http://localhost` | URL เต็มของระบบ (เช่น `https://msuscore.msu.ac.th`) |
+| `APP_URL` | `http://localhost` | URL เต็มของระบบ (เช่น `https://score.msu.ac.th`) |
 | `APP_ENV` | `production` | โหมดการทำงาน (`production` หรือ `development`) |
 | `GOOGLE_CLIENT_ID` | - | OAuth 2.0 Client ID จาก Google Cloud Console สำหรับระบบล็อกอิน Google |
 | `SESSION_LIFETIME` | `7200` | อายุ Session ของผู้ใช้งาน (หน่วย: วินาที / 7200 = 2 ชั่วโมง) |
@@ -237,7 +237,7 @@ sudo chmod -R 775 uploads
 ### ตัวอย่างไฟล์ `.env`:
 ```env
 # Application Settings
-APP_URL=https://msuscore.msu.ac.th
+APP_URL=https://score.msu.ac.th
 APP_ENV=production
 SESSION_LIFETIME=7200
 
@@ -353,16 +353,16 @@ sudo chmod -R 775 /var/www/html/uploads
 ```nginx
 server {
     listen 80;
-    server_name msuscore.msu.ac.th;
+    server_name score.msu.ac.th;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name msuscore.msu.ac.th;
+    server_name score.msu.ac.th;
 
-    ssl_certificate     /etc/ssl/certs/msuscore.msu.ac.th.crt;
-    ssl_certificate_key /etc/ssl/private/msuscore.msu.ac.th.key;
+    ssl_certificate     /etc/ssl/certs/score.msu.ac.th.crt;
+    ssl_certificate_key /etc/ssl/private/score.msu.ac.th.key;
     ssl_protocols       TLSv1.2 TLSv1.3;
 
     # ขนาดไฟล์อัปโหลดสูงสุด
@@ -391,10 +391,10 @@ max_execution_time = 60
 ### 4. การตั้งค่า Google OAuth 2.0 ใน Google Cloud Console
 1. ไปที่ [Google Cloud Console](https://console.cloud.google.com/) -> Credentials
 2. ในส่วน **Authorized JavaScript origins** ให้เพิ่ม:
-   - `https://msuscore.msu.ac.th`
+   - `https://score.msu.ac.th`
    - `http://localhost:8000` (สำหรับ Dev)
 3. ในส่วน **Authorized redirect URIs** ให้เพิ่ม:
-   - `https://msuscore.msu.ac.th/index.php`
+   - `https://score.msu.ac.th/index.php`
 
 ### 5. การสำรองข้อมูลอัตโนมัติ (Automated Backup via Cron Job)
 ตั้งเวลาสำรองฐานข้อมูลและรูปภาพเป็นประจำทุกวัน เวลา 02:00 น.:
@@ -449,7 +449,7 @@ crontab -e
 
 ### ❓ Google Sign-in แสดงข้อความ `Error: origin_mismatch`
 - **สาเหตุ:** โดเมนที่เรียกใช้ไม่ได้ลงทะเบียนใน Authorized JavaScript origins ของ Google Cloud Console
-- **วิธีแก้:** เพิ่ม URL ของเว็บไซต์ (เช่น `https://msuscore.msu.ac.th`) ใน Google Cloud Console Credentials
+- **วิธีแก้:** เพิ่ม URL ของเว็บไซต์ (เช่น `https://score.msu.ac.th`) ใน Google Cloud Console Credentials
 
 ---
 
@@ -459,7 +459,7 @@ crontab -e
 
 - **ผู้พัฒนาระบบ:** นายสรอัฐ น้ำใส (Mr. Soraat Namsai)
 - **หน่วยงาน:** สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม (Computer Center, Mahasarakham University)
-- **เว็บไซต์ระบบ:** [https://msuscore.msu.ac.th](https://msuscore.msu.ac.th)
+- **เว็บไซต์ระบบ:** [https://score.msu.ac.th](https://score.msu.ac.th)
 - **Repository:** [https://github.com/gl00fzy/Final-Project](https://github.com/gl00fzy/Final-Project)
 
 ---

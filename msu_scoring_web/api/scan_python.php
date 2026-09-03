@@ -60,12 +60,13 @@ if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
 $tmp_file = $_FILES['image']['tmp_name'];
 $file_name = $_FILES['image']['name'];
 
-// 1. Try FastAPI Python microservice (http://127.0.0.1:8000/scan)
+// 1. Try FastAPI Python microservice
+$python_url = getenv('PYTHON_URL') ?: 'http://127.0.0.1:8000/scan';
 $curl = curl_init();
 $cfile = new CURLFile($tmp_file, $_FILES['image']['type'], $file_name);
 
 curl_setopt_array($curl, [
-    CURLOPT_URL => "http://127.0.0.1:8000/scan",
+    CURLOPT_URL => $python_url,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST => true,
     CURLOPT_TIMEOUT => 15,

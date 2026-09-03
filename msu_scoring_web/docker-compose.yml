@@ -36,6 +36,24 @@ services:
       retries: 5
       start_period: 30s
 
+  # ── Python OMR Service (FastAPI) ────────────────────────────────
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    container_name: msuscore_python
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - msuscore_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
   # ── Web Application (PHP + Apache) ────────────────────────────
   web:
     build:
@@ -52,15 +70,18 @@ services:
       - uploads_data:/var/www/html/uploads
     environment:
       - APP_ENV=production
-      - APP_URL=${APP_URL:-https://msuscore.msu.ac.th}
+      - APP_URL=${APP_URL:-https://score.msu.ac.th}
       # Override DB_HOST ให้ชี้ไปที่ mysql service ใน Docker
       - DB_HOST=mysql
       - DB_PORT=3306
       - DB_NAME=${DB_NAME:-msuscore}
       - DB_USER=${DB_USER:-msuscore_user}
       - DB_PASS=${DB_PASS:-secret}
+      - PYTHON_URL=http://python:8000/scan
     depends_on:
       mysql:
+        condition: service_healthy
+      python:
         condition: service_healthy
     networks:
       - msuscore_network

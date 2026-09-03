@@ -52,7 +52,7 @@ docker-compose up -d --build
 
 - **ผู้พัฒนาระบบ:** นายสรอัฐ น้ำใส (Mr. Soraat Namsai)
 - **หน่วยงาน:** สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม (Computer Center, Mahasarakham University)
-- **URL ระบบงานจริง:** [https://msuscore.msu.ac.th](https://msuscore.msu.ac.th)
+- **URL ระบบงานจริง:** [https://score.msu.ac.th](https://score.msu.ac.th)
 
 ---
 *© 2026 Mahasarakham University. All Rights Reserved.*
