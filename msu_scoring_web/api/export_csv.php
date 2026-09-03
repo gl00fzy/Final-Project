@@ -28,10 +28,11 @@ if (!$exam) {
     die("ไม่พบชุดข้อสอบ หรือคุณไม่มีสิทธิ์เข้าถึง");
 }
 
-$filename = "scores_exam_" . $exam_id . "_" . date('Y-md-Hi') . ".csv";
+$code_part = !empty($exam['exam_code']) ? preg_replace('/[^A-Za-z0-9_\-]/', '_', $exam['exam_code']) : 'exam_' . $exam_id;
+$filename = $code_part . '_' . date('Y-m-d') . '.csv';
 
 // Fetch scores
-$stmt = $pdo->prepare("SELECT student_id, score, scanned_at FROM student_scores WHERE exam_id = ? ORDER BY scanned_at DESC");
+$stmt = $pdo->prepare("SELECT student_id, exam_set, score, scanned_at FROM student_scores WHERE exam_id = ? ORDER BY scanned_at DESC");
 $stmt->execute([$exam_id]);
 $scores = $stmt->fetchAll();
 
@@ -46,13 +47,15 @@ $output = fopen('php://output', 'w');
 fputs($output, "\xEF\xBB\xBF");
 
 // Write CSV headers
-fputcsv($output, ['รหัสนิสิต', 'คะแนน']);
+fputcsv($output, ['รหัสนิสิต', 'ชุดข้อสอบ', 'คะแนน', 'วันที่สแกน']);
 
 // Write data rows
 foreach ($scores as $row) {
     fputcsv($output, [
         $row['student_id'],
-        $row['score']
+        $row['exam_set'] ?? 'A',
+        $row['score'],
+        $row['scanned_at'] ?? ''
     ]);
 }
 

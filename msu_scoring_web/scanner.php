@@ -100,6 +100,49 @@ $csrf_token = generate_csrf_token();
 </head>
 <body class="bg-black text-white overflow-hidden select-none">
 
+    <!-- PDF Upload Section overlay -->
+    <div class="fixed top-16 left-1/2 -translate-x-1/2 w-11/12 max-w-md z-[60]">
+        <div id="pdfUploadSection" class="bg-white rounded-2xl border border-slate-200 shadow-xl p-5 mb-4 text-slate-800">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900">อัปโหลด PDF (หลายแผ่น)</h3>
+                    <p class="text-xs text-slate-500">สำหรับไฟล์ PDF จากเครื่องสแกน สูงสุด 200 หน้า / 50MB</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3">
+                <label class="flex-1 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-amber-400 rounded-xl p-4 cursor-pointer transition-colors bg-slate-50 hover:bg-amber-50/30">
+                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span class="text-xs font-semibold text-slate-600" id="pdfFileLabel">เลือกไฟล์ PDF</span>
+                    <input type="file" id="pdfFileInput" accept=".pdf,application/pdf" class="hidden">
+                </label>
+                <button type="button" id="btnScanPdf" onclick="startPdfScan()" disabled
+                    class="sm:w-36 bg-amber-500 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed hover:bg-amber-600 active:scale-95 text-white font-bold py-3 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    <span>เริ่มสแกน</span>
+                </button>
+            </div>
+            
+            <!-- Progress -->
+            <div id="pdfProgress" class="hidden mt-3">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-semibold text-slate-700" id="pdfProgressLabel">กำลังประมวลผล...</span>
+                    <span class="text-xs text-slate-500" id="pdfProgressPct">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                    <div id="pdfProgressBar" class="bg-amber-500 h-2 rounded-full transition-all duration-300" style="width:0%"></div>
+                </div>
+            </div>
+            
+            <!-- Result Summary -->
+            <div id="pdfResult" class="hidden mt-3 p-3 rounded-xl text-sm"></div>
+            <div id="pdfDetails" class="hidden mt-2 max-h-40 overflow-y-auto text-xs space-y-1"></div>
+        </div>
+    </div>
+
     <!-- ============================================================ -->
     <!-- LAYER 0: ROOT CONTAINER                                       -->
     <!-- ============================================================ -->
@@ -485,6 +528,103 @@ $csrf_token = generate_csrf_token();
         const studentDirectory = <?= json_encode($students) ?>;
     </script>
     <input type="hidden" id="qCount" value="<?= htmlspecialchars($question_count) ?>">
+    <script>
+        document.getElementById('pdfFileInput').addEventListener('change', function() {
+            const btn = document.getElementById('btnScanPdf');
+            const label = document.getElementById('pdfFileLabel');
+            if (this.files[0]) {
+                label.textContent = this.files[0].name;
+                btn.disabled = false;
+            } else {
+                label.textContent = 'เลือกไฟล์ PDF';
+                btn.disabled = true;
+            }
+        });
+
+        async function startPdfScan() {
+            const file = document.getElementById('pdfFileInput').files[0];
+            if (!file) return;
+            
+            const btn = document.getElementById('btnScanPdf');
+            const progress = document.getElementById('pdfProgress');
+            const progressBar = document.getElementById('pdfProgressBar');
+            const progressLabel = document.getElementById('pdfProgressLabel');
+            const progressPct = document.getElementById('pdfProgressPct');
+            const resultDiv = document.getElementById('pdfResult');
+            const detailsDiv = document.getElementById('pdfDetails');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>กำลังส่ง...</span>';
+            
+            progress.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            detailsDiv.classList.add('hidden');
+            
+            // Simulated progress (actual processing happens server-side)
+            let prog = 0;
+            const timer = setInterval(() => {
+                if (prog < 90) { prog += Math.random() * 8; progressBar.style.width = Math.min(prog, 90) + '%'; progressPct.textContent = Math.round(Math.min(prog, 90)) + '%'; }
+            }, 500);
+            progressLabel.textContent = 'กำลังส่งไฟล์ไปประมวลผล...';
+            
+            try {
+                const examId = <?= $exam_id ?>;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                
+                const fd = new FormData();
+                fd.append('pdf', file);
+                fd.append('exam_id', examId);
+                fd.append('csrf_token', csrfToken);
+                
+                const res = await fetch('api/scan_pdf.php', { method: 'POST', body: fd });
+                const data = await res.json();
+                
+                clearInterval(timer);
+                progressBar.style.width = '100%';
+                progressPct.textContent = '100%';
+                progressLabel.textContent = 'ประมวลผลเสร็จสิ้น';
+                
+                if (data.status === 'success') {
+                    const s = data.summary;
+                    const successTotal = s.success + s.updated;
+                    resultDiv.className = 'mt-3 p-3 rounded-xl text-sm bg-emerald-50 border border-emerald-200 text-emerald-800';
+                    resultDiv.innerHTML = `
+                        <div class="font-bold mb-1">✅ สแกน PDF เสร็จสิ้น (${s.total} หน้า)</div>
+                        <div class="text-xs space-y-0.5">
+                            <div>✅ บันทึกสำเร็จ: <b>${successTotal}</b> หน้า ${s.updated > 0 ? '(อัปเดต ' + s.updated + ' ราย)' : ''}</div>
+                            ${s.warning > 0 ? '<div>⚠️ อ่านรหัสนิสิตไม่ได้: <b>' + s.warning + '</b> หน้า</div>' : ''}
+                            ${s.failed > 0 ? '<div>❌ ล้มเหลว: <b>' + s.failed + '</b> หน้า</div>' : ''}
+                        </div>`;
+                    resultDiv.classList.remove('hidden');
+                    
+                    if (s.details.length > 0) {
+                        const warnings = s.details.filter(d => d.status !== 'success');
+                        if (warnings.length > 0) {
+                            const escapeHtml = (unsafe) => (unsafe||'').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            detailsDiv.innerHTML = warnings.map(d =>
+                                `<div class="p-1.5 rounded-lg ${d.status==='warning'?'bg-amber-50 text-amber-700':'bg-red-50 text-red-700'}">
+                                    หน้า ${d.page}: ${escapeHtml(d.message)}
+                                </div>`
+                            ).join('');
+                            detailsDiv.classList.remove('hidden');
+                        }
+                    }
+                } else {
+                    resultDiv.className = 'mt-3 p-3 rounded-xl text-sm bg-red-50 border border-red-200 text-red-800';
+                    resultDiv.textContent = '❌ ' + (data.message || 'เกิดข้อผิดพลาด');
+                    resultDiv.classList.remove('hidden');
+                }
+            } catch (e) {
+                clearInterval(timer);
+                resultDiv.className = 'mt-3 p-3 rounded-xl text-sm bg-red-50 border border-red-200 text-red-800';
+                resultDiv.textContent = '❌ เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์';
+                resultDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg><span>เริ่มสแกน</span>';
+            }
+        }
+    </script>
     <script async src="https://docs.opencv.org/4.8.0/opencv.js"
             onload="onOpenCvReady();" type="text/javascript"></script>
     <script src="js/scanner.js"></script>

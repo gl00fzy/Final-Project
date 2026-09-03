@@ -20,6 +20,14 @@ $total_exams  = $pdo->query("SELECT COUNT(*) FROM exams")->fetchColumn();
 $total_scans  = $pdo->query("SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success'")->fetchColumn();
 $scans_today  = $pdo->query("SELECT COUNT(*) FROM system_logs WHERE action = 'scan_success' AND DATE(created_at) = CURDATE()")->fetchColumn();
 
+// ── Pending Users ─────────────────────────────────────────────────────────
+$pending_users = $pdo->query("
+    SELECT user_id, username, name, email
+    FROM users WHERE status = 'pending'
+    ORDER BY user_id ASC
+")->fetchAll();
+$pending_count = count($pending_users);
+
 // ── Recent Activity (last 15 logs) ────────────────────────────────────────
 $activity = $pdo->query("
     SELECT sl.id, sl.action, sl.created_at,
@@ -34,7 +42,7 @@ $activity = $pdo->query("
 
 // ── All Users List ────────────────────────────────────────────────────────
 $users = $pdo->query("
-    SELECT u.user_id, u.username, u.name, u.role,
+    SELECT u.user_id, u.username, u.name, u.role, u.status,
            COUNT(DISTINCT e.exam_id) AS exam_count,
            COUNT(DISTINCT sl.id)     AS scan_count
     FROM users u
@@ -42,6 +50,14 @@ $users = $pdo->query("
     LEFT JOIN system_logs sl ON sl.user_id = u.user_id AND sl.action = 'scan_success'
     GROUP BY u.user_id
     ORDER BY u.role DESC, u.user_id ASC
+")->fetchAll();
+
+// ── Invite Codes ──────────────────────────────────────────────────────────
+$invite_codes = $pdo->query("
+    SELECT ic.*, u.name AS creator_name
+    FROM invite_codes ic
+    JOIN users u ON u.user_id = ic.created_by
+    ORDER BY ic.created_at DESC
 ")->fetchAll();
 
 $csrf_token = generate_csrf_token();
@@ -98,6 +114,9 @@ $csrf_token = generate_csrf_token();
                         </svg>
                     </div>
                     <span>แผงควบคุมระบบ (Admin)</span>
+                    <?php if ($pending_count > 0): ?>
+                        <span class="ml-2 bg-yellow-500 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold"><?= $pending_count ?> รอดำเนินการ</span>
+                    <?php endif; ?>
                 </a>
             </div>
             
@@ -130,10 +149,6 @@ $csrf_token = generate_csrf_token();
             <button onclick="checkOrphanImages()" class="bg-red-500/20 hover:bg-red-500/30 active:scale-95 border border-red-400/40 text-red-100 font-bold py-2.5 px-4 rounded-xl transition-all text-xs sm:text-sm flex items-center gap-2 backdrop-blur-sm shadow-sm">
                 <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 <span>ล้างไฟล์ขยะ</span>
-            </button>
-            <button onclick="document.getElementById('roleModal').showModal()" class="bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white font-bold py-2.5 px-4 rounded-xl transition-all text-xs sm:text-sm flex items-center gap-2 backdrop-blur-sm shadow-sm">
-                <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                <span>จัดการสิทธิ์ Admin</span>
             </button>
         </div>
     </div>
@@ -204,60 +219,37 @@ $csrf_token = generate_csrf_token();
         </div>
     </section>
 
-    <!-- ── Activity Feed ────────────────────────────────────────────── -->
+    <!-- ── Pending Users ────────────────────────────────────────────── -->
+    <?php if ($pending_count > 0): ?>
     <section>
-        <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-            <div class="flex items-center justify-between mb-5">
-                <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2.5 font-['Inter','Sarabun']">
-                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full pulse-dot"></span>
-                    <span>ประวัติกิจกรรมล่าสุด (15 รายการ)</span>
-                </h2>
-                <span class="text-xs text-slate-400">อัปเดตแบบเรียลไทม์</span>
+        <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-6">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h2 class="text-lg font-bold text-amber-900">ผู้ใช้งานรอการอนุมัติ (<?= $pending_count ?>)</h2>
             </div>
-
-            <?php if (empty($activity)): ?>
-                <div class="flex flex-col items-center justify-center py-12 text-slate-300">
-                    <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    <p class="text-sm font-medium text-slate-500">ยังไม่มีกิจกรรมในระบบ</p>
-                    <p class="text-xs text-slate-400 mt-1">กิจกรรมจะปรากฏหลังจากอาจารย์สแกนกระดาษคำตอบครั้งแรก</p>
-                </div>
-            <?php else: ?>
-                <div class="space-y-1 divide-y divide-slate-100">
-                    <?php foreach ($activity as $log):
-                        $isToday = str_starts_with($log['created_at'], date('Y-m-d'));
-                        $timeLabel = $isToday
-                            ? 'วันนี้ ' . date('H:i', strtotime($log['created_at']))
-                            : date('d/m/Y H:i', strtotime($log['created_at']));
-                    ?>
-                    <div class="flex items-start gap-3.5 py-3 first:pt-0 last:pb-0 group">
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm text-slate-800">
-                                <span class="font-bold text-slate-900"><?= htmlspecialchars($log['user_name']) ?></span>
-                                <span class="text-slate-600">สแกนกระดาษคำตอบสำเร็จ</span>
-                                <?php if ($log['exam_title']): ?>
-                                    — <span class="text-amber-700 font-semibold"><?= htmlspecialchars($log['exam_title']) ?></span>
-                                <?php endif; ?>
-                            </p>
-                            <p class="text-xs text-slate-400 mt-0.5"><?= $timeLabel ?></p>
-                        </div>
-                        <?php if ($isToday): ?>
-                            <span class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold flex-shrink-0">วันนี้</span>
-                        <?php endif; ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <?php foreach ($pending_users as $pu): ?>
+                <div class="bg-white rounded-xl p-4 border border-amber-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <p class="font-bold text-slate-900"><?= htmlspecialchars($pu['name']) ?></p>
+                        <p class="text-xs text-slate-500 font-mono mt-1"><?= htmlspecialchars($pu['username']) ?></p>
                     </div>
-                    <?php endforeach; ?>
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="adminAction('approve_user', <?= $pu['user_id'] ?>)" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            อนุมัติ
+                        </button>
+                        <button onclick="adminAction('reject_user', <?= $pu['user_id'] ?>, 'ต้องการปฏิเสธและลบบัญชีนี้ใช่หรือไม่?')" class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1 border border-red-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            ปฏิเสธ
+                        </button>
+                    </div>
                 </div>
-            <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- ── Users Table ─────────────────────────────────────────────── -->
     <section class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
@@ -278,9 +270,10 @@ $csrf_token = generate_csrf_token();
                     <tr>
                         <th class="py-3.5 px-6 font-bold bg-slate-50">ชื่อ-นามสกุล</th>
                         <th class="py-3.5 px-6 font-bold bg-slate-50">อีเมล / Username</th>
-                        <th class="py-3.5 px-6 font-bold bg-slate-50">สิทธิ์ในระบบ</th>
+                        <th class="py-3.5 px-6 font-bold bg-slate-50">สิทธิ์ / สถานะ</th>
                         <th class="py-3.5 px-6 font-bold text-center bg-slate-50">ชุดข้อสอบ</th>
                         <th class="py-3.5 px-6 font-bold text-center bg-slate-50">สแกนแล้ว</th>
+                        <th class="py-3.5 px-6 font-bold text-right bg-slate-50">จัดการ</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -289,19 +282,122 @@ $csrf_token = generate_csrf_token();
                         <td class="py-3.5 px-6 font-semibold text-slate-900"><?= htmlspecialchars($u['name']) ?></td>
                         <td class="py-3.5 px-6 text-slate-500 font-mono text-xs"><?= htmlspecialchars($u['username']) ?></td>
                         <td class="py-3.5 px-6">
+                            <div class="flex flex-col gap-1 items-start">
                             <?php if ($u['role'] === 'admin'): ?>
-                                <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 border border-yellow-300 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                                    <svg class="w-3.5 h-3.5 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 border border-yellow-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    <svg class="w-3 h-3 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                     <span>Admin</span>
                                 </span>
                             <?php else: ?>
-                                <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                    <span>อาจารย์ / ผู้ใช้ทั่วไป</span>
+                                <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                                    <span>ผู้ใช้งาน</span>
                                 </span>
                             <?php endif; ?>
+                            
+                            <?php if ($u['status'] === 'active'): ?>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">🟢 ใช้งานได้</span>
+                            <?php elseif ($u['status'] === 'pending'): ?>
+                                <span class="text-[10px] bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full font-bold">🟡 รอการอนุมัติ</span>
+                            <?php elseif ($u['status'] === 'suspended'): ?>
+                                <span class="text-[10px] bg-red-100 text-red-800 border border-red-200 px-2 py-0.5 rounded-full font-bold">🔴 ถูกระงับ</span>
+                            <?php endif; ?>
+                            </div>
                         </td>
                         <td class="py-3.5 px-6 text-center font-bold text-amber-600 font-sans"><?= number_format($u['exam_count']) ?></td>
                         <td class="py-3.5 px-6 text-center font-bold text-emerald-600 font-sans"><?= number_format($u['scan_count']) ?></td>
+                        <td class="py-3.5 px-6 text-right">
+                            <?php if ($u['user_id'] != $_SESSION['user_id']): ?>
+                                <div class="flex items-center justify-end gap-1">
+                                    <?php if ($u['role'] !== 'admin'): ?>
+                                        <button onclick="adminAction('grant_admin', <?= $u['user_id'] ?>, 'ต้องการมอบสิทธิ์ Admin ให้ผู้ใช้นี้ใช่หรือไม่?')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="ตั้งเป็น Admin">🛡️ ตั้งเป็น Admin</button>
+                                    <?php else: ?>
+                                        <button onclick="adminAction('revoke_admin', <?= $u['user_id'] ?>, 'ต้องการถอนสิทธิ์ Admin ของผู้ใช้นี้ใช่หรือไม่?')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="ถอน Admin">ถอน Admin</button>
+                                    <?php endif; ?>
+
+                                    <?php if ($u['status'] === 'active'): ?>
+                                        <button onclick="adminAction('suspend_user', <?= $u['user_id'] ?>, 'ต้องการระงับบัญชีนี้ใช่หรือไม่?')" class="bg-orange-100 hover:bg-orange-200 text-orange-800 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="ระงับบัญชี">🚫 ระงับบัญชี</button>
+                                    <?php elseif ($u['status'] === 'suspended'): ?>
+                                        <button onclick="adminAction('unsuspend_user', <?= $u['user_id'] ?>)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="เปิดการใช้งาน">✅ เปิดการใช้งาน</button>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <span class="text-xs text-slate-400 italic">ตัวคุณเอง</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ── Invite Codes ────────────────────────────────────────────── -->
+    <section class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/50">
+            <div>
+                <h2 class="text-base font-bold text-slate-900 font-['Inter','Sarabun']">รหัสเชิญ (Invite Codes)</h2>
+                <p class="text-xs text-slate-400">สำหรับส่งให้อาจารย์สมัครสมาชิกโดยไม่ต้องรออนุมัติ</p>
+            </div>
+            <button onclick="document.getElementById('inviteModal').showModal()"
+               class="text-xs bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>สร้างรหัสเชิญ</span>
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
+                    <tr>
+                        <th class="py-3 px-6 font-bold">รหัสเชิญ (Code)</th>
+                        <th class="py-3 px-6 font-bold">ป้ายกำกับ</th>
+                        <th class="py-3 px-6 font-bold">สิทธิ์ที่ได้รับ</th>
+                        <th class="py-3 px-6 font-bold text-center">ใช้งาน (ครั้ง)</th>
+                        <th class="py-3 px-6 font-bold">หมดอายุ</th>
+                        <th class="py-3 px-6 font-bold text-center">สถานะ</th>
+                        <th class="py-3 px-6 font-bold text-right">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <?php if(empty($invite_codes)): ?>
+                    <tr><td colspan="7" class="py-4 text-center text-slate-400 text-sm">ยังไม่มีรหัสเชิญในระบบ</td></tr>
+                    <?php endif; ?>
+                    <?php foreach ($invite_codes as $ic): 
+                        $is_expired = $ic['expires_at'] && strtotime($ic['expires_at']) < time();
+                        $is_full    = $ic['max_uses'] && $ic['used_count'] >= $ic['max_uses'];
+                        $is_valid   = $ic['is_active'] && !$is_expired && !$is_full;
+                    ?>
+                    <tr class="hover:bg-slate-50/80 transition-colors <?= !$is_valid ? 'opacity-60' : '' ?>">
+                        <td class="py-3 px-6 font-mono font-bold text-indigo-700"><?= htmlspecialchars($ic['code']) ?></td>
+                        <td class="py-3 px-6 text-slate-600"><?= htmlspecialchars($ic['label'] ?? '-') ?></td>
+                        <td class="py-3 px-6">
+                            <?php if ($ic['role_grant'] === 'admin'): ?>
+                                <span class="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold">Admin</span>
+                            <?php else: ?>
+                                <span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded font-bold">ผู้ใช้ทั่วไป</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="py-3 px-6 text-center text-slate-600">
+                            <?= $ic['used_count'] ?> / <?= $ic['max_uses'] ? $ic['max_uses'] : '∞' ?>
+                        </td>
+                        <td class="py-3 px-6 text-xs text-slate-500">
+                            <?= $ic['expires_at'] ? date('d/m/Y H:i', strtotime($ic['expires_at'])) : 'ไม่มีวันหมดอายุ' ?>
+                            <?php if($is_expired): ?><span class="text-red-500 ml-1">(หมดอายุ)</span><?php endif; ?>
+                        </td>
+                        <td class="py-3 px-6 text-center">
+                            <?php if ($ic['is_active']): ?>
+                                <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">เปิดใช้งาน</span>
+                            <?php else: ?>
+                                <span class="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 rounded font-bold">ปิดใช้งาน</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="py-3 px-6 text-right space-x-1">
+                            <button onclick="toggleInviteCode(<?= $ic['code_id'] ?>)" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded transition-colors">
+                                เปิด/ปิด
+                            </button>
+                            <button onclick="deleteInviteCode(<?= $ic['code_id'] ?>)" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded transition-colors">
+                                ลบ
+                            </button>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -312,45 +408,41 @@ $csrf_token = generate_csrf_token();
 </main>
 
 <!-- ════ MODALS ═══════════════════════════════════════════════════════ -->
-<dialog id="roleModal" class="backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-0 w-full max-w-md m-auto overflow-hidden">
-    <div class="h-1.5 w-full bg-gradient-to-r from-yellow-400 to-amber-500"></div>
+
+<dialog id="inviteModal" class="backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-0 w-full max-w-md m-auto overflow-hidden">
+    <div class="h-1.5 w-full bg-indigo-500"></div>
     <div class="p-6 sm:p-7">
         <div class="flex justify-between items-center mb-5">
-            <h2 class="text-xl font-bold text-slate-900 font-['Inter','Sarabun']">จัดการสิทธิ์ผู้ดูแลระบบ (Admin)</h2>
-            <button type="button" onclick="document.getElementById('roleModal').close()" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
+            <h2 class="text-xl font-bold text-slate-900 font-['Inter','Sarabun']">สร้างรหัสเชิญใหม่</h2>
+            <button type="button" onclick="document.getElementById('inviteModal').close()" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-
-        <div class="space-y-4">
-            <!-- Grant Admin -->
-            <div class="bg-yellow-50/80 rounded-2xl p-4 border border-yellow-200">
-                <h3 class="text-sm font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-                    <span>มอบสิทธิ์ Admin ให้อาจารย์</span>
-                </h3>
-                <p class="text-xs text-slate-600 mb-3">กรอกอีเมล @msu.ac.th ของอาจารย์ที่ต้องการตั้งเป็น Admin</p>
-                <form id="grantAdminForm" class="flex gap-2">
-                    <input type="hidden" name="action" value="grant_admin">
-                    <input type="email" name="email" id="grantEmail" required placeholder="someone@msu.ac.th" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                    <button type="submit" id="btnGrantAdmin" class="bg-yellow-500 hover:bg-yellow-600 active:scale-[0.98] text-slate-950 font-bold py-2 px-3.5 rounded-xl text-sm transition-all whitespace-nowrap shadow-sm">มอบสิทธิ์</button>
-                </form>
+        <form id="createInviteForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">ป้ายกำกับ (Label) <span class="text-slate-400 font-normal">- ทางเลือก</span></label>
+                <input type="text" name="label" placeholder="เช่น รหัสสำหรับครูวิทยาศาสตร์" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
-
-            <!-- Revoke Admin -->
-            <div class="bg-red-50/80 rounded-2xl p-4 border border-red-200">
-                <h3 class="text-sm font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path></svg>
-                    <span>ถอนสิทธิ์ Admin</span>
-                </h3>
-                <p class="text-xs text-slate-600 mb-3">กรอกอีเมลของ Admin ที่ต้องการปรับเป็นผู้ใช้ทั่วไป</p>
-                <form id="revokeAdminForm" class="flex gap-2">
-                    <input type="hidden" name="action" value="revoke_admin">
-                    <input type="email" name="email" id="revokeEmail" required placeholder="someone@msu.ac.th" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <button type="submit" id="btnRevokeAdmin" class="bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold py-2 px-3.5 rounded-xl text-sm transition-all whitespace-nowrap shadow-sm">ถอนสิทธิ์</button>
-                </form>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">สิทธิ์ที่ได้รับ (Role)</label>
+                <select name="role_grant" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="user">ผู้ใช้งานทั่วไป (อาจารย์)</option>
+                    <option value="admin">ผู้ดูแลระบบ (Admin)</option>
+                </select>
             </div>
-        </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">จำนวนการใช้งานสูงสุด <span class="text-slate-400 font-normal">- ทางเลือก (เว้นว่าง = ไม่จำกัด)</span></label>
+                <input type="number" name="max_uses" min="1" placeholder="เช่น 5" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">วันหมดอายุ <span class="text-slate-400 font-normal">- ทางเลือก (เว้นว่าง = ไม่หมดอายุ)</span></label>
+                <input type="datetime-local" name="expires_at" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="pt-2 flex justify-end gap-2">
+                <button type="button" onclick="document.getElementById('inviteModal').close()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold">ยกเลิก</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-sm">สร้างรหัสเชิญ</button>
+            </div>
+        </form>
     </div>
 </dialog>
 
@@ -392,6 +484,71 @@ $csrf_token = generate_csrf_token();
 
 <script src="js/shared.js"></script>
 <script>
+    // ── Universal Admin Action ──────────────────────────────────────────────
+    async function adminAction(action, userId, confirmMsg) {
+        if (confirmMsg && !confirm(confirmMsg)) return;
+        const fd = new FormData();
+        fd.append('action', action);
+        fd.append('user_id', userId);
+        const btn = event.target.closest('button');
+        if (btn) btn.disabled = true;
+        try {
+            const res = await fetchApi('api/admin_action.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showToast(data.message, 'error');
+                if (btn) btn.disabled = false;
+            }
+        } catch { 
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error'); 
+            if (btn) btn.disabled = false; 
+        }
+    }
+
+    // ── Invite Code Handlers ────────────────────────────────────────────────
+    document.getElementById('createInviteForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        fd.append('action', 'create_invite_code');
+        try {
+            const res = await fetchApi('api/admin_action.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showToast(`✅ Code: ${data.code}`, 'success');
+                document.getElementById('inviteModal').close();
+                setTimeout(() => location.reload(), 2000);
+            } else { showToast(data.message, 'error'); }
+        } catch { showToast('เกิดข้อผิดพลาด', 'error'); }
+    });
+
+    async function toggleInviteCode(codeId) {
+        const fd = new FormData();
+        fd.append('action', 'toggle_invite_code');
+        fd.append('code_id', codeId);
+        try {
+            const res = await fetchApi('api/admin_action.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') { showToast(data.message, 'success'); setTimeout(() => location.reload(), 1200); }
+            else showToast(data.message, 'error');
+        } catch { showToast('เกิดข้อผิดพลาด', 'error'); }
+    }
+
+    async function deleteInviteCode(codeId) {
+        if (!confirm('ลบ Invite Code นี้?')) return;
+        const fd = new FormData();
+        fd.append('action', 'delete_invite_code');
+        fd.append('code_id', codeId);
+        try {
+            const res = await fetchApi('api/admin_action.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') { showToast(data.message, 'success'); setTimeout(() => location.reload(), 1200); }
+            else showToast(data.message, 'error');
+        } catch { showToast('เกิดข้อผิดพลาด', 'error'); }
+    }
+
     // ── Check Orphan Images ────────────────────────────────────────────────
     async function checkOrphanImages() {
         const modal = document.getElementById('cleanupModal');
@@ -477,62 +634,6 @@ $csrf_token = generate_csrf_token();
             btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> ลบไฟล์ขยะทั้งหมด';
         }
     }
-
-    // ── Grant Admin ───────────────────────────────────────────────────────
-    document.getElementById('grantAdminForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const email = fd.get('email').trim();
-        const btn = document.getElementById('btnGrantAdmin');
-
-        if (!email.toLowerCase().endsWith('@msu.ac.th')) {
-            showToast('กรุณาใช้อีเมล @msu.ac.th เท่านั้น', 'error');
-            return;
-        }
-
-        btn.classList.add('btn-loading');
-        try {
-            const res  = await fetchApi('api/admin_action.php', { method: 'POST', body: fd });
-            const data = await res.json();
-            
-            if (data.status === 'success') {
-                showToast(data.message, 'success');
-                e.target.reset();
-                setTimeout(() => location.reload(), 1800);
-            } else {
-                showToast(data.message, 'error');
-                btn.classList.remove('btn-loading');
-            }
-        } catch { 
-            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-            btn.classList.remove('btn-loading');
-        }
-    });
-
-    // ── Revoke Admin ──────────────────────────────────────────────────────
-    document.getElementById('revokeAdminForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const btn = document.getElementById('btnRevokeAdmin');
-
-        btn.classList.add('btn-loading');
-        try {
-            const res  = await fetchApi('api/admin_action.php', { method: 'POST', body: fd });
-            const data = await res.json();
-            
-            if (data.status === 'success') {
-                showToast(data.message, 'success');
-                e.target.reset();
-                setTimeout(() => location.reload(), 1800);
-            } else {
-                showToast(data.message, 'error');
-                btn.classList.remove('btn-loading');
-            }
-        } catch { 
-            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-            btn.classList.remove('btn-loading');
-        }
-    });
 </script>
 
 <!-- Global Academic Footer -->

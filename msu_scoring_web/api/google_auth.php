@@ -52,6 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user) {
+        if ($user['status'] === 'pending') {
+            echo json_encode(['status' => 'pending', 'message' => 'บัญชีของคุณรอการอนุมัติจากผู้ดูแลระบบ กรุณาติดต่อ Admin']);
+            exit;
+        }
+        if ($user['status'] === 'suspended') {
+            echo json_encode(['status' => 'error', 'message' => 'บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ']);
+            exit;
+        }
+
         // Log them in
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['user_id'];
@@ -68,16 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Register new user
         $random_password = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT); // random password
-        $insert = $pdo->prepare("INSERT INTO users (username, password, name, role, email, google_id, auth_provider) VALUES (?, ?, ?, 'user', ?, ?, 'google')");
+        $insert = $pdo->prepare("INSERT INTO users (username, password, name, role, email, google_id, auth_provider, status) VALUES (?, ?, ?, 'user', ?, ?, 'google', 'pending')");
         if ($insert->execute([$email, $random_password, $name, $email, $google_id])) {
-            $new_user_id = $pdo->lastInsertId();
-            
-            session_regenerate_id(true);
-            $_SESSION['user_id'] = $new_user_id;
-            $_SESSION['name']    = $name;
-            $_SESSION['role']    = 'user';
-            
-            echo json_encode(['status' => 'success']);
+            echo json_encode(['status' => 'pending', 'message' => 'สมัครสมาชิกด้วย Google สำเร็จ กรุณารอการอนุมัติจากผู้ดูแลระบบ']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'ไม่สามารถสร้างบัญชีผู้ใช้ได้']);
         }

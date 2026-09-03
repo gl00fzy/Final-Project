@@ -117,7 +117,7 @@ $csrf_token = generate_csrf_token();
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
                             <label for="invite_code" class="block text-xs font-bold uppercase tracking-wider text-slate-700">รหัสเชิญใช้งาน (Invite Code)</label>
-                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200">จำเป็นสำหรับอาจารย์</span>
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">ไม่บังคับ</span>
                         </div>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -125,7 +125,11 @@ $csrf_token = generate_csrf_token();
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                                 </svg>
                             </div>
-                            <input type="text" id="invite_code" name="invite_code" required placeholder="กรอกรหัสเชิญที่ได้รับจากผู้ดูแลระบบ" class="w-full pl-11 pr-4 py-3 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 font-mono transition-all">
+                            <input type="text" id="invite_code" name="invite_code" placeholder="กรอกรหัสเชิญ (ถ้ามี) เพื่ออนุมัติอัตโนมัติ" class="w-full pl-11 pr-4 py-3 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 font-mono transition-all">
+                        </div>
+                        <div class="flex items-start gap-2 mt-2 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700">
+                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>ถ้าไม่มีรหัสเชิญ บัญชีของคุณจะรอการอนุมัติจากผู้ดูแลระบบก่อนจึงจะสามารถใช้งานได้</span>
                         </div>
                     </div>
 
@@ -232,9 +236,10 @@ $csrf_token = generate_csrf_token();
                 
                 if (data.status === 'success') {
                     showToast(data.message + ' กำลังพาไปหน้าเข้าสู่ระบบ...');
-                    setTimeout(() => {
-                        window.location.href = 'index.php';
-                    }, 1500);
+                    setTimeout(() => window.location.href = 'index.php', 1800);
+                } else if (data.status === 'pending') {
+                    showToast(data.message, 'info');
+                    btn.classList.remove('btn-loading');
                 } else {
                     showToast(data.message, 'error');
                     btn.classList.remove('btn-loading');

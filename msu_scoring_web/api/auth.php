@@ -23,6 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
+            if ($user['status'] === 'pending') {
+                echo json_encode(['status' => 'error', 'message' => 'บัญชีของคุณรอการอนุมัติจากผู้ดูแลระบบ กรุณาติดต่อ Admin']);
+                exit;
+            }
+            if ($user['status'] === 'suspended') {
+                echo json_encode(['status' => 'error', 'message' => 'บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ']);
+                exit;
+            }
             session_regenerate_id(true);
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['name']    = $user['name'];

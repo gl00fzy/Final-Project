@@ -100,10 +100,25 @@ $csrf_token = generate_csrf_token();
                     <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <span>แก้ไขเฉลย</span>
                 </a>
-                <a href="api/export_csv.php?exam_id=<?= $exam_id ?>" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 active:scale-95 text-emerald-800 font-bold py-2 px-4 rounded-xl shadow-xs text-xs sm:text-sm flex items-center gap-1.5 transition-all">
-                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    <span>ดาวน์โหลด CSV</span>
-                </a>
+                <div class="relative inline-block" id="exportDropdown">
+                    <div class="flex">
+                        <a href="api/export_excel.php?exam_id=<?= $exam_id ?>" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold py-2 px-4 rounded-l-xl shadow-sm text-xs sm:text-sm flex items-center gap-1.5 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>Export Excel</span>
+                        </a>
+                        <button type="button" onclick="document.getElementById('exportMenu').classList.toggle('hidden')" class="bg-emerald-500 hover:bg-emerald-600 border-l border-emerald-400 text-white px-2 py-2 rounded-r-xl transition-all text-xs font-bold">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                    <div id="exportMenu" class="hidden absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-20 overflow-hidden">
+                        <a href="api/export_excel.php?exam_id=<?= $exam_id ?>" class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 font-semibold">
+                            <span>📊</span><span>Export Excel (.xlsx)</span>
+                        </a>
+                        <a href="api/export_csv.php?exam_id=<?= $exam_id ?>" class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 font-medium border-t border-slate-100">
+                            <span>📄</span><span>Export CSV (.csv)</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -304,6 +319,14 @@ $csrf_token = generate_csrf_token();
                 }
             }
         };
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('exportDropdown');
+            const menu = document.getElementById('exportMenu');
+            if (dropdown && menu && !dropdown.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
     </script>
 
     <!-- Global Academic Footer -->

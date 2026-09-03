@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     email         VARCHAR(255)  DEFAULT NULL,
     google_id     VARCHAR(255)  DEFAULT NULL,
     auth_provider VARCHAR(20)   DEFAULT 'local',
+    status        ENUM('pending','active','suspended') NOT NULL DEFAULT 'pending',
     PRIMARY KEY (user_id),
     UNIQUE KEY uq_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -72,5 +73,20 @@ CREATE TABLE IF NOT EXISTS system_logs (
 
 -- ── Default admin account (password: password123) ──────────────
 -- bcrypt hash สำหรับ 'password123'
-INSERT IGNORE INTO users (user_id, username, password, name, role)
-VALUES (1, 'teacher_demo', '$2y$10$Q6wnsSGblDiH.ZPcnnF/n.m629hBzCn4zfdgQppYRZyM0FCBY4l1S', 'อาจารย์ สมชาย', 'admin');
+INSERT IGNORE INTO users (user_id, username, password, name, role, status)
+VALUES (1, 'teacher_demo', '$2y$10$Q6wnsSGblDiH.ZPcnnF/n.m629hBzCn4zfdgQppYRZyM0FCBY4l1S', 'อาจารย์ สมชาย', 'admin', 'active');
+
+CREATE TABLE IF NOT EXISTS invite_codes (
+    code_id    INT NOT NULL AUTO_INCREMENT,
+    code       VARCHAR(32) NOT NULL UNIQUE,
+    label      VARCHAR(100) DEFAULT NULL,
+    role_grant ENUM('user','admin') DEFAULT 'user',
+    max_uses   INT DEFAULT NULL,
+    used_count INT DEFAULT 0,
+    expires_at DATETIME DEFAULT NULL,
+    is_active  TINYINT(1) DEFAULT 1,
+    created_by INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (code_id),
+    CONSTRAINT fk_invcode_creator FOREIGN KEY (created_by) REFERENCES users (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
