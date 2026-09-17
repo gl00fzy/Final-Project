@@ -203,6 +203,9 @@ $csrf_token = generate_csrf_token();
                 if (data.status === 'success') {
                     showToast('เข้าสู่ระบบสำเร็จ กำลังพาไปหน้าหลัก...');
                     setTimeout(() => window.location.href = 'dashboard.php', 1200);
+                } else if (data.status === 'pending') {
+                    showToast(data.message + ' กำลังพาไปหน้าเข้าสู่ระบบ...', 'info');
+                    setTimeout(() => window.location.href = 'index.php?registered=pending', 1800);
                 } else {
                     showToast(data.message, 'error');
                 }
@@ -236,10 +239,10 @@ $csrf_token = generate_csrf_token();
                 
                 if (data.status === 'success') {
                     showToast(data.message + ' กำลังพาไปหน้าเข้าสู่ระบบ...');
-                    setTimeout(() => window.location.href = 'index.php', 1800);
+                    setTimeout(() => window.location.href = 'index.php?registered=active', 1500);
                 } else if (data.status === 'pending') {
-                    showToast(data.message, 'info');
-                    btn.classList.remove('btn-loading');
+                    showToast(data.message + ' กำลังพาไปหน้าเข้าสู่ระบบ...', 'info');
+                    setTimeout(() => window.location.href = 'index.php?registered=pending', 1800);
                 } else {
                     showToast(data.message, 'error');
                     btn.classList.remove('btn-loading');

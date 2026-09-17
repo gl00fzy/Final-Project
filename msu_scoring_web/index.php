@@ -55,6 +55,34 @@ $csrf_token = generate_csrf_token();
                     <p class="text-xs text-slate-500 mt-0.5">กรอกชื่อผู้ใช้งานหรืออีเมลเพื่อเข้าสู่ระบบงานตรวจข้อสอบ</p>
                 </div>
 
+                <?php if (isset($_GET['registered']) && $_GET['registered'] === 'pending'): ?>
+                <!-- Pending Approval Alert Notice -->
+                <div class="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 flex items-start gap-3 shadow-xs">
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0 text-amber-600 mt-0.5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-slate-900 text-sm mb-0.5">สมัครสมาชิกเรียบร้อยแล้ว (รอการอนุมัติ)</p>
+                        <p class="text-slate-600 leading-relaxed">บัญชีของคุณอยู่ระหว่างรอผู้ดูแลระบบ (Admin) ตรวจสอบและอนุมัติสิทธิ์เข้าใช้งาน เมื่อได้รับการอนุมัติแล้วจะสามารถเข้าสู่ระบบได้ทันที</p>
+                    </div>
+                </div>
+                <?php elseif (isset($_GET['registered']) && $_GET['registered'] === 'active'): ?>
+                <!-- Active Success Alert Notice -->
+                <div class="mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-900 flex items-start gap-3 shadow-xs">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-600 mt-0.5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-slate-900 text-sm mb-0.5">สมัครสมาชิกสำเร็จ</p>
+                        <p class="text-slate-600 leading-relaxed">บัญชีของคุณเปิดใช้งานแล้ว สามารถกรอกข้อมูลด้านล่างเพื่อเข้าสู่ระบบได้ทันที</p>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <form id="loginForm" class="flex flex-col gap-4">
                     <!-- Username Field -->
                     <div>
@@ -190,6 +218,14 @@ $csrf_token = generate_csrf_token();
             } catch (error) {
                 showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
                 btn.classList.remove('btn-loading');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registered') === 'pending') {
+                showToast('สมัครสมาชิกสำเร็จ กรุณารอแอดมินอนุมัติการใช้งาน', 'info');
+            } else if (urlParams.get('registered') === 'active') {
+                showToast('สมัครสมาชิกสำเร็จ สามารถเข้าสู่ระบบได้ทันที', 'success');
             }
         });
     </script>

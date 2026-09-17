@@ -52,6 +52,18 @@ button, a, input, select {
   border: 1px solid #FECACA;
 }
 
+.toast.toast-info {
+  background: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+}
+
+.toast.toast-warning {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
 .toast.toast-out {
   animation: toastOut 0.2s ease-in forwards;
 }

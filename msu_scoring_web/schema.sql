@@ -90,3 +90,20 @@ CREATE TABLE IF NOT EXISTS invite_codes (
     PRIMARY KEY (code_id),
     CONSTRAINT fk_invcode_creator FOREIGN KEY (created_by) REFERENCES users (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ── MBS Faculty Courses Catalog (286 รายวิชา) ──────────────────────
+CREATE TABLE IF NOT EXISTS courses (
+    course_id    INT NOT NULL AUTO_INCREMENT,
+    course_code  VARCHAR(20) NOT NULL,
+    name_th      VARCHAR(255) NOT NULL,
+    name_en      VARCHAR(255) DEFAULT NULL,
+    credit       VARCHAR(50) DEFAULT NULL,
+    majors       TEXT DEFAULT NULL COMMENT 'JSON array of major codes',
+    major_names  TEXT DEFAULT NULL COMMENT 'JSON array of major full names',
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (course_id),
+    UNIQUE KEY uq_course_code (course_code),
+    INDEX idx_name_th (name_th),
+    INDEX idx_name_en (name_en)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
