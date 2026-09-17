@@ -113,11 +113,8 @@ class XLSXWriter {
         return $xml;
     }
 
-    public function writeToFile($filename) {
-        $zip = new ZipArchive();
-        if ($zip->open($filename, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            throw new Exception("Cannot create file: $filename");
-        }
+    protected function buildFilesArray() {
+        $files = [];
 
         // [Content_Types].xml
         $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
@@ -133,14 +130,14 @@ class XLSXWriter {
             $sheet_idx++;
         }
         $ct .= '</Types>';
-        $zip->addFromString('[Content_Types].xml', $ct);
+        $files['[Content_Types].xml'] = $ct;
 
         // _rels/.rels
         $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
         $rels .= '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
         $rels .= '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>';
         $rels .= '</Relationships>';
-        $zip->addFromString('_rels/.rels', $rels);
+        $files['_rels/.rels'] = $rels;
 
         // xl/_rels/workbook.xml.rels
         $wb_rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
@@ -153,7 +150,7 @@ class XLSXWriter {
             $sheet_idx++;
         }
         $wb_rels .= '</Relationships>';
-        $zip->addFromString('xl/_rels/workbook.xml.rels', $wb_rels);
+        $files['xl/_rels/workbook.xml.rels'] = $wb_rels;
 
         // xl/workbook.xml
         $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
@@ -165,29 +162,117 @@ class XLSXWriter {
             $sheet_idx++;
         }
         $wb .= '</sheets></workbook>';
-        $zip->addFromString('xl/workbook.xml', $wb);
+        $files['xl/workbook.xml'] = $wb;
 
         // xl/styles.xml
-        $zip->addFromString('xl/styles.xml', $this->buildStylesXML());
+        $files['xl/styles.xml'] = $this->buildStylesXML();
 
         // xl/sharedStrings.xml
-        $zip->addFromString('xl/sharedStrings.xml', $this->buildSharedStringsXML());
+        $files['xl/sharedStrings.xml'] = $this->buildSharedStringsXML();
 
         // xl/worksheets/sheet*.xml
         $sheet_idx = 1;
         foreach ($this->sheets as $name => $s) {
-            $zip->addFromString('xl/worksheets/sheet' . $sheet_idx . '.xml', $this->buildSheetXML($name));
+            $files['xl/worksheets/sheet' . $sheet_idx . '.xml'] = $this->buildSheetXML($name);
             $sheet_idx++;
         }
 
-        $zip->close();
+        return $files;
+    }
+
+    /**
+     * Pure-PHP Zip packager — creates standard PKZIP / OpenXML compatible archive
+     */
+    protected function buildZipData(array $files) {
+        $data = '';
+        $cd = '';
+        $offset = 0;
+        $entries = 0;
+
+        // DOS Timestamp: 2026-01-01 00:00:00
+        $dtime = 0;
+        $ddate = 0x5C21;
+
+        foreach ($files as $name => $content) {
+            $name = str_replace('\\', '/', $name);
+            $unc_len = strlen($content);
+            $crc = crc32($content);
+
+            if (function_exists('gzdeflate')) {
+                $compressed = gzdeflate($content);
+                $comp_len = strlen($compressed);
+                $method = 8; // Deflate
+            } else {
+                $compressed = $content;
+                $comp_len = $unc_len;
+                $method = 0; // Store
+            }
+
+            // Local File Header
+            $lh = "\x50\x4b\x03\x04" .        // signature (PK\x03\x04)
+                  "\x14\x00" .                // version needed to extract (2.0)
+                  "\x00\x08" .                // general purpose bit flag (bit 11 = UTF-8)
+                  pack('v', $method) .        // compression method
+                  pack('v', $dtime) .         // last mod time
+                  pack('v', $ddate) .         // last mod date
+                  pack('V', $crc) .           // crc-32
+                  pack('V', $comp_len) .      // compressed size
+                  pack('V', $unc_len) .       // uncompressed size
+                  pack('v', strlen($name)) .  // file name length
+                  pack('v', 0) .              // extra field length
+                  $name;
+
+            $data .= $lh . $compressed;
+
+            // Central Directory Entry
+            $cd .= "\x50\x4b\x01\x02" .       // signature (PK\x01\x02)
+                   "\x14\x00" .               // version made by (2.0)
+                   "\x14\x00" .               // version needed (2.0)
+                   "\x00\x08" .               // bit flag (UTF-8)
+                   pack('v', $method) .       // compression method
+                   pack('v', $dtime) .        // last mod time
+                   pack('v', $ddate) .        // last mod date
+                   pack('V', $crc) .          // crc-32
+                   pack('V', $comp_len) .     // compressed size
+                   pack('V', $unc_len) .      // uncompressed size
+                   pack('v', strlen($name)) . // file name length
+                   pack('v', 0) .             // extra field length
+                   pack('v', 0) .             // file comment length
+                   pack('v', 0) .             // disk number start
+                   pack('v', 0) .             // internal file attributes
+                   pack('V', 32) .            // external file attributes (archive)
+                   pack('V', $offset) .       // relative offset of local header
+                   $name;
+
+            $offset = strlen($data);
+            $entries++;
+        }
+
+        $cd_len = strlen($cd);
+        $cd_offset = strlen($data);
+
+        // End of Central Directory Record (EOCD)
+        $eocd = "\x50\x4b\x05\x06" .          // signature (PK\x05\x06)
+                pack('v', 0) .                // number of this disk
+                pack('v', 0) .                // number of disk with central directory
+                pack('v', $entries) .          // total entries on this disk
+                pack('v', $entries) .          // total entries in central directory
+                pack('V', $cd_len) .          // size of central directory
+                pack('V', $cd_offset) .       // offset of start of central directory
+                pack('v', 0);                 // zipfile comment length
+
+        return $data . $cd . $eocd;
     }
 
     public function writeToString() {
-        $tmp = tempnam(sys_get_temp_dir(), 'xlsx_');
-        $this->writeToFile($tmp);
-        $data = file_get_contents($tmp);
-        unlink($tmp);
-        return $data;
+        $files = $this->buildFilesArray();
+        return $this->buildZipData($files);
+    }
+
+    public function writeToFile($filename) {
+        $data = $this->writeToString();
+        if (file_put_contents($filename, $data) === false) {
+            throw new Exception("Cannot create file: $filename");
+        }
     }
 }
