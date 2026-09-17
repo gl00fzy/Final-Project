@@ -28,7 +28,9 @@ if (!$exam) {
     die("ไม่พบชุดข้อสอบ หรือคุณไม่มีสิทธิ์เข้าถึง");
 }
 
-$code_part = !empty($exam['exam_code']) ? preg_replace('/[^A-Za-z0-9_\-]/', '_', $exam['exam_code']) : 'exam_' . $exam_id;
+date_default_timezone_set('Asia/Bangkok');
+$code_part = !empty(trim($exam['exam_code'] ?? '')) ? preg_replace('/[^A-Za-z0-9_\-]/', '_', trim($exam['exam_code'])) : 'exam_' . $exam_id;
+if (empty($code_part)) { $code_part = 'exam_' . $exam_id; }
 $filename = $code_part . '_' . date('Y-m-d') . '.csv';
 
 // Fetch scores

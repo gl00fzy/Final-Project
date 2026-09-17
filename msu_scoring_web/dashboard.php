@@ -102,10 +102,13 @@ $csrf_token = generate_csrf_token();
     </main>
 
     <!-- Create Exam Modal -->
-    <dialog id="createExamModal" aria-labelledby="createExamTitle" class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-7 border border-slate-200/80 backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm m-auto overflow-hidden relative">
-        <div class="h-1.5 w-full bg-gradient-to-r from-yellow-400 to-amber-500 absolute top-0 left-0"></div>
-        <div class="flex items-center justify-between mb-5">
-            <h2 id="createExamTitle" class="text-xl font-bold text-slate-900 font-['Inter','Sarabun']">สร้างชุดข้อสอบใหม่</h2>
+    <dialog id="createExamModal" aria-labelledby="createExamTitle" class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-lg p-6 sm:p-7 border border-slate-200/80 backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm m-auto overflow-visible relative">
+        <div class="h-1.5 w-full bg-gradient-to-r from-yellow-400 to-amber-500 absolute top-0 left-0 rounded-t-2xl sm:rounded-t-3xl"></div>
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 id="createExamTitle" class="text-xl font-bold text-slate-900 font-['Inter','Sarabun']">สร้างชุดข้อสอบใหม่</h2>
+                <p class="text-xs text-slate-500 mt-0.5">เลือกรายวิชาของคณะ หรือพิมพ์รหัสและชื่อวิชาที่ต้องการ</p>
+            </div>
             <button type="button" onclick="document.getElementById('createExamModal').close();" class="text-slate-400 hover:text-slate-600 rounded-lg p-1">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
@@ -114,14 +117,57 @@ $csrf_token = generate_csrf_token();
         <form id="createExamForm" class="flex flex-col gap-4">
             <input type="hidden" name="action" value="create">
             <div id="createExamMsg" class="hidden text-sm font-medium px-4 py-2.5 rounded-xl"></div>
-            <div>
+
+            <!-- Course Code with Autocomplete -->
+            <div class="relative z-30" id="courseCodeContainer">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">รหัสวิชา</label>
+                    <span class="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        ค้นหาวิชาในคณะ MBS ได้
+                    </span>
+                </div>
+                <div class="relative flex items-center">
+                    <input type="text" id="examCodeInput" name="exam_code" autocomplete="off" placeholder="พิมพ์รหัสวิชา เช่น 0904 หรือ 0900" class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all font-mono">
+                    <button type="button" id="btnClearCode" class="hidden absolute right-2.5 inset-y-0 my-auto w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Autocomplete Dropdown List -->
+                <div id="courseDropdown" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 max-h-60 overflow-y-auto divide-y divide-slate-100 ring-1 ring-black/5">
+                    <!-- Dynamic items rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Course Title -->
+            <div class="relative z-10">
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ชื่อวิชา / รายวิชา</label>
-                <input type="text" name="exam_title" required placeholder="เช่น การเขียนโปรแกรมคอมพิวเตอร์" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all">
+                <input type="text" id="examTitleInput" name="exam_title" required autocomplete="off" placeholder="เช่น การเขียนโปรแกรมคอมพิวเตอร์" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all">
             </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">รหัสวิชา (ถ้ามี)</label>
-                <input type="text" name="exam_code" placeholder="เช่น 0601201" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all font-mono">
+
+            <!-- Selected Course Badge / Feedback -->
+            <div id="selectedCourseBadge" class="hidden p-3 rounded-xl bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200/80 flex items-start justify-between gap-3 text-xs">
+                <div class="flex items-start gap-2">
+                    <span class="p-1 rounded-md bg-amber-500 text-white mt-0.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </span>
+                    <div>
+                        <div class="font-bold text-amber-950 text-sm flex items-center gap-1.5 flex-wrap">
+                            <span id="badgeCourseCode" class="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-200 text-amber-900 font-bold"></span>
+                            <span id="badgeCourseNameTh"></span>
+                            <span id="badgeCourseCredit" class="text-slate-500 font-normal text-xs"></span>
+                        </div>
+                        <div id="badgeCourseNameEn" class="text-slate-600 mt-0.5 text-[11px]"></div>
+                        <div id="badgeCourseMajors" class="text-amber-800/80 mt-1 text-[11px] flex gap-1 flex-wrap"></div>
+                    </div>
+                </div>
+                <button type="button" id="btnResetSelectedCourse" class="text-slate-400 hover:text-slate-700 p-1" title="ล้างการเลือก">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
+
+            <!-- Question Count -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">จำนวนข้อสอบ</label>
                 <select name="question_count" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white transition-all">
@@ -130,7 +176,8 @@ $csrf_token = generate_csrf_token();
                     <option value="150">150 ข้อ (3 คอลัมน์)</option>
                 </select>
             </div>
-            <div class="mt-4 flex flex-col gap-2.5">
+
+            <div class="mt-3 flex flex-col gap-2.5">
                 <button type="submit" id="btnCreateSubmit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] text-slate-950 font-bold py-3 px-6 rounded-xl transition-all shadow-md shadow-yellow-500/20 text-sm sm:text-base">บันทึกข้อมูล</button>
                 <button type="button" class="w-full bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-semibold py-2.5 px-6 rounded-xl transition-all text-sm" onclick="document.getElementById('createExamModal').close();">ยกเลิก</button>
             </div>
@@ -292,7 +339,209 @@ $csrf_token = generate_csrf_token();
         const deleteModal = document.getElementById('deleteExamModal');
         let allExamsData = [];
 
+        // ── MBS Course Catalog & Autocomplete ──────────────────────────────
+        let allCoursesList = [];
+        let activeSuggestionIndex = -1;
+        let currentSuggestions = [];
+
+        const examCodeInput = document.getElementById('examCodeInput');
+        const examTitleInput = document.getElementById('examTitleInput');
+        const courseDropdown = document.getElementById('courseDropdown');
+        const selectedBadge = document.getElementById('selectedCourseBadge');
+        const btnClearCode = document.getElementById('btnClearCode');
+
+        async function initCourseCatalog() {
+            try {
+                const res = await fetchApi('api/courses.php?action=all');
+                const data = await res.json();
+                if (data.status === 'success' && Array.isArray(data.data)) {
+                    allCoursesList = data.data;
+                }
+            } catch (err) {
+                console.warn('Could not preload course catalog, will search on-demand:', err);
+            }
+        }
+
+        function filterCourses(query) {
+            if (!query || query.trim().length === 0) return [];
+            const q = query.trim().toLowerCase();
+            const cleanQ = q.replace(/\s+/g, '');
+
+            return allCoursesList.filter(c => {
+                const cleanCode = (c.course_code || '').replace(/\s+/g, '').toLowerCase();
+                const rawCode = (c.course_code || '').toLowerCase();
+                const th = (c.name_th || '').toLowerCase();
+                const en = (c.name_en || '').toLowerCase();
+                return cleanCode.includes(cleanQ) || rawCode.includes(q) || th.includes(q) || en.includes(q);
+            }).sort((a, b) => {
+                const aClean = (a.course_code || '').replace(/\s+/g, '').toLowerCase();
+                const bClean = (b.course_code || '').replace(/\s+/g, '').toLowerCase();
+                const aStarts = aClean.startsWith(cleanQ);
+                const bStarts = bClean.startsWith(cleanQ);
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+                return (a.course_code || '').localeCompare(b.course_code || '');
+            }).slice(0, 10);
+        }
+
+        function renderSuggestions(matches) {
+            currentSuggestions = matches;
+            activeSuggestionIndex = -1;
+            if (matches.length === 0) {
+                courseDropdown.innerHTML = `
+                    <div class="bg-white px-4 py-3 text-xs text-slate-500 text-center">
+                        ไม่พบรหัสวิชาในคณะ MBS (สามารถพิมพ์ชื่อวิชาเองได้)
+                    </div>`;
+                courseDropdown.classList.remove('hidden');
+                return;
+            }
+
+            let html = '';
+            matches.forEach((c, idx) => {
+                const majorsPills = (c.majors || []).slice(0, 3).map(m => 
+                    `<span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">${escapeHtml(m)}</span>`
+                ).join(' ');
+
+                html += `
+                    <div class="course-item bg-white px-3.5 py-2.5 hover:bg-amber-50 cursor-pointer transition-colors flex flex-col gap-0.5" data-index="${idx}">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded text-xs flex-shrink-0">${escapeHtml(c.course_code)}</span>
+                                <span class="font-semibold text-slate-900 text-xs sm:text-sm truncate">${escapeHtml(c.name_th)}</span>
+                            </div>
+                            <span class="text-[11px] text-slate-500 font-mono flex-shrink-0">${escapeHtml(c.credit || '')}</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 text-[11px] text-slate-500">
+                            <span class="truncate">${escapeHtml(c.name_en || '')}</span>
+                            <div class="flex items-center gap-1 flex-shrink-0">${majorsPills}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            courseDropdown.innerHTML = html;
+            courseDropdown.classList.remove('hidden');
+
+            courseDropdown.querySelectorAll('.course-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    selectCourse(currentSuggestions[idx]);
+                });
+            });
+        }
+
+        function selectCourse(c) {
+            if (!c) return;
+            examCodeInput.value = c.course_code;
+            examTitleInput.value = c.name_th;
+            closeCourseDropdown();
+
+            // Show badge
+            document.getElementById('badgeCourseCode').textContent = c.course_code;
+            document.getElementById('badgeCourseNameTh').textContent = c.name_th;
+            document.getElementById('badgeCourseCredit').textContent = c.credit ? `(${c.credit})` : '';
+            document.getElementById('badgeCourseNameEn').textContent = c.name_en || '';
+            
+            const majorsContainer = document.getElementById('badgeCourseMajors');
+            const majorNames = c.major_names || [];
+            if (majorNames.length > 0) {
+                majorsContainer.innerHTML = 'เปิดสอนใน: ' + majorNames.map(m => `<span class="bg-amber-100/70 text-amber-900 px-1.5 py-0.5 rounded font-medium">${escapeHtml(m)}</span>`).join(' ');
+            } else {
+                majorsContainer.innerHTML = '';
+            }
+            selectedBadge.classList.remove('hidden');
+            btnClearCode.classList.remove('hidden');
+        }
+
+        function closeCourseDropdown() {
+            courseDropdown.classList.add('hidden');
+            activeSuggestionIndex = -1;
+        }
+
+        function resetSelectedCourse() {
+            selectedBadge.classList.add('hidden');
+            btnClearCode.classList.add('hidden');
+        }
+
+        examCodeInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.trim()) {
+                btnClearCode.classList.remove('hidden');
+                if (allCoursesList.length > 0) {
+                    const matches = filterCourses(val);
+                    renderSuggestions(matches);
+                } else {
+                    fetchApi('api/courses.php?q=' + encodeURIComponent(val))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.status === 'success') renderSuggestions(data.data || []);
+                        });
+                }
+            } else {
+                btnClearCode.classList.add('hidden');
+                closeCourseDropdown();
+                resetSelectedCourse();
+            }
+        });
+
+        btnClearCode.addEventListener('click', () => {
+            examCodeInput.value = '';
+            btnClearCode.classList.add('hidden');
+            closeCourseDropdown();
+            resetSelectedCourse();
+            examCodeInput.focus();
+        });
+
+        document.getElementById('btnResetSelectedCourse').addEventListener('click', () => {
+            resetSelectedCourse();
+        });
+
+        // Keyboard navigation for dropdown
+        examCodeInput.addEventListener('keydown', (e) => {
+            if (courseDropdown.classList.contains('hidden') || currentSuggestions.length === 0) return;
+
+            const items = courseDropdown.querySelectorAll('.course-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
+                updateActiveSuggestion(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+                updateActiveSuggestion(items);
+            } else if (e.key === 'Enter') {
+                if (activeSuggestionIndex >= 0 && activeSuggestionIndex < currentSuggestions.length) {
+                    e.preventDefault();
+                    selectCourse(currentSuggestions[activeSuggestionIndex]);
+                }
+            } else if (e.key === 'Escape') {
+                closeCourseDropdown();
+            }
+        });
+
+        function updateActiveSuggestion(items) {
+            items.forEach((item, idx) => {
+                if (idx === activeSuggestionIndex) {
+                    item.classList.add('bg-amber-100/90');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('bg-amber-100/90');
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('courseCodeContainer');
+            if (container && !container.contains(e.target)) {
+                closeCourseDropdown();
+            }
+        });
+
+        initCourseCatalog();
+
         document.getElementById('btnCreateExam').onclick = () => {
+            resetSelectedCourse();
+            closeCourseDropdown();
             createModal.showModal();
         };
 
@@ -310,6 +559,8 @@ $csrf_token = generate_csrf_token();
                 if (data.status === 'success') {
                     createModal.close();
                     e.target.reset();
+                    resetSelectedCourse();
+                    closeCourseDropdown();
                     msgBox.classList.add('hidden');
                     showToast('สร้างชุดข้อสอบสำเร็จ', 'success');
                     loadExams();
@@ -463,6 +714,10 @@ $csrf_token = generate_csrf_token();
                                 <a href="key_editor.php?exam_id=${exam.exam_id}">
                                     <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                     <span>จัดการเฉลย</span>
+                                </a>
+                                <a href="api/export_excel.php?exam_id=${exam.exam_id}">
+                                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>ดาวน์โหลด Excel</span>
                                 </a>
                                 <a href="api/export_csv.php?exam_id=${exam.exam_id}">
                                     <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>

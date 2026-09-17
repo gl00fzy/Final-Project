@@ -1,4 +1,7 @@
 <?php
+// ── ตั้งค่า Timezone เป็น ประเทศไทย (UTC+7) ─────────────────────
+date_default_timezone_set('Asia/Bangkok');
+
 // ── โหลดค่าจากไฟล์ .env ────────────────────────────────────────
 // (ถ้ารันผ่าน Docker จะได้ค่าจาก environment variables โดยตรง)
 function loadEnv(string $path): void {
