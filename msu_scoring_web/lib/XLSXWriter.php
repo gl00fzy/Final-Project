@@ -1,42 +1,32 @@
 <?php
 /**
  * XLSXWriter — Lightweight single-file XLSX generator
- * Based on the public domain XLSXWriter by mk-j (simplified)
+ * Pure PHP implementation with built-in PKZIP archiver (Zero external dependencies)
+ * Generates standards-compliant OpenXML (.xlsx) files compatible with Excel, LibreOffice, Google Sheets
  */
 class XLSXWriter {
     protected $sheets = [];
-    protected $shared_strings = [];
-    protected $shared_string_lookup = [];
 
     public function writeSheetHeader($sheet_name, $col_types, $col_options = []) {
         if (empty($this->sheets[$sheet_name])) {
-            $this->sheets[$sheet_name] = ['rows'=>[], 'col_types'=>$col_types, 'col_options'=>$col_options, 'freeze_rows'=>0];
+            $this->sheets[$sheet_name] = ['rows' => [], 'freeze_rows' => 0];
         }
-        $this->sheets[$sheet_name]['col_types'] = $col_types;
-        $this->sheets[$sheet_name]['col_options'] = $col_options;
     }
 
     public function writeSheetRow($sheet_name, $row_data, $options = []) {
         if (empty($this->sheets[$sheet_name])) {
-            $this->sheets[$sheet_name] = ['rows'=>[], 'col_types'=>[], 'col_options'=>[], 'freeze_rows'=>0];
+            $this->sheets[$sheet_name] = ['rows' => [], 'freeze_rows' => 0];
         }
-        $this->sheets[$sheet_name]['rows'][] = ['data'=>$row_data, 'options'=>$options];
+        $this->sheets[$sheet_name]['rows'][] = [
+            'data'    => $row_data,
+            'options' => $options
+        ];
     }
 
     public function setFreezeRows($sheet_name, $rows) {
         if (!empty($this->sheets[$sheet_name])) {
-            $this->sheets[$sheet_name]['freeze_rows'] = $rows;
+            $this->sheets[$sheet_name]['freeze_rows'] = (int)$rows;
         }
-    }
-
-    protected function addSharedString($str) {
-        $str = (string)$str;
-        if (!isset($this->shared_string_lookup[$str])) {
-            $idx = count($this->shared_strings);
-            $this->shared_strings[] = $str;
-            $this->shared_string_lookup[$str] = $idx;
-        }
-        return $this->shared_string_lookup[$str];
     }
 
     protected function colLetter($col_idx) {
@@ -52,63 +42,78 @@ class XLSXWriter {
 
     protected function buildSheetXML($sheet_name) {
         $sheet = $this->sheets[$sheet_name];
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $xml .= '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">';
 
-        // Freeze pane
+        // Freeze pane if requested
         if (!empty($sheet['freeze_rows'])) {
+            $freeze = (int)$sheet['freeze_rows'];
+            $top_left = 'A' . ($freeze + 1);
             $xml .= '<sheetViews><sheetView tabSelected="1" workbookViewId="0">';
-            $xml .= '<pane ySplit="' . $sheet['freeze_rows'] . '" topLeftCell="A' . ($sheet['freeze_rows']+1) . '" activePane="bottomLeft" state="frozen"/>';
+            $xml .= '<pane ySplit="' . $freeze . '" topLeftCell="' . $top_left . '" activePane="bottomLeft" state="frozen"/>';
+            $xml .= '<selection pane="bottomLeft" activeCell="' . $top_left . '" sqref="' . $top_left . '"/>';
             $xml .= '</sheetView></sheetViews>';
+        } else {
+            $xml .= '<sheetViews><sheetView tabSelected="1" workbookViewId="0"/></sheetViews>';
         }
 
+        $xml .= '<sheetFormatPr defaultRowHeight="18"/>';
         $xml .= '<sheetData>';
+
         $row_idx = 1;
         foreach ($sheet['rows'] as $row_info) {
-            $row_data = $row_info['data'];
+            $row_data  = $row_info['data'];
             $is_header = !empty($row_info['options']['bold']);
-            $xml .= '<row r="' . $row_idx . '">';
+            $xml .= '<row r="' . $row_idx . '" spans="1:' . count($row_data) . '">';
+
             $col_idx = 0;
             foreach ($row_data as $val) {
                 $cell_ref = $this->colLetter($col_idx) . $row_idx;
-                $str_idx = $this->addSharedString((string)$val);
-                $style = $is_header ? ' s="1"' : '';
-                $xml .= '<c r="' . $cell_ref . '" t="s"' . $style . '><v>' . $str_idx . '</v></c>';
+                $style    = $is_header ? ' s="1"' : '';
+
+                if (is_numeric($val) && !is_string($val)) {
+                    // Pure numeric value (e.g. integer or float score)
+                    $xml .= '<c r="' . $cell_ref . '"' . $style . '><v>' . $val . '</v></c>';
+                } else {
+                    // String / text value (including numeric strings like student IDs)
+                    $escaped = htmlspecialchars((string)$val, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                    $xml .= '<c r="' . $cell_ref . '" t="inlineStr"' . $style . '><is><t>' . $escaped . '</t></is></c>';
+                }
                 $col_idx++;
             }
             $xml .= '</row>';
             $row_idx++;
         }
+
         $xml .= '</sheetData>';
         $xml .= '</worksheet>';
         return $xml;
     }
 
-    protected function buildSharedStringsXML() {
-        $count = count($this->shared_strings);
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-        $xml .= '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' . $count . '" uniqueCount="' . $count . '">';
-        foreach ($this->shared_strings as $s) {
-            $xml .= '<si><t>' . htmlspecialchars($s, ENT_XML1, 'UTF-8') . '</t></si>';
-        }
-        $xml .= '</sst>';
-        return $xml;
-    }
-
     protected function buildStylesXML() {
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $xml .= '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
         $xml .= '<fonts count="2">';
-        $xml .= '<font><sz val="11"/><name val="Calibri"/></font>'; // style 0: normal
-        $xml .= '<font><b/><sz val="11"/><name val="Calibri"/></font>'; // style 1: bold
+        $xml .= '<font><sz val="11"/><color theme="1"/><name val="Calibri"/><family val="2"/></font>'; // 0: Normal
+        $xml .= '<font><b/><sz val="11"/><color theme="1"/><name val="Calibri"/><family val="2"/></font>'; // 1: Bold
         $xml .= '</fonts>';
-        $xml .= '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>';
-        $xml .= '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>';
-        $xml .= '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>';
+        $xml .= '<fills count="2">';
+        $xml .= '<fill><patternFill patternType="none"/></fill>';
+        $xml .= '<fill><patternFill patternType="gray125"/></fill>';
+        $xml .= '</fills>';
+        $xml .= '<borders count="1">';
+        $xml .= '<border><left/><right/><top/><bottom/><diagonal/></border>';
+        $xml .= '</borders>';
+        $xml .= '<cellStyleXfs count="1">';
+        $xml .= '<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>';
+        $xml .= '</cellStyleXfs>';
         $xml .= '<cellXfs count="2">';
-        $xml .= '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>';  // 0: normal
-        $xml .= '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0"/>';  // 1: bold
+        $xml .= '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'; // 0: Normal
+        $xml .= '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'; // 1: Bold
         $xml .= '</cellXfs>';
+        $xml .= '<cellStyles count="1">';
+        $xml .= '<cellStyle name="Normal" xfId="0" builtinId="0"/>';
+        $xml .= '</cellStyles>';
         $xml .= '</styleSheet>';
         return $xml;
     }
@@ -116,66 +121,71 @@ class XLSXWriter {
     protected function buildFilesArray() {
         $files = [];
 
-        // [Content_Types].xml
-        $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        // 1. Build each worksheet XML first
+        $sheet_idx = 1;
+        $sheet_entries = [];
+        foreach ($this->sheets as $name => $s) {
+            // Clean sheet name (Excel limits to 31 chars and disallows: \ / ? * [ ] :)
+            $safe_name = preg_replace('/[\\\\\\/\\?\\*\\[\\]\\:]/', '', (string)$name);
+            if (mb_strlen($safe_name, 'UTF-8') > 31) {
+                $safe_name = mb_substr($safe_name, 0, 31, 'UTF-8');
+            }
+            if (trim($safe_name) === '') {
+                $safe_name = 'Sheet' . $sheet_idx;
+            }
+
+            $part_name = 'xl/worksheets/sheet' . $sheet_idx . '.xml';
+            $files[$part_name] = $this->buildSheetXML($name);
+            $sheet_entries[] = [
+                'index' => $sheet_idx,
+                'name'  => $safe_name,
+                'rid'   => 'rId' . ($sheet_idx + 1) // rId1 is styles.xml, rId2+ are sheets
+            ];
+            $sheet_idx++;
+        }
+
+        // 2. [Content_Types].xml
+        $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $ct .= '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">';
         $ct .= '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>';
         $ct .= '<Default Extension="xml" ContentType="application/xml"/>';
         $ct .= '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>';
         $ct .= '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
-        $ct .= '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>';
-        $sheet_idx = 1;
-        foreach ($this->sheets as $name => $s) {
-            $ct .= '<Override PartName="/xl/worksheets/sheet' . $sheet_idx . '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
-            $sheet_idx++;
+        foreach ($sheet_entries as $entry) {
+            $ct .= '<Override PartName="/xl/worksheets/sheet' . $entry['index'] . '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
         }
         $ct .= '</Types>';
         $files['[Content_Types].xml'] = $ct;
 
-        // _rels/.rels
-        $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        // 3. _rels/.rels
+        $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $rels .= '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
         $rels .= '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>';
         $rels .= '</Relationships>';
         $files['_rels/.rels'] = $rels;
 
-        // xl/_rels/workbook.xml.rels
-        $wb_rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        // 4. xl/_rels/workbook.xml.rels
+        $wb_rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $wb_rels .= '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
-        $wb_rels .= '<Relationship Id="rId0" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
-        $wb_rels .= '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>';
-        $sheet_idx = 2;
-        foreach ($this->sheets as $name => $s) {
-            $wb_rels .= '<Relationship Id="rId' . $sheet_idx . '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' . ($sheet_idx-1) . '.xml"/>';
-            $sheet_idx++;
+        $wb_rels .= '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
+        foreach ($sheet_entries as $entry) {
+            $wb_rels .= '<Relationship Id="' . $entry['rid'] . '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' . $entry['index'] . '.xml"/>';
         }
         $wb_rels .= '</Relationships>';
         $files['xl/_rels/workbook.xml.rels'] = $wb_rels;
 
-        // xl/workbook.xml
-        $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        // 5. xl/workbook.xml
+        $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $wb .= '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">';
         $wb .= '<sheets>';
-        $sheet_idx = 2;
-        foreach ($this->sheets as $name => $s) {
-            $wb .= '<sheet name="' . htmlspecialchars($name, ENT_XML1, 'UTF-8') . '" sheetId="' . ($sheet_idx-1) . '" r:id="rId' . $sheet_idx . '"/>';
-            $sheet_idx++;
+        foreach ($sheet_entries as $entry) {
+            $wb .= '<sheet name="' . htmlspecialchars($entry['name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" sheetId="' . $entry['index'] . '" r:id="' . $entry['rid'] . '"/>';
         }
         $wb .= '</sheets></workbook>';
         $files['xl/workbook.xml'] = $wb;
 
-        // xl/styles.xml
+        // 6. xl/styles.xml
         $files['xl/styles.xml'] = $this->buildStylesXML();
-
-        // xl/sharedStrings.xml
-        $files['xl/sharedStrings.xml'] = $this->buildSharedStringsXML();
-
-        // xl/worksheets/sheet*.xml
-        $sheet_idx = 1;
-        foreach ($this->sheets as $name => $s) {
-            $files['xl/worksheets/sheet' . $sheet_idx . '.xml'] = $this->buildSheetXML($name);
-            $sheet_idx++;
-        }
 
         return $files;
     }
@@ -199,7 +209,7 @@ class XLSXWriter {
             $crc = crc32($content);
 
             if (function_exists('gzdeflate')) {
-                $compressed = gzdeflate($content);
+                $compressed = gzdeflate($content, 6);
                 $comp_len = strlen($compressed);
                 $method = 8; // Deflate
             } else {
@@ -211,7 +221,7 @@ class XLSXWriter {
             // Local File Header
             $lh = "\x50\x4b\x03\x04" .        // signature (PK\x03\x04)
                   "\x14\x00" .                // version needed to extract (2.0)
-                  "\x00\x08" .                // general purpose bit flag (bit 11 = UTF-8)
+                  "\x00\x00" .                // general purpose bit flag
                   pack('v', $method) .        // compression method
                   pack('v', $dtime) .         // last mod time
                   pack('v', $ddate) .         // last mod date
@@ -228,7 +238,7 @@ class XLSXWriter {
             $cd .= "\x50\x4b\x01\x02" .       // signature (PK\x01\x02)
                    "\x14\x00" .               // version made by (2.0)
                    "\x14\x00" .               // version needed (2.0)
-                   "\x00\x08" .               // bit flag (UTF-8)
+                   "\x00\x00" .               // bit flag
                    pack('v', $method) .       // compression method
                    pack('v', $dtime) .        // last mod time
                    pack('v', $ddate) .        // last mod date

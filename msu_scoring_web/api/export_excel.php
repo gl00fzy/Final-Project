@@ -57,9 +57,14 @@ foreach ($scores as $row) {
 
 $data = $writer->writeToString();
 
+if (ob_get_level()) {
+    ob_end_clean();
+}
+
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 header('Content-Length: ' . strlen($data));
 header('Cache-Control: max-age=0');
+header('Pragma: public');
 echo $data;
 exit;
