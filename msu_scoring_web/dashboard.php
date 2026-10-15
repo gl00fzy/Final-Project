@@ -439,19 +439,22 @@ $csrf_token = generate_csrf_token();
             const cleanQ = q.replace(/\s+/g, '');
 
             return allCoursesList.filter(c => {
-                const cleanCode = (c.course_code || '').replace(/\s+/g, '').toLowerCase();
-                const rawCode = (c.course_code || '').toLowerCase();
+                const code = c.course_code || c.code || '';
+                const cleanCode = code.replace(/\s+/g, '').toLowerCase();
+                const rawCode = code.toLowerCase();
                 const th = (c.name_th || '').toLowerCase();
                 const en = (c.name_en || '').toLowerCase();
                 return cleanCode.includes(cleanQ) || rawCode.includes(q) || th.includes(q) || en.includes(q);
             }).sort((a, b) => {
-                const aClean = (a.course_code || '').replace(/\s+/g, '').toLowerCase();
-                const bClean = (b.course_code || '').replace(/\s+/g, '').toLowerCase();
+                const aCode = a.course_code || a.code || '';
+                const bCode = b.course_code || b.code || '';
+                const aClean = aCode.replace(/\s+/g, '').toLowerCase();
+                const bClean = bCode.replace(/\s+/g, '').toLowerCase();
                 const aStarts = aClean.startsWith(cleanQ);
                 const bStarts = bClean.startsWith(cleanQ);
                 if (aStarts && !bStarts) return -1;
                 if (!aStarts && bStarts) return 1;
-                return (a.course_code || '').localeCompare(b.course_code || '');
+                return aCode.localeCompare(bCode);
             }).slice(0, 10);
         }
 
@@ -469,6 +472,7 @@ $csrf_token = generate_csrf_token();
 
             let html = '';
             matches.forEach((c, idx) => {
+                const code = c.course_code || c.code || '';
                 const majorsPills = (c.majors || []).slice(0, 3).map(m => 
                     `<span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">${escapeHtml(m)}</span>`
                 ).join(' ');
@@ -477,7 +481,7 @@ $csrf_token = generate_csrf_token();
                     <div class="course-item bg-white px-3.5 py-2.5 hover:bg-amber-50 cursor-pointer transition-colors flex flex-col gap-0.5" data-index="${idx}">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center gap-1.5 min-w-0">
-                                <span class="font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded text-xs flex-shrink-0">${escapeHtml(c.course_code)}</span>
+                                <span class="font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded text-xs flex-shrink-0">${escapeHtml(code)}</span>
                                 <span class="font-semibold text-slate-900 text-xs sm:text-sm truncate">${escapeHtml(c.name_th)}</span>
                             </div>
                             <span class="text-[11px] text-slate-500 font-mono flex-shrink-0">${escapeHtml(c.credit || '')}</span>
@@ -502,12 +506,13 @@ $csrf_token = generate_csrf_token();
 
         function selectCourse(c) {
             if (!c) return;
-            examCodeInput.value = c.course_code;
+            const code = c.course_code || c.code || '';
+            examCodeInput.value = code;
             examTitleInput.value = c.name_th;
             closeCourseDropdown();
 
             // Show badge
-            document.getElementById('badgeCourseCode').textContent = c.course_code;
+            document.getElementById('badgeCourseCode').textContent = code;
             document.getElementById('badgeCourseNameTh').textContent = c.name_th;
             document.getElementById('badgeCourseCredit').textContent = c.credit ? `(${c.credit})` : '';
             document.getElementById('badgeCourseNameEn').textContent = c.name_en || '';
@@ -533,8 +538,7 @@ $csrf_token = generate_csrf_token();
             btnClearCode.classList.add('hidden');
         }
 
-        examCodeInput.addEventListener('input', (e) => {
-            const val = e.target.value;
+        function triggerCourseSearch(val) {
             if (val.trim()) {
                 btnClearCode.classList.remove('hidden');
                 if (allCoursesList.length > 0) {
@@ -545,12 +549,25 @@ $csrf_token = generate_csrf_token();
                         .then(r => r.json())
                         .then(data => {
                             if (data.status === 'success') renderSuggestions(data.data || []);
+                        })
+                        .catch(err => {
+                            console.warn('Error fetching courses on query:', err);
                         });
                 }
             } else {
                 btnClearCode.classList.add('hidden');
                 closeCourseDropdown();
                 resetSelectedCourse();
+            }
+        }
+
+        examCodeInput.addEventListener('input', (e) => {
+            triggerCourseSearch(e.target.value);
+        });
+
+        examCodeInput.addEventListener('focus', () => {
+            if (examCodeInput.value.trim()) {
+                triggerCourseSearch(examCodeInput.value);
             }
         });
 
@@ -613,6 +630,9 @@ $csrf_token = generate_csrf_token();
         document.getElementById('btnCreateExam').onclick = () => {
             resetSelectedCourse();
             closeCourseDropdown();
+            if (allCoursesList.length === 0) {
+                initCourseCatalog();
+            }
             createModal.showModal();
         };
 
