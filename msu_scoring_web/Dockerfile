@@ -23,6 +23,10 @@ RUN a2enmod rewrite headers
 # ── ตั้งค่า Apache ────────────────────────────────────────────
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
+# ── คัดลอก entrypoint script ──────────────────────────────────
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # ── คัดลอกโค้ดทั้งหมดเข้า container ──────────────────────────
 WORKDIR /var/www/html
 COPY . .
@@ -35,4 +39,5 @@ RUN mkdir -p /var/www/html/uploads \
 # ── เปิด port 80 ───────────────────────────────────────────────
 EXPOSE 80
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
