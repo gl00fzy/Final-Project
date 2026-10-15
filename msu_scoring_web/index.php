@@ -6,6 +6,7 @@ if (isset($_SESSION['user_id'])) {
     exit;
 }
 $google_client_id = env('GOOGLE_CLIENT_ID', '6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com');
+$allow_all_domains = filter_var(env('ALLOW_ALL_GOOGLE_DOMAINS', 'true'), FILTER_VALIDATE_BOOLEAN);
 $csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
@@ -57,7 +58,7 @@ $csrf_token = generate_csrf_token();
 
                 <?php if (isset($_GET['registered']) && $_GET['registered'] === 'pending'): ?>
                 <!-- Pending Approval Alert Notice -->
-                <div class="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 flex items-start gap-3 shadow-xs">
+                <div class="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 flex items-start gap-3 shadow-sm">
                     <div class="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0 text-amber-600 mt-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -70,7 +71,7 @@ $csrf_token = generate_csrf_token();
                 </div>
                 <?php elseif (isset($_GET['registered']) && $_GET['registered'] === 'active'): ?>
                 <!-- Active Success Alert Notice -->
-                <div class="mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-900 flex items-start gap-3 shadow-xs">
+                <div class="mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-900 flex items-start gap-3 shadow-sm">
                     <div class="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-600 mt-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -140,7 +141,7 @@ $csrf_token = generate_csrf_token();
                      data-auto_prompt="false">
                 </div>
                 
-                <div class="flex justify-center">
+                <div class="flex flex-col items-center justify-center">
                     <div class="g_id_signin"
                          data-type="standard"
                          data-shape="rectangular"
@@ -150,6 +151,30 @@ $csrf_token = generate_csrf_token();
                          data-logo_alignment="left"
                          data-width="320">
                     </div>
+                    <p class="text-[11px] text-slate-500 mt-2 text-center">
+                        <?php if ($allow_all_domains): ?>
+                            รองรับทั้งบัญชี Google (@gmail.com) และอีเมลมหาวิทยาลัย (@msu.ac.th)
+                        <?php else: ?>
+                            เฉพาะอีเมลมหาวิทยาลัย (@msu.ac.th) เท่านั้น
+                        <?php endif; ?>
+                    </p>
+                </div>
+
+                <!-- Demo / Guest Tester 1-Click Quick Access -->
+                <div class="mt-5 pt-4 border-t border-slate-200/80">
+                    <button type="button" id="btnDemoLogin" onclick="handleDemoLogin()"
+                            class="w-full group bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 hover:from-amber-100 hover:to-yellow-100 active:scale-[0.98] text-slate-800 font-bold py-2.5 px-4 rounded-xl transition-all border border-amber-300/80 hover:border-amber-400 flex items-center justify-center gap-2 text-sm shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <div class="w-6 h-6 rounded-lg bg-yellow-400 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="tracking-tight">เข้าสู่ระบบทดลองใช้งาน (Demo / Guest Tester)</span>
+                        <span class="text-[10px] font-extrabold bg-amber-200/90 text-amber-900 px-2 py-0.5 rounded-full uppercase tracking-wider">1-Click</span>
+                    </button>
+                    <p class="text-[11px] text-center text-slate-500 mt-1.5 leading-relaxed">
+                        สำหรับผู้ประเมินหรือบุคคลภายนอก ทดสอบระบบได้ทันทีโดยไม่ต้องลงทะเบียน
+                    </p>
                 </div>
             </div>
             
@@ -159,9 +184,9 @@ $csrf_token = generate_csrf_token();
             </div>
 
             <!-- Survey & Feedback Link Card -->
-            <div class="mt-4 p-3.5 bg-white/90 backdrop-blur-sm border border-amber-200/90 rounded-2xl shadow-xs flex items-center justify-between gap-3">
+            <div class="mt-4 p-3.5 bg-white/90 backdrop-blur-sm border border-amber-200/90 rounded-2xl shadow-sm flex items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-xs">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
@@ -171,7 +196,7 @@ $csrf_token = generate_csrf_token();
                         <p class="text-[11px] text-slate-500 truncate">Google Forms &bull; สแกน QR Code หรือทำแบบประเมิน</p>
                     </div>
                 </div>
-                <button type="button" onclick="openSurveyModal()" class="flex-shrink-0 bg-yellow-400 hover:bg-yellow-500 active:scale-95 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer">
+                <button type="button" onclick="openSurveyModal()" class="flex-shrink-0 bg-yellow-400 hover:bg-yellow-500 active:scale-95 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                     <span>เปิดแบบประเมิน</span>
                 </button>
@@ -206,13 +231,60 @@ $csrf_token = generate_csrf_token();
                 const data = await res.json();
                 
                 if (data.status === 'success') {
-                    showToast('เข้าสู่ระบบสำเร็จ กำลังพาไปหน้าหลัก...');
-                    setTimeout(() => window.location.href = 'dashboard.php', 1200);
+                    showToast(data.message || 'เข้าสู่ระบบสำเร็จ กำลังพาไปหน้าหลัก...');
+                    setTimeout(() => window.location.href = 'dashboard.php', 1000);
+                } else if (data.status === 'pending') {
+                    showToast(data.message, 'info');
                 } else {
                     showToast(data.message, 'error');
                 }
             } catch (error) {
                 showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+            }
+        }
+
+        async function handleDemoLogin() {
+            const btn = document.getElementById('btnDemoLogin');
+            if (!btn) return;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.innerHTML = `
+                <div class="inline-flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4 text-slate-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>กำลังเข้าสู่ระบบทดลองใช้งาน...</span>
+                </div>
+            `;
+            
+            try {
+                const res = await fetchApi('api/demo_login.php', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    showToast(data.message || 'เข้าสู่ระบบทดลองใช้งานสำเร็จ กำลังเข้าสู่แดชบอร์ด...');
+                    setTimeout(() => window.location.href = 'dashboard.php', 800);
+                } else {
+                    const isCsrf = data.message && (data.message.includes('CSRF') || data.message.includes('โทเค็น'));
+                    if (isCsrf) {
+                        showToast('ความปลอดภัยเซสชันหมดอายุ กำลังรีเฟรชหน้าเว็บ...', 'warning');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast(data.message || 'ไม่สามารถเข้าสู่ระบบทดลองใช้งานได้', 'error');
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        btn.innerHTML = originalHtml;
+                    }
+                }
+            } catch (error) {
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                btn.innerHTML = originalHtml;
             }
         }
 

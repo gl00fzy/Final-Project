@@ -134,14 +134,14 @@ $csrf_token = generate_csrf_token();
                         
                         <button type="button" 
                                 onclick="openSurveyModal()"
-                                class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-300 shadow-xs transition-all cursor-pointer">
+                                class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-300 shadow-sm transition-all cursor-pointer">
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                             <span>ดู QR Code ขยายใหญ่</span>
                         </button>
                         
                         <button type="button" 
                                 onclick="copySurveyLink()"
-                                class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold px-3 py-2.5 rounded-xl text-sm border border-slate-300 shadow-xs transition-all cursor-pointer">
+                                class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold px-3 py-2.5 rounded-xl text-sm border border-slate-300 shadow-sm transition-all cursor-pointer">
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                             <span>คัดลอกลิงก์</span>
                         </button>

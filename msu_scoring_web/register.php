@@ -7,6 +7,7 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $google_client_id = env('GOOGLE_CLIENT_ID', '6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com');
+$allow_all_domains = filter_var(env('ALLOW_ALL_GOOGLE_DOMAINS', 'true'), FILTER_VALIDATE_BOOLEAN);
 $csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
@@ -158,7 +159,7 @@ $csrf_token = generate_csrf_token();
                      data-auto_prompt="false">
                 </div>
                 
-                <div class="flex justify-center">
+                <div class="flex flex-col items-center justify-center">
                     <div class="g_id_signin"
                          data-type="standard"
                          data-shape="rectangular"
@@ -168,6 +169,13 @@ $csrf_token = generate_csrf_token();
                          data-logo_alignment="left"
                          data-width="320">
                     </div>
+                    <p class="text-[11px] text-slate-500 mt-2 text-center">
+                        <?php if ($allow_all_domains): ?>
+                            รองรับทั้งบัญชี Google (@gmail.com) และอีเมลมหาวิทยาลัย (@msu.ac.th)
+                        <?php else: ?>
+                            เฉพาะอีเมลมหาวิทยาลัย (@msu.ac.th) เท่านั้น
+                        <?php endif; ?>
+                    </p>
                 </div>
             </div>
             
