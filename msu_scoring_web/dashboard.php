@@ -36,6 +36,16 @@ $csrf_token = generate_csrf_token();
                 </a>
                 
                 <div class="flex items-center space-x-2 sm:space-x-3">
+                    <button type="button" onclick="openSurveyModal()"
+                            class="flex items-center gap-1.5 bg-amber-400/15 hover:bg-amber-400/25 active:scale-95 text-amber-300 hover:text-amber-200 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all border border-amber-400/30 whitespace-nowrap cursor-pointer"
+                            title="แบบประเมินประสิทธิภาพและการยอมรับระบบ">
+                        <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        <span class="hidden md:inline">แบบประเมินระบบ</span>
+                        <span class="md:hidden">ประเมิน</span>
+                    </button>
+
                     <?php if (($_SESSION['role'] ?? 'user') === 'admin'): ?>
                     <a href="admin_dashboard.php"
                        class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all border border-indigo-400/30 whitespace-nowrap">
@@ -89,6 +99,67 @@ $csrf_token = generate_csrf_token();
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                     <span>สร้างชุดข้อสอบใหม่</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Survey / Evaluation Banner -->
+        <div class="mb-8 bg-gradient-to-br from-amber-500/10 via-yellow-500/10 to-amber-500/5 border border-amber-200/90 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-sm relative overflow-hidden">
+            <!-- Top Accent Line -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-500 absolute top-0 left-0"></div>
+            
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex-1 text-center md:text-left">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold mb-3 border border-amber-200">
+                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        <span>แบบประเมินความพึงพอใจและการยอมรับระบบ</span>
+                    </div>
+                    
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mb-2 font-['Inter','Sarabun']">
+                        แบบประเมินประสิทธิภาพและการยอมรับระบบตรวจข้อสอบปรนัยอัจฉริยะ (MSU Score)
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl mb-4">
+                        ขอความอนุเคราะห์อาจารย์และผู้ใช้งานทุกท่าน ร่วมตอบแบบประเมินเพื่อวัดประสิทธิภาพ ความพึงพอใจ และการยอมรับการใช้งานระบบ เพื่อนำข้อเสนอแนะไปพัฒนาและปรับปรุงระบบให้ดียิ่งขึ้น
+                    </p>
+                    
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScadKdz_wPk-QtWbxFKyINhTf2TKhS__R-QgMEKsurSZ2Nitg/viewform?usp=dialog" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm shadow-md shadow-yellow-500/20 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <span>เปิดทำแบบประเมิน (Google Form)</span>
+                        </a>
+                        
+                        <button type="button" 
+                                onclick="openSurveyModal()"
+                                class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-300 shadow-xs transition-all cursor-pointer">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                            <span>ดู QR Code ขยายใหญ่</span>
+                        </button>
+                        
+                        <button type="button" 
+                                onclick="copySurveyLink()"
+                                class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold px-3 py-2.5 rounded-xl text-sm border border-slate-300 shadow-xs transition-all cursor-pointer">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span>คัดลอกลิงก์</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- QR Code Preview Card -->
+                <div class="flex flex-col items-center flex-shrink-0 bg-white p-3.5 rounded-2xl border border-amber-200/80 shadow-md">
+                    <img src="assets/survey_qr.png" 
+                         alt="QR Code แบบประเมิน" 
+                         class="w-32 h-32 sm:w-36 sm:h-36 rounded-xl object-contain cursor-pointer hover:opacity-95 transition-opacity"
+                         onclick="openSurveyModal()"
+                         title="คลิกเพื่อดูภาพขยาย">
+                    <span class="text-[11px] font-bold text-slate-600 mt-2 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        สแกนด้วยสมาร์ทโฟน
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -835,8 +906,14 @@ $csrf_token = generate_csrf_token();
     <footer class="w-full border-t border-slate-200/80 py-5 text-center bg-white mt-12">
         <p class="text-xs text-slate-500 leading-relaxed">
             &copy; 2026 ระบบตรวจข้อสอบ MSU Scoring | มหาวิทยาลัยมหาสารคาม<br class="sm:hidden">
-            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.
+            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.<br>
+            <button type="button" onclick="openSurveyModal()" class="inline-flex items-center gap-1 text-amber-700 hover:text-amber-800 font-semibold underline underline-offset-2 mt-1.5 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                <span>แบบประเมินประสิทธิภาพและการยอมรับระบบ (Google Form &amp; QR Code)</span>
+            </button>
         </p>
     </footer>
+
+    <?php include_once __DIR__ . '/components/survey_modal.php'; ?>
 </body>
 </html>

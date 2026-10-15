@@ -372,7 +372,7 @@ $csrf_token = generate_csrf_token();
     </dialog>
 
     <script src="js/shared.js"></script>
-
+    <script>
         // ── Show Scan Result Modal Helper ────────────────────────────────────
         window.showScanResultModal = function(opts) {
             const card = document.getElementById('scanResultCard');

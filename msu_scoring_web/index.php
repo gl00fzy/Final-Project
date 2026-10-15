@@ -157,6 +157,25 @@ $csrf_token = generate_csrf_token();
             <div class="mt-5 text-center">
                 <p class="text-sm text-slate-600">ยังไม่มีบัญชีผู้ใช้งาน? <a href="register.php" class="text-amber-600 font-bold hover:text-amber-700 hover:underline transition-colors ml-1">สมัครสมาชิกใหม่</a></p>
             </div>
+
+            <!-- Survey & Feedback Link Card -->
+            <div class="mt-4 p-3.5 bg-white/90 backdrop-blur-sm border border-amber-200/90 rounded-2xl shadow-xs flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-xs">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div class="text-left min-w-0">
+                        <p class="text-xs font-bold text-slate-800 truncate">แบบประเมินระบบ MSU Score</p>
+                        <p class="text-[11px] text-slate-500 truncate">Google Forms &bull; สแกน QR Code หรือทำแบบประเมิน</p>
+                    </div>
+                </div>
+                <button type="button" onclick="openSurveyModal()" class="flex-shrink-0 bg-yellow-400 hover:bg-yellow-500 active:scale-95 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    <span>เปิดแบบประเมิน</span>
+                </button>
+            </div>
         </div>
     </main>
 
@@ -164,7 +183,11 @@ $csrf_token = generate_csrf_token();
     <footer class="w-full border-t border-slate-200/80 py-5 text-center bg-white/80 backdrop-blur-sm">
         <p class="text-xs text-slate-500 leading-relaxed">
             &copy; 2026 ระบบตรวจข้อสอบ MSU Scoring | มหาวิทยาลัยมหาสารคาม<br class="sm:hidden">
-            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.
+            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.<br>
+            <button type="button" onclick="openSurveyModal()" class="inline-flex items-center gap-1 text-amber-700 hover:text-amber-800 font-semibold underline underline-offset-2 mt-1.5 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                <span>แบบประเมินประสิทธิภาพและการยอมรับระบบ (Google Form &amp; QR Code)</span>
+            </button>
         </p>
     </footer>
 
@@ -229,5 +252,6 @@ $csrf_token = generate_csrf_token();
             }
         });
     </script>
+    <?php include_once __DIR__ . '/components/survey_modal.php'; ?>
 </body>
 </html>

@@ -1,0 +1,3742 @@
+[
+  {
+    "code": "0199 499",
+    "name_th": "สหกิจศึกษา",
+    "name_en": "Cooperative Education",
+    "credit": "9(0-40-0)",
+    "majors": [
+      "AC",
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 101",
+    "name_th": "ความรู้เบื้องต้นเกี่ยวกับธุรกิจ",
+    "name_en": "Introduction to Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 102",
+    "name_th": "หลักการตลาดสมัยใหม่",
+    "name_en": "Principles of Modern Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 103",
+    "name_th": "การประยุกต์ใช้เทคโนโลยีดิจิทัลในธุรกิจ",
+    "name_en": "Digital Business Applications",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC",
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 104",
+    "name_th": "การบัญชีเบื้องต้นสำหรับธุรกิจ",
+    "name_en": "Accounting Foundation for Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 105",
+    "name_th": "การจัดการและพฤติกรรมองค์การ",
+    "name_en": "Management and Organizational Behavior",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 106",
+    "name_th": "เศรษฐศาสตร์ธุรกิจเบื้องต้น",
+    "name_en": "Introduction of Business Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "BC",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 201",
+    "name_th": "การภาษีอากรและกฎหมายธุรกิจ",
+    "name_en": "Taxation and Business Law",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 202",
+    "name_th": "การจัดการทางการเงินสมัยใหม่",
+    "name_en": "Modern Financial Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 203",
+    "name_th": "สถิติประยุกต์ในเชิงธุรกิจ",
+    "name_en": "Applied Statistics for Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 204",
+    "name_th": "การวิเคราะห์ข้อมูลเชิงธุรกิจ",
+    "name_en": "Business Analytics",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 301",
+    "name_th": "วิทยาระเบียบวิธีวิจัยธุรกิจ",
+    "name_en": "Business Research Methodology",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 302",
+    "name_th": "การจัดการการผลิตและปฏิบัติการ",
+    "name_en": "Productions and Operations Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "DBIS",
+      "ENT",
+      "FM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 303",
+    "name_th": "ภาษาอังกฤษธุรกิจ",
+    "name_en": "English for Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 304",
+    "name_th": "ความเป็นผู้ประกอบการและการสร้างสรรค์ธุรกิจใหม่",
+    "name_en": "Entrepreneurship and New Venture Creation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC",
+      "BE",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0900 401",
+    "name_th": "การจัดการเชิงกลยุทธ์",
+    "name_en": "Strategic Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "BC",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0901 101",
+    "name_th": "หลักการบัญชีขั้นต้น",
+    "name_en": "Principles of Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 105",
+    "name_th": "ความรู้เบื้องต้นเกี่ยวกับธุรกิจและการจัดการองค์กร",
+    "name_en": "Introduction to Business and Organizational Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 209",
+    "name_th": "ความรู้เบื้องต้นเกี่ยวกับกฎหมายธุรกิจ",
+    "name_en": "Introduction to Business Law",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 210",
+    "name_th": "การบัญชีภาคปฏิบัติ",
+    "name_en": "Accounting in Practice",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 211",
+    "name_th": "การบัญชีขั้นกลาง 1",
+    "name_en": "Intermediate Accounting 1",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 212",
+    "name_th": "การบัญชีขั้นกลาง 2",
+    "name_en": "Intermediate Accounting 2",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 221",
+    "name_th": "การบัญชีต้นทุน",
+    "name_en": "Cost Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 251",
+    "name_th": "การภาษีอากร 1",
+    "name_en": "Taxation 1",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 311",
+    "name_th": "การบัญชีขั้นสูง 1",
+    "name_en": "Advanced Accounting 1",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 312",
+    "name_th": "มาตรฐานการรายงานทางการเงินและนโยบายบัญชี",
+    "name_en": "Financial Reporting Standards and Accounting Policy",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 321",
+    "name_th": "การบัญชีบริหาร",
+    "name_en": "Managerial Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 331",
+    "name_th": "ระบบสารสนเทศทางการบัญชี",
+    "name_en": "Accounting Information System",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 332",
+    "name_th": "การประยุกต์โปรแกรมสำเร็จรูปทางการบัญชี",
+    "name_en": "Accounting Software Applications",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 333",
+    "name_th": "การบัญชีดิจิทัล วิชาอัตลักษณ์",
+    "name_en": "Digital Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 341",
+    "name_th": "การสอบบัญชีและงานที่ให้ความเชื่อมั่น",
+    "name_en": "Auditing and Assurance Service",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 342",
+    "name_th": "การตรวจสอบและควบคุมภายใน",
+    "name_en": "Internal Auditing and Control",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 351",
+    "name_th": "การภาษีอากร 2",
+    "name_en": "Taxation 2",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 400",
+    "name_th": "การบัญชีสำหรับเครื่องมือทางการเงิน",
+    "name_en": "Accounting for Financial Instruments",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 404",
+    "name_th": "การฝึกประสบการณ์วิชาชีพทางด้านการบัญชี",
+    "name_en": "Accounting Internship",
+    "credit": "2(300 ชั่วโมง)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 411",
+    "name_th": "การบัญชีขั้นสูง 2",
+    "name_en": "Advanced Accounting 2",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 412",
+    "name_th": "รายงานทางการเงินและการวิเคราะห์",
+    "name_en": "Financial Reporting and Analysis",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 414",
+    "name_th": "สัมมนาการบัญชีการเงิน",
+    "name_en": "Seminar in Financial Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 415",
+    "name_th": "การบัญชีสำหรับกิจการขนาดกลางและขนาดย่อม",
+    "name_en": "Accounting for Small and Medium-Sized Enterprises",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 416",
+    "name_th": "การบัญชีสำหรับธุรกิจการเกษตร",
+    "name_en": "Accounting for Agriculture Businesses",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 417",
+    "name_th": "การบัญชีสำหรับธุรกิจบริการ",
+    "name_en": "Accounting for Service Businesses",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 418",
+    "name_th": "การบัญชีหน่วยงานภาครัฐ",
+    "name_en": "Public Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 421",
+    "name_th": "การวางแผนและควบคุมกำไร",
+    "name_en": "Profit Planning and Control",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 422",
+    "name_th": "ระบบการควบคุมทางการบริหาร",
+    "name_en": "Management Control System",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 423",
+    "name_th": "การบริหารต้นทุน",
+    "name_en": "Cost Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 424",
+    "name_th": "สัมมนาการบัญชีบริหาร",
+    "name_en": "Seminar in Managerial Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 425",
+    "name_th": "การบัญชีเพื่อการจัดการสิ่งแวดล้อม",
+    "name_en": "Environmental Management Accounting",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 426",
+    "name_th": "การวิเคราะห์ข้อมูลทางการบัญชีเพื่อการบริหาร",
+    "name_en": "Managerial Accounting Data Analytics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 431",
+    "name_th": "โปรแกรมภาษาเพื่อการประมวลผลข้อมูลทางการบัญชี",
+    "name_en": "Programming for Accounting Information Interpretation",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 432",
+    "name_th": "การวางระบบบัญชี",
+    "name_en": "Accounting System Design",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 433",
+    "name_th": "การพัฒนาและการใช้ระบบสารสนเทศทางการบัญชี",
+    "name_en": "Development and the Use of Accounting Information Systems",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 434",
+    "name_th": "สัมมนาระบบสารสนเทศทางการบัญชี",
+    "name_en": "Seminar in Accounting Information Systems",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 435",
+    "name_th": "การจัดการฐานข้อมูลทางการบัญชี",
+    "name_en": "Accounting Database Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 436",
+    "name_th": "โปรแกรมสำเร็จรูปการวางแผนทรัพยากรสำหรับงานบัญชี",
+    "name_en": "Enterprise Resource Planning Software for Accounting",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 437",
+    "name_th": "การวิเคราะห์และออกแบบระบบสารสนเทศทางการบัญชี",
+    "name_en": "Accounting Information System Analysis and Design",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 438",
+    "name_th": "การวิเคราะห์ข้อมูลขนาดใหญ่ทางการบัญชี",
+    "name_en": "Big Data Analytics in Accounting",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 441",
+    "name_th": "การตรวจสอบและควบคุมระบบสารสนเทศ",
+    "name_en": "Information System Auditing and Control",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 442",
+    "name_th": "สัมมนาการสอบบัญชี",
+    "name_en": "Seminar in Auditing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 443",
+    "name_th": "สัมมนาการตรวจสอบภายใน",
+    "name_en": "Seminar in Internal Auditing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 444",
+    "name_th": "ปัญหาการตรวจสอบภายใน",
+    "name_en": "Problems in Internal Auditing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 445",
+    "name_th": "การสอบบัญชีขั้นสูง",
+    "name_en": "Advanced Auditing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 446",
+    "name_th": "การตรวจสอบบัญชีภาครัฐ",
+    "name_en": "Government Auditing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 447",
+    "name_th": "การตรวจสอบระบบสารสนเทศขั้นสูง",
+    "name_en": "Advanced Information System Auditing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 451",
+    "name_th": "การวางแผนภาษีอากร",
+    "name_en": "Tax Planning",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC",
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0901 454",
+    "name_th": "ปัญหาภาษีอากร",
+    "name_en": "Problems in Taxation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 461",
+    "name_th": "การวิจัยทางการบัญชี",
+    "name_en": "Accounting Research",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0901 463",
+    "name_th": "ภาษาอังกฤษสำหรับนักบัญชีมืออาชีพ",
+    "name_en": "English for Professional Accountants",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "AC"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี"
+    ]
+  },
+  {
+    "code": "0902 111",
+    "name_th": "พฤติกรรมผู้บริโภค",
+    "name_en": "Consumer Behavior",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 212",
+    "name_th": "การจัดการช่องทางการจัดจำหน่าย",
+    "name_en": "Distribution Channels Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 214",
+    "name_th": "การจัดการกลยุทธ์การตั้งราคา",
+    "name_en": "Price Strategic Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 215",
+    "name_th": "การจัดการผลิตภัณฑ์และการออกแบบบริการ",
+    "name_en": "Product Management and Service Design",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 311",
+    "name_th": "การสื่อสารการตลาดแบบบูรณาการ",
+    "name_en": "Integrated Marketing Communication",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 312",
+    "name_th": "การวิจัยการตลาด",
+    "name_en": "Marketing Research",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 315",
+    "name_th": "การตลาดโลก",
+    "name_en": "Global Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 316",
+    "name_th": "การสร้างตราผลิตภัณฑ์",
+    "name_en": "Branding",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 320",
+    "name_th": "การตลาดบริการ",
+    "name_en": "Service Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 322",
+    "name_th": "การตลาดดิจิทัล",
+    "name_en": "Digital Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM",
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0902 323",
+    "name_th": "การตลาดดิจิทัล",
+    "name_en": "Digital Marketing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 324",
+    "name_th": "การตลาดออนไลน์และสื่อสังคม",
+    "name_en": "Social Media and Online Marketing",
+    "credit": "3(3-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 325",
+    "name_th": "การวิเคราะห์ข้อมูลลูกค้า",
+    "name_en": "Customer analytics",
+    "credit": "3(3-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 326",
+    "name_th": "การจัดการการค้าปลีกและค้าส่ง",
+    "name_en": "Retailing and Wholesale Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 327",
+    "name_th": "การตลาดเชิงเนื้อหา",
+    "name_en": "Content Marketing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 411",
+    "name_th": "การวิเคราะห์เชิงปริมาณทางการตลาด",
+    "name_en": "Marketing Quantitative Analysis",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 425",
+    "name_th": "การจัดกิจกรรมทางการตลาด",
+    "name_en": "Event Marketing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 428",
+    "name_th": "การจัดการการขายยุคใหม่",
+    "name_en": "Sales Management in New Era",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 429",
+    "name_th": "การตลาดสำหรับผู้ประกอบการ",
+    "name_en": "Entrepreneurial Marketing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 430",
+    "name_th": "การตลาดแบบยั่งยืน",
+    "name_en": "Sustainability Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 431",
+    "name_th": "เทคนิคการนำเสนอและการเล่าเรื่อง",
+    "name_en": "Presentation Technique and Storytelling",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 432",
+    "name_th": "ภาษาอังกฤษทางการตลาด",
+    "name_en": "English for Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 434",
+    "name_th": "การวางแผนการตลาดเชิงกลยุทธ์",
+    "name_en": "Strategic Marketing Planning",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 435",
+    "name_th": "หัวข้อพิเศษทางการตลาด",
+    "name_en": "Special Topics in Marketing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 436",
+    "name_th": "การตลาดการท่องเที่ยว",
+    "name_en": "Tourism Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 437",
+    "name_th": "การตลาดอินฟลูเอนเซอร์",
+    "name_en": "Influencer Marketing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0902 438",
+    "name_th": "การวิเคราะห์และนําเสนอข้อมูลด้วยภาพ",
+    "name_en": "Data Analysis and Visualization",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0903 201",
+    "name_th": "การจัดการทรัพยากรมนุษย์",
+    "name_en": "Human Resource Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0903 213",
+    "name_th": "การวิเคราะห์เชิงปริมาณเพื่อการตัดสินใจ",
+    "name_en": "Quantitative Analysis for Business Decision Making",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 282",
+    "name_th": "การเงินสำหรับผู้ประกอบการ",
+    "name_en": "Finance for Entrepreneurs",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0903 311",
+    "name_th": "การจัดการคุณภาพและผลิตภาพ",
+    "name_en": "Quality and Productivity Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 322",
+    "name_th": "ความปลอดภัยในสถานประกอบการและอนามัยทางวิชาชีพ",
+    "name_en": "Workplace Safety and Occupational Health",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 332",
+    "name_th": "หลักการลงทุน",
+    "name_en": "Principles of Investment",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM",
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0903 354",
+    "name_th": "หลักการประกันภัย",
+    "name_en": "Principles of Insurance",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0903 423",
+    "name_th": "การลงทุนการเงินสําหรับนักเศรษฐศาสตร์",
+    "name_en": "Financial Investment for Economist",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0903 426",
+    "name_th": "การจัดการทรัพยากรมนุษย์ระหว่างประเทศ",
+    "name_en": "International Human Resource Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0903 430",
+    "name_th": "การฝึกประสบการณ์วิชาชีพทางด้านบริหารธุรกิจ",
+    "name_en": "Business Administration Internship",
+    "credit": "2(300 ชั่วโมง)",
+    "majors": [
+      "BC",
+      "DBIS",
+      "ENT",
+      "FM",
+      "GM",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาการจัดการสมัยใหม่",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0903 454",
+    "name_th": "การจัดการการเปลี่ยนแปลงและนวัตกรรมในองค์การ",
+    "name_en": "Management for Organizational Change and Innovation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0903 460",
+    "name_th": "การพัฒนาองค์การและการจัดการการเปลี่ยนแปลง",
+    "name_en": "Organization Development and Change Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 461",
+    "name_th": "การจัดการทรัพยากรมนุษย์ในยุคดิจิทัล",
+    "name_en": "Managing Human Resource in the Digital Era",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 462",
+    "name_th": "การจัดการธุรกิจสตาร์ทอัพ",
+    "name_en": "Business Startup Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 463",
+    "name_th": "ศาสตร์และศิลป์ในการสื่อสารทางธุรกิจ",
+    "name_en": "Science and Art in Business Communication",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 464",
+    "name_th": "การสร้างสรรค์และพัฒนานวัตกรรมทางธุรกิจ",
+    "name_en": "Creativity and Innovation Development for Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 465",
+    "name_th": "การจัดการธุรกิจบริการสมัยใหม่",
+    "name_en": "Modern Service Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 466",
+    "name_th": "จริยธรรม ธรรมาภิบาล และความรับผิดชอบขององค์การ",
+    "name_en": "Ethic Good Governance and Corporate Accountability",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 467",
+    "name_th": "สัมมนาทางการจัดการสมัยใหม่",
+    "name_en": "Seminar in Modern Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 468",
+    "name_th": "โครงงานพิเศษธุรกิจสมัยใหม่",
+    "name_en": "Special Project in Modern Business",
+    "credit": "3(1-4-4)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 485",
+    "name_th": "ทักษะการพูดในที่สาธารณะและการนำเสนอผลงานสำหรับธุรกิจ",
+    "name_en": "Public Speaking and Presentation Skills for Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0903 501",
+    "name_th": "การจัดการการแก้ปัญหาความขัดแย้งและการเจรจาต่อรอง",
+    "name_en": "Conflict Resolution and Negotiation Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 502",
+    "name_th": "การจัดการความเสี่ยงแบบบูรณาการ",
+    "name_en": "Integrated Risk Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 503",
+    "name_th": "การบริหารธุรกิจระหว่างประเทศ",
+    "name_en": "International Business Administration",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 504",
+    "name_th": "การจัดการโลจิสติกส์และห่วงโซ่อุปทานอย่างยั่งยืน",
+    "name_en": "Sustainable Logistics and Supply Chain Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 505",
+    "name_th": "ภาวะผู้นำสมัยใหม่และการจัดการสมัยใหม่",
+    "name_en": "Modern Leadership and Modern Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 506",
+    "name_th": "ระบบสารสนเทศเพื่อการจัดการธุรกิจสมัยใหม่",
+    "name_en": "Information Systems for Modern Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 507",
+    "name_th": "จิตวิทยาการบริการและการพัฒนาบุคลิกภาพ",
+    "name_en": "Service Psychology and Personality Development",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 508",
+    "name_th": "การจัดการธุรกิจดิจิทัล",
+    "name_en": "Digital Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 509",
+    "name_th": "สินทรัพย์ดิจิทัลระหว่างประเทศ",
+    "name_en": "International Digital Assets",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 510",
+    "name_th": "บล็อกเชนและปัญญาประดิษฐ์สำหรับการจัดการธุรกิจอัจฉริยะ",
+    "name_en": "Blockchains and Artificial Intelligence for Smart Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 511",
+    "name_th": "การเป็นผู้ประกอบการในองค์กรและนวัตกรรม",
+    "name_en": "Corporate entrepreneurship and Innovation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 512",
+    "name_th": "ความยั่งยืนทางธุรกิจและการจัดการความรับผิดชอบทางธุรกิจ",
+    "name_en": "Sustainability and Responsibility Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 513",
+    "name_th": "การจัดการธุรกิจขนาดกลางและขนาดย่อม",
+    "name_en": "Small and Medium Enterprises Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 520",
+    "name_th": "พื้นฐานของการเป็นผู้ประกอบการสมัยใหม่",
+    "name_en": "Foundation for Modern Entrepreneurship",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 521",
+    "name_th": "การวางแผนธุรกิจและพัฒนาธุรกิจสำหรับผู้ประกอบการ",
+    "name_en": "Business Planning and Developing for Entrepreneurs",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 522",
+    "name_th": "การคิดแบบสร้างสรรค์และการพัฒนานวัตกรรมธุรกิจ",
+    "name_en": "Creative Thinking and Developing Innovative Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 523",
+    "name_th": "การเป็นผู้ประกอบการเพื่อสังคมและความยั่งยืน",
+    "name_en": "Social Entrepreneurship and Sustainability",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 524",
+    "name_th": "การตลาดดิจิทัลสำหรับผู้ประกอบการ",
+    "name_en": "Digital Marketing for Entrepreneurs",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 525",
+    "name_th": "การเงินและการระดมทุนสำหรับผู้ประกอบการ",
+    "name_en": "Entrepreneurial Financing and Funding",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 526",
+    "name_th": "การศึกษาความเป็นไปได้และการประเมินโครงการ",
+    "name_en": "Feasibility Study and Project Evaluation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 527",
+    "name_th": "โครงงานฝึกปฏิบัติสำหรับการเป็นผู้ประกอบการ 1",
+    "name_en": "Entrepreneurial Practicum Project 1",
+    "credit": "3(1-4-4)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 528",
+    "name_th": "โครงงานฝึกปฏิบัติสำหรับการเป็นผู้ประกอบการ 2",
+    "name_en": "Entrepreneurial Practicum Project 2",
+    "credit": "3(1-4-4)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 529",
+    "name_th": "สัมมนาทางการเป็นผู้ประกอบการและนวัตกรรม",
+    "name_en": "Seminar in Entrepreneurship and Innovation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 530",
+    "name_th": "กลยุทธ์การนำเสนอธุรกิจและการลงทุน",
+    "name_en": "Strategies for Business and Investment Presentation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 531",
+    "name_th": "ทักษะการเป็นผู้นำเชิงสร้างสรรค์และการทำงานเป็นทีม",
+    "name_en": "Creative Leadership Skills and Teamwork",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 532",
+    "name_th": "การจัดการเครือข่ายและพันธมิตรทางธุรกิจ",
+    "name_en": "Management of Network and Business Partners",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 533",
+    "name_th": "การเป็นผู้ประกอบการธุรกิจชุมชน",
+    "name_en": "Community Business Entrepreneurship",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 534",
+    "name_th": "การจัดการองค์กรธุรกิจชุมชนอย่างสร้างสรรค์",
+    "name_en": "Creative Management of Community Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 535",
+    "name_th": "การตลาดสำหรับธุรกิจชุมชน",
+    "name_en": "Marketing for Community Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0903 536",
+    "name_th": "การจัดการความรู้เพื่อการพัฒนาธุรกิจชุมชน",
+    "name_en": "Knowledge Management for Community Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0904 102",
+    "name_th": "การเขียนโปรแกรมคอมพิวเตอร์",
+    "name_en": "Computer Programming",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 103",
+    "name_th": "โครงสร้างข้อมูลและอัลกอริทึม",
+    "name_en": "Data Structure and Algorithms",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 202",
+    "name_th": "เทคโนโลยีคอมพิวเตอร์และระบบปฏิบัติการ",
+    "name_en": "Computer Technology and Operating System",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 203",
+    "name_th": "ระบบฐานข้อมูล",
+    "name_en": "Database System",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 204",
+    "name_th": "การวิเคราะห์และออกแบบระบบ",
+    "name_en": "System Analysis and Design",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 301",
+    "name_th": "เครือข่ายคอมพิวเตอร์และความมั่นคงของระบบสารสนเทศ",
+    "name_en": "Computer Network and Information Systems Security",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 302",
+    "name_th": "การจัดการธุรกิจดิจิทัลและระบบสารสนเทศ",
+    "name_en": "Digital Business and Information Systems Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 303",
+    "name_th": "การเขียนโปรแกรมบนเว็บ",
+    "name_en": "Web Programming",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 304",
+    "name_th": "การพัฒนาระบบสารสนเทศทางธุรกิจ",
+    "name_en": "Business Information System Development",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 305",
+    "name_th": "วิทยาการข้อมูลเชิงธุรกิจ",
+    "name_en": "Data Science for Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 317",
+    "name_th": "การพัฒนาและประยุกต์ใช้ฐานข้อมูล",
+    "name_en": "Database Implementations",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 327",
+    "name_th": "การตลาดดิจิทัลและการพาณิชย์อิเล็กทรอนิกส์",
+    "name_en": "Digital Marketing and Electronic Commerce",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 328",
+    "name_th": "การวิเคราะห์ข้อมูลขนาดใหญ่",
+    "name_en": "Big Data Analytics",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS",
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0904 330",
+    "name_th": "การวิเคราะห์ข้อมูลสำหรับธุรกิจดิจิทัล",
+    "name_en": "Data Analytics for Digital Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 331",
+    "name_th": "ระบบธุรกิจอัจฉริยะ",
+    "name_en": "Business Intelligence System",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS",
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0904 332",
+    "name_th": "อินเทอร์เน็ตของสรรพสิ่ง",
+    "name_en": "Internet of Things",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 333",
+    "name_th": "การแสดงข้อมูลด้วยภาพ",
+    "name_en": "Data Visualization",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS",
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0904 334",
+    "name_th": "การวิเคราะห์ข้อมูลแบบไม่มีโครงสร้างสำหรับงานธุรกิจ",
+    "name_en": "Unstructured Data Analytics for Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 335",
+    "name_th": "เทคโนโลยีบล็อกเชนและเทคโนโลยีการเงินเพื่อนวัตกรรมธุรกิจ",
+    "name_en": "Blockchain and Fintech for Business Innovation",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "AC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาการบัญชี",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 337",
+    "name_th": "การวิเคราะห์และออกแบบระบบสารสนเทศทางธุรกิจขั้นสูง",
+    "name_en": "Advanced Analysis and Design for Business Information System",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 404",
+    "name_th": "โครงงานธุรกิจดิจิทัลและระบบสารสนเทศ",
+    "name_en": "Digital Business and Information System Project",
+    "credit": "4(0-12-0)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 407",
+    "name_th": "โครงงานคอมพิวเตอร์ธุรกิจ",
+    "name_en": "Business Computer Project",
+    "credit": "4(0-12-0)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 413",
+    "name_th": "เทคโนโลยีกำเนิดใหม่สำหรับธุรกิจดิจิทัลและระบบสารสนเทศ",
+    "name_en": "Emerging Technologies for Digital Business and Information Systems",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 414",
+    "name_th": "ระบบสนับสนุนการตัดสินใจ",
+    "name_en": "Decision Support Systems",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 416",
+    "name_th": "การพัฒนาโปรแกรมประยุกต์สำหรับอุปกรณ์เคลื่อนที่",
+    "name_en": "Mobile Application Development",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 417",
+    "name_th": "การพัฒนาซอฟต์แวร์เพื่อการวางแผนทรัพยากรองค์กร",
+    "name_en": "Development of Enterprise Resource Planning Software",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 418",
+    "name_th": "การประยุกต์ซอฟต์แวร์เพื่อการจัดการด้านลูกค้าสัมพันธ์",
+    "name_en": "Applications of Customer Relationship Management Software",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS",
+      "ENT",
+      "MK"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ",
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่",
+      "สาขาวิชาการตลาด"
+    ]
+  },
+  {
+    "code": "0904 420",
+    "name_th": "การประยุกต์ใช้เทคโนโลยีสำหรับธุรกิจใหม่",
+    "name_en": "Technology Application for New Ventures",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "ENT"
+    ],
+    "major_names": [
+      "สาขาวิชาการเป็นผู้ประกอบการธุรกิจสมัยใหม่"
+    ]
+  },
+  {
+    "code": "0904 427",
+    "name_th": "การพัฒนาระบบด้วยอินเทอร์เน็ตของสรรพสิ่ง",
+    "name_en": "System Development with Internet of Things",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 428",
+    "name_th": "เทคโนโลยีความเป็นจริงเสริมเพื่อธุรกิจดิจิทัล",
+    "name_en": "Augmented Reality (AR) Applications for Digital Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 429",
+    "name_th": "สถาปัตยกรรมองค์กรเพื่อธุรกิจดิจิทัล",
+    "name_en": "Enterprise Architecture (EA) for Digital Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 430",
+    "name_th": "ซอฟต์แวร์กระบวนการอัตโนมัติเพื่อธุรกิจดิจิทัล",
+    "name_en": "Robotic Process Automation (RPA) Software for Digital Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 431",
+    "name_th": "ปัญญาประดิษฐ์ทางธุรกิจดิจิทัล",
+    "name_en": "Artificial Intelligence in Digital Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0904 437",
+    "name_th": "ปฏิสัมพันธ์ระหว่างมนุษย์กับคอมพิวเตอร์ทางธุรกิจ",
+    "name_en": "Human Computer Interaction in Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 438",
+    "name_th": "เทคโนโลยีบล็อกเชนและการประยุกต์ใช้ในทางธุรกิจ",
+    "name_en": "Blockchain Technology and Business Application",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 440",
+    "name_th": "โครงสร้างพื้นฐานสำหรับสมาร์ตซิตี้",
+    "name_en": "Infrastructure for Smart City",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 441",
+    "name_th": "การจัดการความยั่งยืนของสมาร์ตซิตี้",
+    "name_en": "Sustainability Smart City Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 442",
+    "name_th": "เทคโนโลยีสารสนเทศและการสื่อสารในสมาร์ตซิตี้",
+    "name_en": "Information and Communication Technology in Smart City",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 443",
+    "name_th": "สมาร์ตซิตี้แพลตฟอร์ม",
+    "name_en": "Smart City Platform",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 444",
+    "name_th": "นวัตกรรมดิจิทัลสำหรับสมาร์ตซิตี้",
+    "name_en": "Digital Innovation for Smart City",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 451",
+    "name_th": "วิศวกรรมข้อมูลสำหรับคอมพิวเตอร์ธุรกิจ",
+    "name_en": "Data Engineering for Business Computer",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 452",
+    "name_th": "ปัญญาประดิษฐ์สำหรับคอมพิวเตอร์ธุรกิจ",
+    "name_en": "Artificial Intelligence (AI) for Business Computer",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 453",
+    "name_th": "การเรียนรู้ของเครื่องสำหรับคอมพิวเตอร์ธุรกิจ",
+    "name_en": "Machine Learning for Business Computer",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 454",
+    "name_th": "การวิเคราะห์ข้อความและการประมวลผลภาษาธรรมชาติ",
+    "name_en": "Text Analytics and Natural Language Processing",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 455",
+    "name_th": "การเรียนรู้ของเครื่องบนการประมวลผลแบบคลาวด์ และการพัฒนาแอปพลิเคชันแบบไร้เซิร์ฟเวอร์",
+    "name_en": "Machine Learning on Cloud Computing and Serverless Application Development",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 456",
+    "name_th": "การจัดการเครือข่าย",
+    "name_en": "Network Management",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 457",
+    "name_th": "ระบบอัตโนมัติสำหรับภาคอุตสาหกรรม",
+    "name_en": "Automation System for Industry",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0904 494",
+    "name_th": "การออกแบบและพัฒนาส่วนติดต่อและประสบการณ์ผู้ใช้",
+    "name_en": "User Experience and User Interface Design and Development",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BC",
+      "DBIS"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาธุรกิจดิจิทัลและระบบสารสนเทศ"
+    ]
+  },
+  {
+    "code": "0905 302",
+    "name_th": "ตลาดการเงินและสถาบันการเงิน",
+    "name_en": "Financial Markets and Institutions",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 303",
+    "name_th": "หลักการลงทุนและการวิเคราะห์หลักทรัพย์",
+    "name_en": "Principles of Investment and Securities Analysis",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 304",
+    "name_th": "การเงินธุรกิจสตาร์ทอัพและธุรกิจเทคโนโลยีการเงิน",
+    "name_en": "Start-up Finance and Fintech",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 401",
+    "name_th": "การจัดการสินเชื่อและสินเชื่อออนไลน์ระหว่างบุคคล",
+    "name_en": "Credit Management and Peer-to-peer Lending",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 402",
+    "name_th": "การดำเนินงานธนาคารพาณิชย์และธนาคารอิเล็กทรอนิกส์",
+    "name_en": "Commercial Bank Operations and Electronic Banking Operations",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 403",
+    "name_th": "วาณิชธนกิจและการประเมินค่า",
+    "name_en": "Investment Banking and Valuation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 404",
+    "name_th": "การวางแผนและควบคุมทางการเงิน",
+    "name_en": "Financial Planning and Control",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 405",
+    "name_th": "การจัดการทางการเงินขั้นสูง",
+    "name_en": "Advanced Financial Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 406",
+    "name_th": "สัมมนาการบริหารการเงิน",
+    "name_en": "Seminar in Financial Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 411",
+    "name_th": "การวิเคราะห์หลักทรัพย์และการจัดการกลุ่มหลักทรัพย์",
+    "name_en": "Security Analysis and Portfolio Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 412",
+    "name_th": "การจัดการความเสี่ยง",
+    "name_en": "Risk Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 413",
+    "name_th": "อนุพันธ์ทางการเงิน",
+    "name_en": "Financial Derivatives",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 414",
+    "name_th": "การจัดการการเงินส่วนบุคคล",
+    "name_en": "Personal Financial Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 415",
+    "name_th": "การวิจัยทางการเงิน",
+    "name_en": "Research in Finance",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 416",
+    "name_th": "การวิเคราะห์เชิงปริมาณทางการเงิน",
+    "name_en": "Quantitative Analysis of Finance",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 417",
+    "name_th": "ธุรกิจเงินร่วมลงทุนสำหรับบริษัทนอกตลาดหลักทรัพย์",
+    "name_en": "Private Equity and Venture Capital",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 418",
+    "name_th": "การวิเคราะห์รายงานทางการเงิน",
+    "name_en": "Analysis of Financial Reports",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 419",
+    "name_th": "การจัดการทางการเงินระหว่างประเทศ",
+    "name_en": "International Financial Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM",
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0905 420",
+    "name_th": "การเงินเพื่อการจัดการอสังหาริมทรัพย์",
+    "name_en": "Real Estate Finance",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 421",
+    "name_th": "การบริหารการประกันวินาศภัย",
+    "name_en": "Non-Life Insurance Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0905 422",
+    "name_th": "การบัญชีเพื่อการจัดการทางการเงิน",
+    "name_en": "Accouning for Financial Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0906 203",
+    "name_th": "การค้าระหว่างประเทศ",
+    "name_en": "International Trade",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM",
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน",
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 301",
+    "name_th": "การดำเนินการด้านการค้าระหว่างประเทศ",
+    "name_en": "International Trade Operations",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 302",
+    "name_th": "กฎหมายและข้อบังคับธุรกิจระหว่างประเทศ",
+    "name_en": "International Business Law and Regulations",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 401",
+    "name_th": "การจัดการข้ามวัฒนธรรมและความหลากหลาย",
+    "name_en": "Cross-Culture and Diversity Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 402",
+    "name_th": "สัมมนาธุรกิจระหว่างประเทศ",
+    "name_en": "Seminar in International Business",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 411",
+    "name_th": "การประกอบการระหว่างประเทศ",
+    "name_en": "International Entrepreneurship",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 413",
+    "name_th": "การจัดการโซ่อุปทานและโลจิสติกส์ระหว่างประเทศ",
+    "name_en": "International Supply Chain and Logistics Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 432",
+    "name_th": "การฝึกประสบการณ์วิชาชีพทางด้านธุรกิจระหว่างประเทศ",
+    "name_en": "International Business Administration Internship",
+    "credit": "2(300 ชั่วโมง)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 436",
+    "name_th": "ประเด็นปัจจุบันเกี่ยวกับธุรกิจระหว่างประเทศ",
+    "name_en": "Current Issues in International Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 437",
+    "name_th": "บทนำธุรกิจระหว่างประเทศ",
+    "name_en": "Introduction to International Business",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 438",
+    "name_th": "ภาษาอังกฤษสำหรับการสื่อสารเชิงวิพากษ์ด้านธุรกิจ",
+    "name_en": "English for Critical Business Communication",
+    "credit": "3(1-2-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 439",
+    "name_th": "การจัดการโครงการเชิงกลยุทธ์",
+    "name_en": "Strategic Project Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 440",
+    "name_th": "กิจการใหม่ระดับโลก",
+    "name_en": "Born Global Company",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 441",
+    "name_th": "นวัตกรรมและการประกอบการทางสังคม",
+    "name_en": "Social Innovation and Entrepreneurship",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 442",
+    "name_th": "ระบบธุรกิจระหว่างประเทศเชิงเปรียบเทียบ",
+    "name_en": "Comparative International Business System",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 443",
+    "name_th": "การจัดการธุรกิจบริการ",
+    "name_en": "Service Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 444",
+    "name_th": "กลยุทธ์ธุรกิจระหว่างประเทศ",
+    "name_en": "International Business Strategy",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 445",
+    "name_th": "กลยุทธ์การตลาดสำหรับตลาดเกิดใหม่",
+    "name_en": "Marketing Strategy for Emerging Markets",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 446",
+    "name_th": "การตลาดประกอบการ",
+    "name_en": "Entrepreneurial Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 447",
+    "name_th": "การพาณิชย์ระหว่างประเทศสำหรับกลุ่มประเทศในภูมิภาค",
+    "name_en": "International Commerce for Regional Markets",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 448",
+    "name_th": "กลยุทธ์ทางธุรกิจสำหรับตลาดเกิดใหม่",
+    "name_en": "Business Strategy for Emerging Markets",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 449",
+    "name_th": "การเจรจาต่อรอง ธุรกิจระหว่างประเทศ",
+    "name_en": "International Business Negotiation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 450",
+    "name_th": "สินทรัพย์ดิจิทัลระหว่างประเทศ",
+    "name_en": "International Digital Assets",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 451",
+    "name_th": "บล็อกเชนและปัญญาประดิษฐ์สำหรับการจัดการธุรกิจอัจฉริยะ",
+    "name_en": "Blockchain and Artificial Intelligence for Smart Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 452",
+    "name_th": "การพัฒนาธุรกิจใหม่บนพื้นฐานทางเทคโนโลยี",
+    "name_en": "Technology-Based Business Startup",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 453",
+    "name_th": "ระบบสนับสนุนอัจฉริยะเพื่อโลจิสติกส์ กลุ่มอื่นๆ",
+    "name_en": "Intelligence Support for Logistics Other Subjects",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 454",
+    "name_th": "การเป็นผู้ประกอบการในองค์กรและนวัตกรรม",
+    "name_en": "Corporate Entrepreneurship and Innovation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 455",
+    "name_th": "การวิเคราะห์ข้อมูลและการวิจัยธุรกิจระหว่างประเทศ",
+    "name_en": "Data Analytics and International Business Research",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0906 456",
+    "name_th": "ความยั่งยืนทางธุรกิจและการจัดการความรับผิดชอบทางธุรกิจ",
+    "name_en": "Sustainability and Responsible Business Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "IB"
+    ],
+    "major_names": [
+      "สาขาวิชาธุรกิจระหว่างประเทศ"
+    ]
+  },
+  {
+    "code": "0907 101",
+    "name_th": "เศรษฐศาสตร์จุลภาค 1",
+    "name_en": "Microeconomics 1",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 102",
+    "name_th": "เศรษฐศาสตร์มหภาค 1",
+    "name_en": "Macroeconomics 1",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 103",
+    "name_th": "คณิตศาสตร์ขั้นพื้นฐานสำหรับเศรษฐศาสตร์",
+    "name_en": "Fundamentals Mathematics for Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 201",
+    "name_th": "เศรษฐศาสตร์จุลภาค 2",
+    "name_en": "Microeconomics 2",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 202",
+    "name_th": "เศรษฐศาสตร์มหภาค 2",
+    "name_en": "Macroeconomics 2",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 301",
+    "name_th": "ภาษาอังกฤษสำหรับเศรษฐศาสตร์",
+    "name_en": "English for Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 302",
+    "name_th": "วิทยาระเบียบวิธีวิจัยสำหรับนักเศรษฐศาสตร์",
+    "name_en": "Research Methodology for Economist",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 303",
+    "name_th": "เศรษฐกิจไทย",
+    "name_en": "Thai Economy",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 304",
+    "name_th": "เศรษฐศาสตร์การเงินและการธนาคาร",
+    "name_en": "Money and Banking Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 305",
+    "name_th": "สถิติเศรษฐศาสตร์",
+    "name_en": "Economic Statistics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 306",
+    "name_th": "เศรษฐศาสตร์การจัดการ",
+    "name_en": "Managerial Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 307",
+    "name_th": "เศรษฐมิติเบื้องต้น",
+    "name_en": "Introduction to Econometrics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 308",
+    "name_th": "ทฤษฎีและนโยบายการคลัง",
+    "name_en": "Theory and Policy of Public Finance",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 309",
+    "name_th": "เศรษฐศาสตร์การพัฒนาและการวิเคราะห์เชิงนโยบาย",
+    "name_en": "Development Economics and Policy Analysis",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 310",
+    "name_th": "ทฤษฎีและนโยบายการเงิน",
+    "name_en": "Monetary Theory and Policy",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 311",
+    "name_th": "เศรษฐศาสตร์ระหว่างประเทศ",
+    "name_en": "International Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 312",
+    "name_th": "การฝึกประสบการณ์วิชาชีพทางด้านเศรษฐศาสตร์ และหรือบริหารธุรกิจ *",
+    "name_en": "Economics and/or Business Administration Internship",
+    "credit": "2(300 ชั่วโมง)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 401",
+    "name_th": "สัมมนาเศรษฐศาสตร์ธุรกิจ",
+    "name_en": "Seminar in Business Economics",
+    "credit": "3(2-2-5)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 402",
+    "name_th": "ทฤษฎีและนโยบายการคลัง",
+    "name_en": "Theory and Policy of Public Finance",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "FM"
+    ],
+    "major_names": [
+      "สาขาวิชาการเงินและการลงทุน / การบริหารการเงิน"
+    ]
+  },
+  {
+    "code": "0907 411",
+    "name_th": "การวิเคราะห์ข้อมูลเบื้องต้นสำหรับเศรษฐศาสตร์ธุรกิจ",
+    "name_en": "Data Analytics Foundations for Business Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 412",
+    "name_th": "ระบบการจัดการฐานข้อมูลทางเศรษฐศาสตร์",
+    "name_en": "Economics Database Management System",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 413",
+    "name_th": "เศรษฐมิติประยุกต์",
+    "name_en": "Applied Econometrics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 414",
+    "name_th": "คณิตศาสตร์สำหรับเศรษฐศาสตร์ธุรกิจ",
+    "name_en": "Mathematics for Business Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 415",
+    "name_th": "หัวข้อเฉพาะด้านการวิเคราะห์ข้อมูลสำหรับธุรกิจและเศรษฐศาสตร์",
+    "name_en": "Special Topics in Data Analytics for Business and Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 421",
+    "name_th": "เศรษฐศาสตร์การเงินระหว่างประเทศ",
+    "name_en": "International Monetary Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 422",
+    "name_th": "เศรษฐศาสตร์ตลาดการเงินและเครื่องมือทางการเงิน",
+    "name_en": "Economics of Financial Markets and Institutions",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 424",
+    "name_th": "การเปลี่ยนแปลงทางดิจิทัลและนวัตกรรมทางการเงิน",
+    "name_en": "Digital Transformation and Financial Innovation",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 425",
+    "name_th": "เศรษฐศาสตร์ประกันภัย",
+    "name_en": "Insurrance Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 426",
+    "name_th": "บล็อกเชนและสกุลเงินดิจิทัล",
+    "name_en": "Blockchain and Cryptocurrency",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 427",
+    "name_th": "หัวข้อเฉพาะด้านเศรษฐศาสตร์เทคโนโลยีการเงิน",
+    "name_en": "Special Topics in Financial Technology Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 431",
+    "name_th": "นวัตกรรมการเกษตรและเศรษฐศาสตร์เกษตรสมัยใหม่",
+    "name_en": "Agricultural Innovation and Modern Agricultural Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 432",
+    "name_th": "เศรษฐศาสตร์การพัฒนาการเกษตร",
+    "name_en": "Agricultural Development Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 433",
+    "name_th": "การผลิตและนโยบายการผลิตการเกษตร",
+    "name_en": "Agricultural Production and Policy",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 434",
+    "name_th": "การตลาดสินค้าเกษตร",
+    "name_en": "Agricultural Product Marketing",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 435",
+    "name_th": "การวิเคราะห์ข้อมูลสารสนเทศสินค้าเกษตร",
+    "name_en": "Information Data Analysis of Agricultural Product",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 436",
+    "name_th": "หัวข้อเฉพาะด้านเศรษฐศาสตร์เกษตรสมัยใหม่",
+    "name_en": "Special Topics in Modern Agricultural Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 441",
+    "name_th": "นโยบายเศรษฐกิจของประเทศในเอเชีย",
+    "name_en": "Economic Policy of Asian Counties",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 442",
+    "name_th": "เศรษฐศาสตร์สำหรับการวิเคราะห์โครงการ",
+    "name_en": "Economics for Project Analysis",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 443",
+    "name_th": "เศรษฐศาสตร์สาธารณะ",
+    "name_en": "Public Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 444",
+    "name_th": "เศรษฐศาสตร์ว่าด้วยภาคบริการ",
+    "name_en": "Economics of Services Sector",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 445",
+    "name_th": "เศรษฐศาสตร์แรงงาน",
+    "name_en": "Labor Economics",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0907 446",
+    "name_th": "หัวข้อเฉพาะด้านนโยบายเศรษฐกิจและการวางแผนธุรกิจสมัยใหม่",
+    "name_en": "Special Topics in Economic Policy and Modern Economic Planning",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BE"
+    ],
+    "major_names": [
+      "สาขาวิชาเศรษฐศาสตร์ธุรกิจ"
+    ]
+  },
+  {
+    "code": "0909 302",
+    "name_th": "การจัดการการผลิตและปฏิบัติการ",
+    "name_en": "Production and Operation Management",
+    "credit": "3(3-0-6)",
+    "majors": [
+      "BC",
+      "GM"
+    ],
+    "major_names": [
+      "สาขาวิชาคอมพิวเตอร์ธุรกิจ",
+      "สาขาวิชาการจัดการสมัยใหม่"
+    ]
+  }
+]

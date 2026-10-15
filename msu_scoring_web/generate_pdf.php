@@ -193,52 +193,105 @@ if ($has_field('date')) {
 }
 
 // ── Row 2: Selected Optional Fields ───────────────────────────────────
-// Definitions with relative weights for proportional sizing
-$row2_defs = [
-    'room'    => ['label' => 'Room',     'weight' => 1.0],
-    'sec'     => ['label' => 'Sec',      'weight' => 0.8],
-    'tel'     => ['label' => 'Tel',      'weight' => 1.4],
-    'seat_no' => ['label' => 'Seat No.', 'weight' => 0.9],
-    'exam_no' => ['label' => 'Exam No.', 'weight' => 0.9],
+$left_defs = [
+    'room' => ['label' => 'Room', 'weight' => 1.0],
+    'sec'  => ['label' => 'Sec',  'weight' => 0.8],
+    'tel'  => ['label' => 'Tel',  'weight' => 1.4],
+];
+$right_defs = [
+    'seat_no' => ['label' => 'Seat No.', 'weight' => 1.0],
+    'exam_no' => ['label' => 'Exam No.', 'weight' => 1.0],
 ];
 
-$row2_active = [];
-$total_weight = 0.0;
-foreach ($row2_defs as $k => $def) {
-    if ($has_field($k)) {
-        $row2_active[$k] = $def;
-        $total_weight += $def['weight'];
+if ($has_field('date')) {
+    // ── Two-Column Layout (aligned with Name on Left and Date on Right) ─
+    $left_w  = $name_w; // 118 mm
+    $right_w = $date_w; // 65 mm
+    $right_x = $date_x; // 133 mm
+
+    // 1. Left Group (under Name)
+    $active_left = [];
+    $total_lweight = 0.0;
+    foreach ($left_defs as $k => $def) {
+        if ($has_field($k)) {
+            $active_left[$k] = $def;
+            $total_lweight += $def['weight'];
+        }
     }
-}
+    if (!empty($active_left)) {
+        $n = count($active_left);
+        $gap = 2.0;
+        $avail = $left_w - (($n - 1) * $gap);
+        $allocated = 0.0;
+        $keys = array_keys($active_left);
+        $cur_x = MARG;
+        for ($i = 0; $i < $n; $i++) {
+            $k = $keys[$i];
+            $w = ($i === $n - 1) ? round($avail - $allocated, 2) : round(($active_left[$k]['weight'] / $total_lweight) * $avail, 2);
+            $allocated += $w;
 
-if (!empty($row2_active)) {
-    $n = count($row2_active);
-    $gap2 = 2.0;
-    $total_gaps = ($n - 1) * $gap2;
-    $avail_w = $total_w - $total_gaps;
-
-    // Calculate proportional widths
-    $row2_widths = [];
-    $allocated_w = 0.0;
-    $keys = array_keys($row2_active);
-    for ($idx = 0; $idx < $n; $idx++) {
-        $k = $keys[$idx];
-        if ($idx === $n - 1) {
-            // Last element absorbs remaining width to guarantee exact total_w
-            $row2_widths[$k] = round($avail_w - $allocated_w, 2);
-        } else {
-            $w = round(($row2_active[$k]['weight'] / $total_weight) * $avail_w, 2);
-            $row2_widths[$k] = $w;
-            $allocated_w += $w;
+            $pdf->Rect($cur_x, $row2_y, $w, $box_h);
+            $pdf->SetXY($cur_x + 1.5, $row2_y + 0.5);
+            $pdf->Cell($w - 3, 4, $active_left[$k]['label'], 0, 0, 'L');
+            $cur_x += $w + $gap;
         }
     }
 
-    $cur_x = MARG;
-    foreach ($row2_widths as $k => $w) {
-        $pdf->Rect($cur_x, $row2_y, $w, $box_h);
-        $pdf->SetXY($cur_x + 1.5, $row2_y + 0.5);
-        $pdf->Cell($w - 3, 4, $row2_active[$k]['label'], 0, 0, 'L');
-        $cur_x += $w + $gap2;
+    // 2. Right Group (under Date — perfectly aligned with Date!)
+    $active_right = [];
+    $total_rweight = 0.0;
+    foreach ($right_defs as $k => $def) {
+        if ($has_field($k)) {
+            $active_right[$k] = $def;
+            $total_rweight += $def['weight'];
+        }
+    }
+    if (!empty($active_right)) {
+        $n = count($active_right);
+        $gap = 2.0;
+        $avail = $right_w - (($n - 1) * $gap);
+        $allocated = 0.0;
+        $keys = array_keys($active_right);
+        $cur_x = $right_x;
+        for ($i = 0; $i < $n; $i++) {
+            $k = $keys[$i];
+            $w = ($i === $n - 1) ? round($avail - $allocated, 2) : round(($active_right[$k]['weight'] / $total_rweight) * $avail, 2);
+            $allocated += $w;
+
+            $pdf->Rect($cur_x, $row2_y, $w, $box_h);
+            $pdf->SetXY($cur_x + 1.5, $row2_y + 0.5);
+            $pdf->Cell($w - 3, 4, $active_right[$k]['label'], 0, 0, 'L');
+            $cur_x += $w + $gap;
+        }
+    }
+} else {
+    // ── Single Full-Width Row 2 (when Date is not selected) ─────────────
+    $all_defs = array_merge($left_defs, $right_defs);
+    $active_all = [];
+    $total_weight = 0.0;
+    foreach ($all_defs as $k => $def) {
+        if ($has_field($k)) {
+            $active_all[$k] = $def;
+            $total_weight += $def['weight'];
+        }
+    }
+    if (!empty($active_all)) {
+        $n = count($active_all);
+        $gap = 2.0;
+        $avail = $total_w - (($n - 1) * $gap);
+        $allocated = 0.0;
+        $keys = array_keys($active_all);
+        $cur_x = MARG;
+        for ($i = 0; $i < $n; $i++) {
+            $k = $keys[$i];
+            $w = ($i === $n - 1) ? round($avail - $allocated, 2) : round(($active_all[$k]['weight'] / $total_weight) * $avail, 2);
+            $allocated += $w;
+
+            $pdf->Rect($cur_x, $row2_y, $w, $box_h);
+            $pdf->SetXY($cur_x + 1.5, $row2_y + 0.5);
+            $pdf->Cell($w - 3, 4, $active_all[$k]['label'], 0, 0, 'L');
+            $cur_x += $w + $gap;
+        }
     }
 }
 

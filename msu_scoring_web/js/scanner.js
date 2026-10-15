@@ -452,6 +452,66 @@ const _sid_block_bot = _sid_y_start + (_digit_rows - 1) * _sid_dy + _BUB_R_MM + 
 const _y_div2        = _sid_block_bot + 2;
 const _ans_start_y   = _y_div2 - 3;           // Python uses y_divider2 + (-3)
 
+function snapToCircle(binMat, cx_px, cy_px, r_px, searchMargin) {
+    if (!searchMargin) searchMargin = Math.max(5, Math.round(r_px * 0.8));
+    const W = binMat.cols, H = binMat.rows;
+    let x1 = Math.max(0, Math.round(cx_px - r_px - searchMargin));
+    let y1 = Math.max(0, Math.round(cy_px - r_px - searchMargin));
+    let x2 = Math.min(W - 1, Math.round(cx_px + r_px + searchMargin));
+    let y2 = Math.min(H - 1, Math.round(cy_px + r_px + searchMargin));
+
+    if (x2 <= x1 || y2 <= y1) return { x: cx_px, y: cy_px };
+
+    let roiRect = new cv.Rect(x1, y1, x2 - x1, y2 - y1);
+    let roi = binMat.roi(roiRect);
+    let contours = new cv.MatVector();
+    let hierarchy = new cv.Mat();
+
+    let bestCenter = null;
+    let bestDist = Infinity;
+
+    try {
+        cv.findContours(roi, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+        const minArea = Math.max(8, Math.pow(r_px * 0.4, 2) * Math.PI);
+        const maxArea = Math.pow(r_px * 2.2, 2) * Math.PI;
+        const expLocalX = cx_px - x1;
+        const expLocalY = cy_px - y1;
+
+        for (let i = 0; i < contours.size(); i++) {
+            let cnt = contours.get(i);
+            let area = cv.contourArea(cnt);
+            if (area >= minArea && area <= maxArea) {
+                let rect = cv.boundingRect(cnt);
+                let ar = rect.width / (rect.height || 1);
+                if (ar >= 0.6 && ar <= 1.6) {
+                    let M = cv.moments(cnt);
+                    if (M.m00 > 0) {
+                        let lX = M.m10 / M.m00;
+                        let lY = M.m01 / M.m00;
+                        let dist = (lX - expLocalX) * (lX - expLocalX) + (lY - expLocalY) * (lY - expLocalY);
+                        if (dist < bestDist) {
+                            bestDist = dist;
+                            bestCenter = { x: x1 + lX, y: y1 + lY };
+                        }
+                    }
+                }
+            }
+            cnt.delete();
+        }
+    } catch(e) {
+        // Fallback
+    } finally {
+        roi.delete();
+        contours.delete();
+        hierarchy.delete();
+    }
+
+    if (bestCenter && bestDist <= Math.pow(searchMargin * 1.5, 2)) {
+        return bestCenter;
+    }
+    return { x: cx_px, y: cy_px };
+}
+
 function readAllBubbles(binMat, W, H, warpedMat) {
     const q_count = getQCount();
     const sections = getSections(q_count);
@@ -489,8 +549,13 @@ function readAllBubbles(binMat, W, H, warpedMat) {
                     let bx_px = Math.round(mm2px(bx_mm, 'x'));
                     let by_px = Math.round(mm2px(qy_mm,  'y'));
                     let r_px  = Math.round(_BUB_PX);
-                    let x1 = Math.max(0, bx_px - r_px), y1 = Math.max(0, by_px - r_px);
-                    let x2 = Math.min(W-1, bx_px + r_px), y2 = Math.min(H-1, by_px + r_px);
+
+                    // Auto-snap to real circle
+                    let snapped = snapToCircle(binMat, bx_px, by_px, r_px);
+                    let sx = Math.round(snapped.x), sy = Math.round(snapped.y);
+
+                    let x1 = Math.max(0, sx - r_px), y1 = Math.max(0, sy - r_px);
+                    let x2 = Math.min(W-1, sx + r_px), y2 = Math.min(H-1, sy + r_px);
                     if (x2 <= x1 || y2 <= y1) { fills.push(0); continue; }
                     let roi = binMat.roi(new cv.Rect(x1, y1, x2-x1, y2-y1));
                     let frac = cv.countNonZero(roi) / (roi.rows * roi.cols);
@@ -538,8 +603,13 @@ function readStudentId(binMat, W, H, warpedMat) {
             let bx_px = Math.round(mm2px(cx_mm, 'x'));
             let by_px = Math.round(mm2px(cy_mm,  'y'));
             let r_px  = Math.round(_BUB_PX);
-            let x1 = Math.max(0, bx_px - r_px), y1 = Math.max(0, by_px - r_px);
-            let x2 = Math.min(W-1, bx_px + r_px), y2 = Math.min(H-1, by_px + r_px);
+
+            // Auto-snap to real circle
+            let snapped = snapToCircle(binMat, bx_px, by_px, r_px);
+            let sx = Math.round(snapped.x), sy = Math.round(snapped.y);
+
+            let x1 = Math.max(0, sx - r_px), y1 = Math.max(0, sy - r_px);
+            let x2 = Math.min(W-1, sx + r_px), y2 = Math.min(H-1, sy + r_px);
             if (x2 <= x1 || y2 <= y1) { fills.push(0); continue; }
             let roi = binMat.roi(new cv.Rect(x1, y1, x2-x1, y2-y1));
             let frac = cv.countNonZero(roi) / (roi.rows * roi.cols);

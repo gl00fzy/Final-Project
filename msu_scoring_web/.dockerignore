@@ -9,7 +9,6 @@ cookie.txt
 # ── ไฟล์ Docker เอง ──────────────────────────────────────────
 Dockerfile
 docker-compose.yml
-docker/
 .dockerignore
 
 # ── ไฟล์ migrate และ fix ─────────────────────────────────────
@@ -30,6 +29,8 @@ config/database.sqlite
 *.backup.js
 *.md
 *.log
+*.docx
+*.pdf
 
 # ── โฟลเดอร์ที่ไม่จำเป็น ─────────────────────────────────────
 implement_plan/
