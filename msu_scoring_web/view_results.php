@@ -86,8 +86,8 @@ $csrf_token = generate_csrf_token();
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 pb-6 border-b border-slate-200/80">
             <div>
                 <div class="flex items-center gap-2 mb-2">
-                    <a href="dashboard.php" class="inline-flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 text-slate-700 font-bold py-1.5 px-3 rounded-xl shadow-sm transition-all text-xs">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="dashboard.php" class="inline-flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 text-slate-700 font-bold py-1.5 px-3 rounded-xl shadow-sm transition-all text-xs whitespace-nowrap flex-shrink-0">
+                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
                         <span>กลับแดชบอร์ด</span>
@@ -102,12 +102,12 @@ $csrf_token = generate_csrf_token();
 
             <!-- Quick Action Shortcuts -->
             <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-                <a href="scanner.php?exam_id=<?= $exam_id ?>" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-95 text-slate-950 font-bold py-2 px-4 rounded-xl shadow-md shadow-yellow-500/20 text-xs sm:text-sm flex items-center gap-1.5 transition-all">
-                    <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                <a href="scanner.php?exam_id=<?= $exam_id ?>" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-95 text-slate-950 font-bold py-2 px-4 rounded-xl shadow-md shadow-yellow-500/20 text-xs sm:text-sm flex items-center gap-1.5 transition-all whitespace-nowrap flex-shrink-0">
+                    <svg class="w-4 h-4 text-slate-950 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                     <span>ไปหน้าสแกน</span>
                 </a>
-                <a href="key_editor.php?exam_id=<?= $exam_id ?>" class="bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 text-slate-700 font-bold py-2 px-4 rounded-xl shadow-sm text-xs sm:text-sm flex items-center gap-1.5 transition-all">
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <a href="key_editor.php?exam_id=<?= $exam_id ?>" class="bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 text-slate-700 font-bold py-2 px-4 rounded-xl shadow-sm text-xs sm:text-sm flex items-center gap-1.5 transition-all whitespace-nowrap flex-shrink-0">
+                    <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <span>แก้ไขเฉลย</span>
                 </a>
                 <div class="relative inline-block" id="exportDropdown">

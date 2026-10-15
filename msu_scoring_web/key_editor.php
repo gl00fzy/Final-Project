@@ -120,31 +120,31 @@ $csrf_token = generate_csrf_token();
     <nav class="bg-slate-900/95 text-white shadow-md sticky top-0 z-40 backdrop-blur-md border-b border-yellow-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <a href="dashboard.php" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white font-semibold py-2 px-3.5 rounded-xl transition-all text-xs sm:text-sm flex items-center gap-2 border border-slate-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <div class="flex items-center gap-3 min-w-0 flex-1 mr-2 sm:mr-4">
+                    <a href="dashboard.php" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white font-semibold py-2 px-3.5 rounded-xl transition-all text-xs sm:text-sm flex items-center gap-2 border border-slate-700 whitespace-nowrap flex-shrink-0">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                         <span>กลับแดชบอร์ด</span>
                     </a>
-                    <div class="font-bold text-base sm:text-lg hidden md:flex items-center gap-2 truncate text-slate-100 font-['Inter','Sarabun']">
-                        <span>จัดการเฉลยข้อสอบ:</span>
+                    <div class="font-bold text-base sm:text-lg hidden md:flex items-center gap-2 truncate text-slate-100 font-['Inter','Sarabun'] min-w-0">
+                        <span class="whitespace-nowrap flex-shrink-0">จัดการเฉลยข้อสอบ:</span>
                         <span class="text-amber-400 font-extrabold truncate"><?= htmlspecialchars($exam['exam_title']) ?></span>
                         <?php if ($exam['exam_code']): ?>
-                            <span class="text-xs bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded-lg border border-slate-700">(<?= htmlspecialchars($exam['exam_code']) ?>)</span>
+                            <span class="text-xs bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded-lg border border-slate-700 whitespace-nowrap flex-shrink-0">(<?= htmlspecialchars($exam['exam_code']) ?>)</span>
                         <?php endif; ?>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     <button type="button" onclick="openSurveyModal()"
-                            class="flex items-center gap-1.5 bg-amber-400/15 hover:bg-amber-400/25 active:scale-95 text-amber-300 hover:text-amber-200 px-2.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all border border-amber-400/30 whitespace-nowrap cursor-pointer"
+                            class="flex items-center gap-1.5 bg-amber-400/15 hover:bg-amber-400/25 active:scale-95 text-amber-300 hover:text-amber-200 px-2.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all border border-amber-400/30 whitespace-nowrap cursor-pointer flex-shrink-0"
                             title="แบบประเมินประสิทธิภาพและการยอมรับระบบ">
                         <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
                         <span class="hidden sm:inline">แบบประเมินระบบ</span>
                     </button>
-                    <a href="scanner.php?exam_id=<?= $exam_id ?>" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-700 flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                    <a href="scanner.php?exam_id=<?= $exam_id ?>" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-700 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0">
+                        <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                         <span class="hidden sm:inline">ไปหน้าสแกน</span>
                     </a>
                 </div>

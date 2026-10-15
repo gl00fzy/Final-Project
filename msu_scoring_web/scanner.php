@@ -96,52 +96,13 @@ $csrf_token = generate_csrf_token();
         #modeStudentBtn, #modeKeyBtn {
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
+        dialog:not([open]) {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden select-none">
-
-    <!-- PDF Upload Section overlay -->
-    <div class="fixed top-16 left-1/2 -translate-x-1/2 w-11/12 max-w-md z-[60]">
-        <div id="pdfUploadSection" class="bg-white rounded-2xl border border-slate-200 shadow-xl p-5 mb-4 text-slate-800">
-            <div class="flex items-center gap-2 mb-3">
-                <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-900">อัปโหลด PDF (หลายแผ่น)</h3>
-                    <p class="text-xs text-slate-500">สำหรับไฟล์ PDF จากเครื่องสแกน สูงสุด 200 หน้า / 50MB</p>
-                </div>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row gap-3">
-                <label class="flex-1 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-amber-400 rounded-xl p-4 cursor-pointer transition-colors bg-slate-50 hover:bg-amber-50/30">
-                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span class="text-xs font-semibold text-slate-600" id="pdfFileLabel">เลือกไฟล์ PDF</span>
-                    <input type="file" id="pdfFileInput" accept=".pdf,application/pdf" class="hidden">
-                </label>
-                <button type="button" id="btnScanPdf" onclick="startPdfScan()" disabled
-                    class="sm:w-36 bg-amber-500 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed hover:bg-amber-600 active:scale-95 text-white font-bold py-3 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                    <span>เริ่มสแกน</span>
-                </button>
-            </div>
-            
-            <!-- Progress -->
-            <div id="pdfProgress" class="hidden mt-3">
-                <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-xs font-semibold text-slate-700" id="pdfProgressLabel">กำลังประมวลผล...</span>
-                    <span class="text-xs text-slate-500" id="pdfProgressPct">0%</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-2">
-                    <div id="pdfProgressBar" class="bg-amber-500 h-2 rounded-full transition-all duration-300" style="width:0%"></div>
-                </div>
-            </div>
-            
-            <!-- Result Summary -->
-            <div id="pdfResult" class="hidden mt-3 p-3 rounded-xl text-sm"></div>
-            <div id="pdfDetails" class="hidden mt-2 max-h-40 overflow-y-auto text-xs space-y-1"></div>
-        </div>
-    </div>
 
     <!-- ============================================================ -->
     <!-- LAYER 0: ROOT CONTAINER                                       -->
@@ -250,7 +211,7 @@ $csrf_token = generate_csrf_token();
         </div>
 
         <!-- [HUD] BOTTOM CONTROLS: Upload & Manual Entry -->
-        <div class="absolute bottom-5 left-0 w-full px-4 z-20 flex justify-center items-center gap-3">
+        <div class="absolute bottom-5 left-0 w-full px-3 sm:px-4 z-20 flex flex-wrap justify-center items-center gap-2 sm:gap-3">
             <!-- Hidden File Input for Python OMR Engine -->
             <input type="file" id="pyUploadInput" accept="image/*" capture="environment" class="hidden" onchange="uploadToPythonEngine(this)">
 
@@ -258,7 +219,7 @@ $csrf_token = generate_csrf_token();
             <button onclick="document.getElementById('pyUploadInput').click()"
                     id="pyUploadBtn"
                     class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
-                           text-slate-950 font-extrabold text-xs sm:text-sm px-5 py-3 rounded-full shadow-2xl shadow-yellow-500/30
+                           text-slate-950 font-extrabold text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-full shadow-2xl shadow-yellow-500/30
                            hover:scale-105 active:scale-95 transition-all whitespace-nowrap">
                 <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
@@ -267,10 +228,22 @@ $csrf_token = generate_csrf_token();
                 <span id="pyBtnText">อัปโหลดรูปสแกน</span>
             </button>
 
+            <!-- PDF Upload Modal Button -->
+            <button type="button" id="btnOpenPdfModal"
+                    class="inline-flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md
+                           text-slate-200 hover:text-white font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full shadow-xl
+                           border border-slate-700/80 hover:bg-slate-800 hover:scale-105 active:scale-95
+                           transition-all whitespace-nowrap">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>อัปโหลด PDF</span>
+            </button>
+
             <!-- Manual Score Entry Button -->
             <button id="btnManual"
                     class="inline-flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md
-                           text-slate-200 hover:text-white font-bold text-xs sm:text-sm px-4 py-3 rounded-full shadow-xl
+                           text-slate-200 hover:text-white font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full shadow-xl
                            border border-slate-700/80 hover:bg-slate-800 hover:scale-105 active:scale-95
                            transition-all whitespace-nowrap">
                 <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,6 +341,70 @@ $csrf_token = generate_csrf_token();
                     </button>
                 </div>
             </form>
+        </div>
+    </dialog>
+
+    <!-- PDF UPLOAD MODAL -->
+    <dialog id="pdfModal"
+            class="backdrop:bg-slate-950/70 backdrop:backdrop-blur-md bg-white rounded-3xl shadow-2xl w-[calc(100%-2rem)] max-w-md p-6 sm:p-7 text-slate-900 border border-slate-200 m-auto overflow-hidden relative">
+        <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 absolute top-0 left-0"></div>
+        
+        <!-- Header with Close Button -->
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 font-['Inter','Sarabun']">อัปโหลด PDF (หลายแผ่น)</h3>
+                    <p class="text-xs text-slate-500">สำหรับไฟล์ PDF จากเครื่องสแกน สูงสุด 200 หน้า / 50MB</p>
+                </div>
+            </div>
+            <button type="button" id="btnClosePdfModal" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-3">
+            <label class="flex-1 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-amber-400 rounded-2xl p-4 cursor-pointer transition-colors bg-slate-50 hover:bg-amber-50/40">
+                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                <span class="text-xs font-semibold text-slate-700 text-center truncate max-w-[200px]" id="pdfFileLabel">เลือกไฟล์ PDF</span>
+                <input type="file" id="pdfFileInput" accept=".pdf,application/pdf" class="hidden">
+            </label>
+            <button type="button" id="btnScanPdf" onclick="startPdfScan()" disabled
+                class="sm:w-36 bg-amber-500 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed hover:bg-amber-600 active:scale-95 text-white font-bold py-3 px-4 rounded-2xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+                <span>เริ่มสแกน</span>
+            </button>
+        </div>
+        
+        <!-- Progress -->
+        <div id="pdfProgress" class="hidden mt-4">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-semibold text-slate-700" id="pdfProgressLabel">กำลังประมวลผล...</span>
+                <span class="text-xs font-bold text-amber-600" id="pdfProgressPct">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div id="pdfProgressBar" class="bg-gradient-to-r from-amber-400 to-yellow-500 h-2.5 rounded-full transition-all duration-300" style="width:0%"></div>
+            </div>
+        </div>
+        
+        <!-- Result Summary -->
+        <div id="pdfResult" class="hidden mt-3 p-3.5 rounded-2xl text-sm"></div>
+        <div id="pdfDetails" class="hidden mt-2 max-h-40 overflow-y-auto text-xs space-y-1 pr-1"></div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-end">
+            <button type="button" id="btnCancelPdf" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-5 rounded-xl text-xs active:scale-95 transition-all">
+                ปิดหน้าต่าง
+            </button>
         </div>
     </dialog>
 
@@ -529,6 +566,38 @@ $csrf_token = generate_csrf_token();
     </script>
     <input type="hidden" id="qCount" value="<?= htmlspecialchars($question_count) ?>">
     <script>
+        // ── PDF Upload Modal Controls ────────────────────────────────────
+        const pdfModal = document.getElementById('pdfModal');
+        const btnOpenPdfModal = document.getElementById('btnOpenPdfModal');
+        const btnClosePdfModal = document.getElementById('btnClosePdfModal');
+        const btnCancelPdf = document.getElementById('btnCancelPdf');
+
+        if (btnOpenPdfModal && pdfModal) {
+            btnOpenPdfModal.addEventListener('click', () => {
+                if (typeof pdfModal.showModal === 'function') {
+                    pdfModal.showModal();
+                } else {
+                    pdfModal.setAttribute('open', '');
+                }
+            });
+        }
+        if (btnClosePdfModal && pdfModal) {
+            btnClosePdfModal.addEventListener('click', () => pdfModal.close());
+        }
+        if (btnCancelPdf && pdfModal) {
+            btnCancelPdf.addEventListener('click', () => pdfModal.close());
+        }
+        if (pdfModal) {
+            pdfModal.addEventListener('click', (e) => {
+                const rect = pdfModal.getBoundingClientRect();
+                const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+                                    rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+                if (!isInDialog) {
+                    pdfModal.close();
+                }
+            });
+        }
+
         document.getElementById('pdfFileInput').addEventListener('change', function() {
             const btn = document.getElementById('btnScanPdf');
             const label = document.getElementById('pdfFileLabel');

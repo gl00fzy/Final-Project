@@ -856,6 +856,14 @@ const btnCancelManual = document.getElementById('btnCancelManual');
 const manualForm      = document.getElementById('manualForm');
 if (btnManual) btnManual.addEventListener('click', () => manualModal.showModal());
 if (btnCancelManual) btnCancelManual.addEventListener('click', () => manualModal.close());
+if (manualModal) {
+    manualModal.addEventListener('click', (e) => {
+        const rect = manualModal.getBoundingClientRect();
+        const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+                            rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+        if (!isInDialog) manualModal.close();
+    });
+}
 if (manualForm) {
     manualForm.addEventListener('submit', async e => {
         e.preventDefault();
