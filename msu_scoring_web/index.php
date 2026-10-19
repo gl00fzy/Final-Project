@@ -163,14 +163,14 @@ $csrf_token = generate_csrf_token();
                 <!-- Demo / Guest Tester 1-Click Quick Access -->
                 <div class="mt-5 pt-4 border-t border-slate-200/80">
                     <button type="button" id="btnDemoLogin" onclick="handleDemoLogin()"
-                            class="w-full group bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 hover:from-amber-100 hover:to-yellow-100 active:scale-[0.98] text-slate-800 font-bold py-2.5 px-4 rounded-xl transition-all border border-amber-300/80 hover:border-amber-400 flex items-center justify-center gap-2 text-sm shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                        <div class="w-6 h-6 rounded-lg bg-yellow-400 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="w-full group bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 hover:from-amber-100 hover:to-yellow-100 active:scale-[0.98] text-slate-800 font-bold py-2.5 px-3 sm:px-4 rounded-xl transition-all border border-amber-300/80 hover:border-amber-400 flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-yellow-400 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                         </div>
-                        <span class="tracking-tight">เข้าสู่ระบบทดลองใช้งาน (Demo / Guest Tester)</span>
-                        <span class="text-[10px] font-extrabold bg-amber-200/90 text-amber-900 px-2 py-0.5 rounded-full uppercase tracking-wider">1-Click</span>
+                        <span class="text-xs sm:text-sm tracking-tight whitespace-nowrap">เข้าสู่ระบบทดลองใช้งาน (Demo Tester)</span>
+                        <span class="hidden sm:inline-flex items-center text-[10px] font-extrabold bg-amber-200/90 text-amber-900 px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap flex-shrink-0">1-Click</span>
                     </button>
                     <p class="text-[11px] text-center text-slate-500 mt-1.5 leading-relaxed">
                         สำหรับผู้ประเมินหรือบุคคลภายนอก ทดสอบระบบได้ทันทีโดยไม่ต้องลงทะเบียน
@@ -250,12 +250,12 @@ $csrf_token = generate_csrf_token();
             btn.disabled = true;
             btn.classList.add('opacity-70', 'cursor-not-allowed');
             btn.innerHTML = `
-                <div class="inline-flex items-center gap-2">
-                    <svg class="animate-spin h-4 w-4 text-slate-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <div class="inline-flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                    <svg class="animate-spin h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-800 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
-                    <span>กำลังเข้าสู่ระบบทดลองใช้งาน...</span>
+                    <span class="text-xs sm:text-sm">กำลังเข้าสู่ระบบทดลองใช้งาน...</span>
                 </div>
             `;
             
