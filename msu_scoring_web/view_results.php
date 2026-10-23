@@ -44,6 +44,16 @@ $csrf_token = generate_csrf_token();
                 </a>
                 
                 <div class="flex items-center space-x-2 sm:space-x-3">
+                    <button type="button" onclick="openUserGuideModal(4)"
+                            class="flex items-center gap-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 active:scale-95 text-slate-950 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition-all whitespace-nowrap cursor-pointer"
+                            title="คู่มือการใช้งานและวิธีดูสถิติ CTT">
+                        <svg class="w-4 h-4 text-slate-950 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <span class="hidden md:inline">คู่มือ</span>
+                        <span class="md:hidden">คู่มือ</span>
+                    </button>
+
                     <button type="button" onclick="openSurveyModal()"
                             class="flex items-center gap-1.5 bg-amber-400/15 hover:bg-amber-400/25 active:scale-95 text-amber-300 hover:text-amber-200 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all border border-amber-400/30 whitespace-nowrap cursor-pointer"
                             title="แบบประเมินประสิทธิภาพและการยอมรับระบบ">
@@ -348,9 +358,15 @@ $csrf_token = generate_csrf_token();
                 <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                 <span>แบบประเมินประสิทธิภาพและการยอมรับระบบ (Google Form &amp; QR Code)</span>
             </button>
+            <span class="mx-2 text-slate-300">|</span>
+            <button type="button" onclick="openUserGuideModal(4)" class="inline-flex items-center gap-1 text-blue-700 hover:text-blue-800 font-semibold underline underline-offset-2 mt-1.5 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>คู่มือการใช้งานระบบ (Quick-Start Guide)</span>
+            </button>
         </p>
     </footer>
 
     <?php include_once __DIR__ . '/components/survey_modal.php'; ?>
+    <?php include_once __DIR__ . '/components/user_guide_modal.php'; ?>
 </body>
 </html>

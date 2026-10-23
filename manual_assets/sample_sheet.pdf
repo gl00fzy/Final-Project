@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="0e3333a6de8473c244d9d76b1fc77fec60e9f4eece6aac08820c251a099c1945">
+    <title>เข้าสู่ระบบ - MSU Scoring</title>
+    <link rel="icon" type="image/png" href="favicon_pic/favicon_for_web.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dist/output.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-full flex flex-col justify-between font-['Sarabun'] relative overflow-x-hidden selection:bg-yellow-400 selection:text-slate-900">
+    
+    <!-- Ambient Background Glows -->
+    <div class="fixed -top-36 -right-36 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="fixed -bottom-36 -left-36 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
+        <div class="w-full max-w-md">
+            
+            <!-- Branding Header -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-500 text-slate-950 mb-3.5 shadow-lg shadow-yellow-500/25 ring-4 ring-yellow-100">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1 font-['Inter','Sarabun']">MSU Scoring</h1>
+                <p class="text-slate-500 text-sm font-medium">ระบบตรวจและประมวลผลกระดาษคำตอบปรนัย</p>
+                <div class="inline-flex items-center gap-1.5 mt-2 px-2.5 py-0.5 rounded-full bg-slate-200/70 text-slate-700 text-xs font-semibold">
+                    <span>มหาวิทยาลัยมหาสารคาม</span>
+                </div>
+            </div>
+            
+            <!-- Login Card -->
+            <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-6 sm:p-8 relative overflow-hidden">
+                <!-- Card Top Accent Bar -->
+                <div class="h-1.5 w-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 absolute top-0 left-0"></div>
+
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-slate-900">เข้าสู่ระบบ</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">กรอกชื่อผู้ใช้งานหรืออีเมลเพื่อเข้าสู่ระบบงานตรวจข้อสอบ</p>
+                </div>
+
+                
+                <form id="loginForm" class="flex flex-col gap-4">
+                    <!-- Username Field -->
+                    <div>
+                        <label for="username" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ชื่อผู้ใช้งาน หรือ อีเมล</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" id="username" name="username" required autocomplete="username" placeholder="เช่น teacher_demo หรือ name@msu.ac.th" class="w-full pl-11 pr-4 py-3 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">รหัสผ่าน</label>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="กรอกรหัสผ่านของคุณ" class="w-full pl-11 pr-12 py-3 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all">
+                            <button type="button" class="password-toggle-btn absolute inset-y-0 right-0 px-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" data-target="password" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="btnSubmit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] text-slate-950 font-bold py-3 px-6 rounded-xl transition-all mt-1.5 shadow-md shadow-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/30 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 flex items-center justify-center gap-2 text-base">
+                        <span>เข้าสู่ระบบ</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- Separator -->
+                <div class="my-5 flex items-center justify-between">
+                    <hr class="w-full border-slate-200">
+                    <span class="px-3 text-xs font-semibold text-slate-400 whitespace-nowrap">หรือดำเนินการต่อด้วย</span>
+                    <hr class="w-full border-slate-200">
+                </div>
+
+                <!-- Google Sign-in -->
+                <div id="g_id_onload"
+                     data-client_id="6718745422-4o8ukvml1f5h7cjsh97a9rrgteun20mf.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                
+                <div class="flex flex-col items-center justify-center">
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="outline"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="320">
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-2 text-center">
+                                                    รองรับทั้งบัญชี Google (@gmail.com) และอีเมลมหาวิทยาลัย (@msu.ac.th)
+                                            </p>
+                </div>
+
+                <!-- Demo / Guest Tester 1-Click Quick Access -->
+                <div class="mt-5 pt-4 border-t border-slate-200/80">
+                    <button type="button" id="btnDemoLogin" onclick="handleDemoLogin()"
+                            class="w-full group bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 hover:from-amber-100 hover:to-yellow-100 active:scale-[0.98] text-slate-800 font-bold py-2.5 px-3 sm:px-4 rounded-xl transition-all border border-amber-300/80 hover:border-amber-400 flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-yellow-400 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs sm:text-sm tracking-tight whitespace-nowrap">เข้าสู่ระบบทดลองใช้งาน (Demo Tester)</span>
+                        <span class="hidden sm:inline-flex items-center text-[10px] font-extrabold bg-amber-200/90 text-amber-900 px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap flex-shrink-0">1-Click</span>
+                    </button>
+                    <p class="text-[11px] text-center text-slate-500 mt-1.5 leading-relaxed">
+                        สำหรับผู้ประเมินหรือบุคคลภายนอก ทดสอบระบบได้ทันทีโดยไม่ต้องลงทะเบียน
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Register Link Footer -->
+            <div class="mt-5 text-center">
+                <p class="text-sm text-slate-600">ยังไม่มีบัญชีผู้ใช้งาน? <a href="register.php" class="text-amber-600 font-bold hover:text-amber-700 hover:underline transition-colors ml-1">สมัครสมาชิกใหม่</a></p>
+            </div>
+
+            <!-- Survey & Feedback Link Card -->
+            <div class="mt-4 p-3.5 bg-white/90 backdrop-blur-sm border border-amber-200/90 rounded-2xl shadow-sm flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div class="text-left min-w-0">
+                        <p class="text-xs font-bold text-slate-800 truncate">แบบประเมินระบบ MSU Score</p>
+                        <p class="text-[11px] text-slate-500 truncate">Google Forms &bull; สแกน QR Code หรือทำแบบประเมิน</p>
+                    </div>
+                </div>
+                <button type="button" onclick="openSurveyModal()" class="flex-shrink-0 bg-yellow-400 hover:bg-yellow-500 active:scale-95 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    <span>เปิดแบบประเมิน</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Academic Footer -->
+    <footer class="w-full border-t border-slate-200/80 py-5 text-center bg-white/80 backdrop-blur-sm">
+        <p class="text-xs text-slate-500 leading-relaxed">
+            &copy; 2026 ระบบตรวจข้อสอบ MSU Scoring | มหาวิทยาลัยมหาสารคาม<br class="sm:hidden">
+            <span class="hidden sm:inline"> — </span>ร่วมกับ สำนักคอมพิวเตอร์ มมส.<br>
+            <button type="button" onclick="openSurveyModal()" class="inline-flex items-center gap-1 text-amber-700 hover:text-amber-800 font-semibold underline underline-offset-2 mt-1.5 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                <span>แบบประเมินประสิทธิภาพและการยอมรับระบบ (Google Form &amp; QR Code)</span>
+            </button>
+        </p>
+    </footer>
+
+    <script src="js/shared.js"></script>
+    <script>
+        async function handleCredentialResponse(response) {
+            try {
+                const formData = new FormData();
+                formData.append('credential', response.credential);
+                
+                const res = await fetchApi('api/google_auth.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    showToast(data.message || 'เข้าสู่ระบบสำเร็จ กำลังพาไปหน้าหลัก...');
+                    setTimeout(() => window.location.href = 'dashboard.php', 1000);
+                } else if (data.status === 'pending') {
+                    showToast(data.message, 'info');
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+            }
+        }
+
+        async function handleDemoLogin() {
+            const btn = document.getElementById('btnDemoLogin');
+            if (!btn) return;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.innerHTML = `
+                <div class="inline-flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                    <svg class="animate-spin h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-800 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span class="text-xs sm:text-sm">กำลังเข้าสู่ระบบทดลองใช้งาน...</span>
+                </div>
+            `;
+            
+            try {
+                const res = await fetchApi('api/demo_login.php', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    showToast(data.message || 'เข้าสู่ระบบทดลองใช้งานสำเร็จ กำลังเข้าสู่แดชบอร์ด...');
+                    setTimeout(() => window.location.href = 'dashboard.php', 800);
+                } else {
+                    const isCsrf = data.message && (data.message.includes('CSRF') || data.message.includes('โทเค็น'));
+                    if (isCsrf) {
+                        showToast('ความปลอดภัยเซสชันหมดอายุ กำลังรีเฟรชหน้าเว็บ...', 'warning');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast(data.message || 'ไม่สามารถเข้าสู่ระบบทดลองใช้งานได้', 'error');
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        btn.innerHTML = originalHtml;
+                    }
+                }
+            } catch (error) {
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.classList.add('btn-loading');
+
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetchApi('api/auth.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showToast('เข้าสู่ระบบสำเร็จ กำลังเข้าสู่แดชบอร์ด...');
+                    setTimeout(() => window.location.href = 'dashboard.php', 800);
+                } else {
+                    showToast(data.message, 'error');
+                    btn.classList.remove('btn-loading');
+                }
+            } catch (error) {
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+                btn.classList.remove('btn-loading');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registered') === 'pending') {
+                showToast('สมัครสมาชิกสำเร็จ กรุณารอแอดมินอนุมัติการใช้งาน', 'info');
+            } else if (urlParams.get('registered') === 'active') {
+                showToast('สมัครสมาชิกสำเร็จ สามารถเข้าสู่ระบบได้ทันที', 'success');
+            }
+        });
+    </script>
+    <!-- ════ SURVEY & EVALUATION MODAL DIALOG ═════════════════════════════ -->
+<dialog id="surveyModal" aria-labelledby="surveyModalTitle" class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-lg p-6 sm:p-7 border border-slate-200/80 backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm m-auto overflow-hidden relative">
+    <!-- Top Accent Bar (MSU Yellow / Gold Gradient) -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-500 absolute top-0 left-0"></div>
+    
+    <!-- Modal Header -->
+    <div class="flex items-start justify-between gap-3 mb-4">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <div>
+                <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md mb-1">
+                    Google Forms &bull; แบบประเมินระบบ
+                </span>
+                <h2 id="surveyModalTitle" class="text-base sm:text-lg font-bold text-slate-900 leading-snug font-['Inter','Sarabun']">
+                    แบบประเมินประสิทธิภาพและการยอมรับระบบตรวจข้อสอบปรนัยอัจฉริยะ (MSU Score)
+                </h2>
+            </div>
+        </div>
+        <button type="button" onclick="closeSurveyModal()" class="text-slate-400 hover:text-slate-600 rounded-lg p-1 transition-colors flex-shrink-0" title="ปิดหน้าต่าง">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+
+    <!-- Description -->
+    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+        ขอความอนุเคราะห์อาจารย์ ผู้ประเมิน และผู้ใช้งานทุกท่าน ร่วมตอบแบบประเมินความพึงพอใจและประสิทธิภาพ เพื่อนำข้อมูลไปปรับปรุงและพัฒนาระบบ MSU Scoring ต่อไป
+    </p>
+
+    <!-- QR Code Section -->
+    <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center mb-5">
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm mb-3">
+            <img src="assets/survey_qr.png" 
+                 alt="QR Code แบบประเมินประสิทธิภาพระบบ MSU Score" 
+                 class="w-48 h-48 sm:w-56 sm:h-56 object-contain block mx-auto">
+        </div>
+        
+        <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1">
+            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            <span>สแกน QR Code ด้วยสมาร์ทโฟน</span>
+        </div>
+        <p class="text-[11px] text-slate-500">
+            เปิดแอปพลิเคชันกล้องถ่ายรูป หรือ LINE เพื่อสแกนและตอบแบบประเมินได้ทันที
+        </p>
+
+        <!-- QR Download Actions -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-3 pt-3 border-t border-slate-200/80 w-full text-xs">
+            <a href="assets/survey_qr.png" download="MSU_Scoring_Survey_QR.png" 
+               class="inline-flex items-center gap-1 text-slate-600 hover:text-amber-700 py-1 px-2 rounded-lg hover:bg-slate-200/60 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span>บันทึกรูป QR Code</span>
+            </a>
+            <span class="text-slate-300">&bull;</span>
+            <a href="assets/survey_qr_card.png" download="MSU_Scoring_Survey_Card.png" 
+               class="inline-flex items-center gap-1 text-slate-600 hover:text-amber-700 py-1 px-2 rounded-lg hover:bg-slate-200/60 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>บันทึกใบประกาศพร้อมพิมพ์</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col gap-2.5">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScadKdz_wPk-QtWbxFKyINhTf2TKhS__R-QgMEKsurSZ2Nitg/viewform?usp=dialog" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] text-slate-950 font-bold py-3 px-5 rounded-xl shadow-md shadow-yellow-500/20 transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            <span>เปิดทำแบบประเมินในแท็บใหม่ (Google Forms)</span>
+        </a>
+
+        <div class="flex gap-2">
+            <button type="button" 
+                    onclick="copySurveyLink()" 
+                    class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition-all text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <span>คัดลอกลิงก์</span>
+            </button>
+            
+            <button type="button" 
+                    onclick="closeSurveyModal()" 
+                    class="bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-600 font-semibold py-2.5 px-4 rounded-xl transition-all text-xs sm:text-sm">
+                ปิด
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<script>
+function openSurveyModal() {
+    const modal = document.getElementById('surveyModal');
+    if (modal && typeof modal.showModal === 'function') {
+        modal.showModal();
+    }
+}
+
+function closeSurveyModal() {
+    const modal = document.getElementById('surveyModal');
+    if (modal && typeof modal.close === 'function') {
+        modal.close();
+    }
+}
+
+function copySurveyLink() {
+    const surveyUrl = "https://docs.google.com/forms/d/e/1FAIpQLScadKdz_wPk-QtWbxFKyINhTf2TKhS__R-QgMEKsurSZ2Nitg/viewform?usp=dialog";
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(surveyUrl).then(() => {
+            if (typeof showToast === 'function') {
+                showToast('คัดลอกลิงก์แบบประเมินเรียบร้อยแล้ว', 'success');
+            } else {
+                alert('คัดลอกลิงก์แบบประเมินเรียบร้อยแล้ว');
+            }
+        }).catch(() => fallbackCopy(surveyUrl));
+    } else {
+        fallbackCopy(surveyUrl);
+    }
+}
+
+function fallbackCopy(text) {
+    const tempInput = document.createElement('input');
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    try {
+        document.execCommand('copy');
+        if (typeof showToast === 'function') {
+            showToast('คัดลอกลิงก์แบบประเมินเรียบร้อยแล้ว', 'success');
+        } else {
+            alert('คัดลอกลิงก์แบบประเมินเรียบร้อยแล้ว');
+        }
+    } catch (e) {
+        prompt('คัดลอกลิงก์แบบประเมินด้านล่าง:', text);
+    }
+    document.body.removeChild(tempInput);
+}
+</script>
+</body>
+</html>

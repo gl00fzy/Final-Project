@@ -29,6 +29,24 @@ $csrf_token = generate_csrf_token();
     <div class="fixed -top-36 -right-36 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
     <div class="fixed -bottom-36 -left-36 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
+    <!-- Top Bar with User Guide & System Badge -->
+    <header class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-4 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-slate-600 font-semibold">
+            <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+            <span class="hidden sm:inline">ระบบตรวจข้อสอบปรนัยอัจฉริยะ (OMR) | มหาวิทยาลัยมหาสารคาม</span>
+            <span class="sm:hidden">MSU Scoring Web</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="openUserGuideModal()" 
+                    class="inline-flex items-center gap-1.5 bg-white/95 hover:bg-white text-slate-900 px-3 py-1.5 rounded-xl border border-slate-300 font-bold transition-all shadow-xs cursor-pointer active:scale-95">
+                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>คู่มือการใช้งาน (4 ขั้นตอน)</span>
+            </button>
+        </div>
+    </header>
+
     <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
         <div class="w-full max-w-md">
             
@@ -183,8 +201,27 @@ $csrf_token = generate_csrf_token();
                 <p class="text-sm text-slate-600">ยังไม่มีบัญชีผู้ใช้งาน? <a href="register.php" class="text-amber-600 font-bold hover:text-amber-700 hover:underline transition-colors ml-1">สมัครสมาชิกใหม่</a></p>
             </div>
 
+            <!-- User Guide Link Card -->
+            <div class="mt-4 p-3.5 bg-white/90 backdrop-blur-sm border border-slate-200/90 rounded-2xl shadow-sm flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <div class="text-left min-w-0">
+                        <p class="text-xs font-bold text-slate-800 truncate">คู่มือการใช้งาน &amp; วิธีการตรวจ</p>
+                        <p class="text-[11px] text-slate-500 truncate">ขั้นตอนตรวจ 4 สเต็ป &bull; โหลด Word (.docx)</p>
+                    </div>
+                </div>
+                <button type="button" onclick="openUserGuideModal()" class="flex-shrink-0 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <span>ดูคู่มือ</span>
+                </button>
+            </div>
+
             <!-- Survey & Feedback Link Card -->
-            <div class="mt-4 p-3.5 bg-white/90 backdrop-blur-sm border border-amber-200/90 rounded-2xl shadow-sm flex items-center justify-between gap-3">
+            <div class="mt-3 p-3.5 bg-white/90 backdrop-blur-sm border border-amber-200/90 rounded-2xl shadow-sm flex items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5 min-w-0">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,6 +249,11 @@ $csrf_token = generate_csrf_token();
             <button type="button" onclick="openSurveyModal()" class="inline-flex items-center gap-1 text-amber-700 hover:text-amber-800 font-semibold underline underline-offset-2 mt-1.5 transition-colors cursor-pointer">
                 <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                 <span>แบบประเมินประสิทธิภาพและการยอมรับระบบ (Google Form &amp; QR Code)</span>
+            </button>
+            <span class="mx-2 text-slate-300">|</span>
+            <button type="button" onclick="openUserGuideModal()" class="inline-flex items-center gap-1 text-blue-700 hover:text-blue-800 font-semibold underline underline-offset-2 mt-1.5 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>คู่มือการใช้งานระบบ (Quick-Start Guide)</span>
             </button>
         </p>
     </footer>
@@ -325,5 +367,6 @@ $csrf_token = generate_csrf_token();
         });
     </script>
     <?php include_once __DIR__ . '/components/survey_modal.php'; ?>
+    <?php include_once __DIR__ . '/components/user_guide_modal.php'; ?>
 </body>
 </html>

@@ -151,7 +151,8 @@ $csrf_token = generate_csrf_token();
         <!-- [HUD] TOP BAR: Back + Exam Title + Set Selector -->
         <div class="absolute top-0 left-0 w-full p-4 z-20 flex justify-between items-center bg-gradient-to-b from-black/90 via-black/50 to-transparent">
             
-            <a href="dashboard.php"
+        <div class="flex items-center gap-2">
+                <a href="dashboard.php"
                class="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-md
                       border border-slate-700/80 text-white text-xs sm:text-sm font-bold
                       px-3.5 py-2 rounded-xl shadow-lg hover:bg-slate-800 active:scale-95 transition-all whitespace-nowrap">
@@ -160,6 +161,17 @@ $csrf_token = generate_csrf_token();
                 </svg>
                 <span>กลับ</span>
             </a>
+                <button type="button" onclick="openUserGuideModal(3)"
+                        class="inline-flex items-center gap-1.5 bg-yellow-400/20 backdrop-blur-md
+                               border border-yellow-400/40 text-yellow-300 hover:text-white text-xs sm:text-sm font-bold
+                               px-3 py-2 rounded-xl shadow-lg hover:bg-yellow-400/30 active:scale-95 transition-all whitespace-nowrap cursor-pointer"
+                        title="ดูคำแนะนำการสแกนและการจัดแสง">
+                    <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>คู่มือ</span>
+                </button>
+            </div>
 
             <!-- Exam Title Pill (Hidden on very small screens) -->
             <div class="hidden sm:flex items-center gap-2 bg-slate-900/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-xs font-bold text-slate-200 truncate max-w-xs">
@@ -697,5 +709,6 @@ $csrf_token = generate_csrf_token();
     <script async src="https://docs.opencv.org/4.8.0/opencv.js"
             onload="onOpenCvReady();" type="text/javascript"></script>
     <script src="js/scanner.js"></script>
+    <?php include_once __DIR__ . '/components/user_guide_modal.php'; ?>
 </body>
 </html>

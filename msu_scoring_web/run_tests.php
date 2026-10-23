@@ -1,19 +1,31 @@
 <?php
 // Test script
-$base_url = 'http://localhost:8000';
+$base_url = getenv('APP_URL') ?: 'http://127.0.0.1:8080';
 $cookie_file = __DIR__ . '/cookie.txt';
 if (file_exists($cookie_file)) unlink($cookie_file);
 
-function request($url, $post_data = null) {
-    global $cookie_file;
+$csrf_token = '';
+
+function request($url, $post_data = null, $headers = []) {
+    global $cookie_file, $csrf_token;
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
     curl_setopt($ch, CURLOPT_HEADER, true);
+    $req_headers = $headers;
+    if ($csrf_token) {
+        $req_headers[] = 'X-CSRF-TOKEN: ' . $csrf_token;
+    }
     if ($post_data !== null) {
         curl_setopt($ch, CURLOPT_POST, true);
+        if (is_array($post_data) && !isset($post_data['csrf_token']) && $csrf_token) {
+            $post_data['csrf_token'] = $csrf_token;
+        }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    }
+    if (!empty($req_headers)) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $req_headers);
     }
     $response = curl_exec($ch);
     $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -24,22 +36,31 @@ function request($url, $post_data = null) {
 }
 
 // Initial request to get session cookie before login
-request("$base_url/index.php");
+$init_res = request("$base_url/index.php");
+if (preg_match('/<meta name="csrf-token" content="([^"]+)"/', $init_res['body'], $m)) {
+    $csrf_token = $m[1];
+}
 
 // Test 1: Auth
 echo "Test 1: Authentication\n";
 $res1 = request("$base_url/api/auth.php", ['username' => 'teacher_demo', 'password' => 'password123']);
 $data1 = json_decode($res1['body'], true);
-if ($data1['status'] === 'success') {
+if ($data1 && ($data1['status'] ?? '') === 'success') {
     echo "PASS: Login success\n";
 } else {
-    echo "FAIL: Login failed\n";
+    echo "FAIL: Login failed - " . ($res1['body'] ?? '') . "\n";
 }
 
 if (strpos($res1['header'], 'Set-Cookie: PHPSESSID=') !== false) {
     echo "PASS: Session regenerated (Set-Cookie found)\n";
 } else {
     echo "FAIL: No Set-Cookie found\n";
+}
+
+// Refresh CSRF token after login
+$dash_res = request("$base_url/dashboard.php");
+if (preg_match('/<meta name="csrf-token" content="([^"]+)"/', $dash_res['body'], $m)) {
+    $csrf_token = $m[1];
 }
 
 // Test 2: Create Exam
@@ -88,10 +109,10 @@ if ($data4['status'] === 'success') {
 
 $res5 = request("$base_url/api/scores.php", $req_data);
 $data5 = json_decode($res5['body'], true);
-if ($data5['status'] === 'duplicate') {
-    echo "PASS: Duplicate prevented correctly\n";
+if (($data5['status'] ?? '') === 'success' && ($data5['mode'] ?? '') === 'updated') {
+    echo "PASS: Rescan/Update handled correctly (mode=updated)\n";
 } else {
-    echo "FAIL: Duplicate NOT prevented - " . $res5['body'] . "\n";
+    echo "FAIL: Rescan/Update unexpected response - " . $res5['body'] . "\n";
 }
 
 // Test 4: Roster Loading
@@ -105,5 +126,7 @@ if (strpos($res6['body'], 'const studentDirectory = {"') !== false || strpos($re
 
 // Cleanup
 $pdo->exec("DELETE FROM student_scores WHERE student_id = '99999999999'");
-$pdo->exec("DELETE FROM exams WHERE exam_id = $exam_id");
+if (!empty($exam_id)) {
+    $pdo->exec("DELETE FROM exams WHERE exam_id = " . intval($exam_id));
+}
 ?>
