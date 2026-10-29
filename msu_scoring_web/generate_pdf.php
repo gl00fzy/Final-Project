@@ -17,8 +17,14 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once 'tfpdf/tfpdf.php';
-require_once 'config/database.php';
+if (file_exists(__DIR__ . '/tFPDF/tfpdf.php')) {
+    require_once __DIR__ . '/tFPDF/tfpdf.php';
+} elseif (file_exists(__DIR__ . '/tfpdf/tfpdf.php')) {
+    require_once __DIR__ . '/tfpdf/tfpdf.php';
+} else {
+    require_once 'tFPDF/tfpdf.php';
+}
+require_once __DIR__ . '/config/database.php';
 
 // ── Parameters ────────────────────────────────────────────────────────────
 $exam_id  = (int)($_GET['exam_id']  ?? 0);

@@ -15,6 +15,11 @@ if [ -n "$PORT" ]; then
     sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:$PORT>/" /etc/apache2/sites-available/000-default.conf
 fi
 
+# Ensure case-insensitive compatibility symlinks for tFPDF
+if [ -d /var/www/html/tFPDF ] && [ ! -d /var/www/html/tfpdf ]; then
+    ln -sf /var/www/html/tFPDF /var/www/html/tfpdf || true
+fi
+
 # Run database course migration/seeder (non-blocking in case DB starts slowly)
 if [ -f /var/www/html/migrate_courses.php ]; then
     echo "Running migrate_courses.php..."
