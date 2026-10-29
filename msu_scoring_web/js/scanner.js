@@ -777,7 +777,7 @@ async function submitKey(rawAnswers, imageBase64) {
 }
 
 async function submitScore(studentId, score, rawAnswers, imageBase64) {
-    const isManual = !rawAnswers || rawAnswers === '{}';
+    const isManual = (rawAnswers === null || rawAnswers === undefined || rawAnswers === '');
     rawAnswers  = isManual ? '' : rawAnswers;
     imageBase64 = imageBase64 || '';
     if (isSubmitting) return;

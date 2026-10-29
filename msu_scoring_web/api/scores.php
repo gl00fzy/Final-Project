@@ -65,9 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $exam_set = $_POST['exam_set'] ?? 'A';
 
-    // Calculate actual score from raw_answers (only if non-empty raw_answers provided)
+    // Calculate actual score from raw_answers (when raw_answers is provided)
     $actual_score = $score; // Fallback to passed manual score
-    $has_raw = !empty($raw_answers) && $raw_answers !== '{}';
+    $has_raw = ($raw_answers !== null && $raw_answers !== '');
     if ($has_raw) {
         $stmtKey = $pdo->prepare("SELECT answer_key FROM exams WHERE exam_id = ?");
         $stmtKey->execute([$exam_id]);

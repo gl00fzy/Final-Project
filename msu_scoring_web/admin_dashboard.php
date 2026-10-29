@@ -104,31 +104,33 @@ $csrf_token = generate_csrf_token();
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    <span>กลับสู่หน้าหลัก</span>
+                    <span class="hidden lg:inline">กลับสู่หน้าหลัก</span>
+                    <span class="lg:hidden">กลับ</span>
                 </a>
-                <a href="admin_dashboard.php" class="flex items-center gap-2 text-lg sm:text-xl font-bold tracking-tight font-['Inter','Sarabun']">
+                <a href="admin_dashboard.php" class="flex items-center gap-2 text-base sm:text-lg lg:text-xl font-bold tracking-tight font-['Inter','Sarabun']">
                     <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center text-slate-950 shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
                     </div>
-                    <span>แผงควบคุมระบบ (Admin)</span>
+                    <span class="hidden sm:inline">แผงควบคุมระบบ (Admin)</span>
+                    <span class="sm:hidden">Admin</span>
                     <?php if ($pending_count > 0): ?>
                         <span class="ml-2 bg-yellow-500 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold"><?= $pending_count ?> รอดำเนินการ</span>
                     <?php endif; ?>
                 </a>
             </div>
             
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <button type="button" onclick="openUserGuideModal()"
                         class="flex items-center gap-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 active:scale-95 text-slate-950 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition-all whitespace-nowrap cursor-pointer"
                         title="คู่มือการใช้งานระบบและขั้นตอนการทำงาน">
                     <svg class="w-4 h-4 text-slate-950 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
-                    <span class="hidden md:inline">คู่มือการใช้งาน</span>
-                    <span class="md:hidden">คู่มือ</span>
+                    <span class="hidden lg:inline">คู่มือการใช้งาน</span>
+                    <span class="lg:hidden">คู่มือ</span>
                 </button>
 
                 <button type="button" onclick="openSurveyModal()"
@@ -137,13 +139,13 @@ $csrf_token = generate_csrf_token();
                     <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
-                    <span class="hidden md:inline">แบบประเมินระบบ</span>
-                    <span class="md:hidden">ประเมิน</span>
+                    <span class="hidden lg:inline">แบบประเมินระบบ</span>
+                    <span class="lg:hidden">ประเมิน</span>
                 </button>
 
                 <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-200 text-xs font-medium">
                     <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
-                    <span><?= htmlspecialchars($_SESSION['name']) ?></span>
+                    <span class="max-w-[110px] md:max-w-[130px] lg:max-w-[180px] truncate"><?= htmlspecialchars($_SESSION['name']) ?></span>
                 </div>
                 <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80 whitespace-nowrap">
                     ออกจากระบบ
@@ -327,17 +329,17 @@ $csrf_token = generate_csrf_token();
                         <td class="py-3.5 px-6 text-center font-bold text-emerald-600 font-sans"><?= number_format($u['scan_count']) ?></td>
                         <td class="py-3.5 px-6 text-right">
                             <?php if ($u['user_id'] != $_SESSION['user_id']): ?>
-                                <div class="flex items-center justify-end gap-1">
+                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
                                     <?php if ($u['role'] !== 'admin'): ?>
-                                        <button onclick="adminAction('grant_admin', <?= $u['user_id'] ?>, 'ต้องการมอบสิทธิ์ Admin ให้ผู้ใช้นี้ใช่หรือไม่?')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="ตั้งเป็น Admin">🛡️ ตั้งเป็น Admin</button>
+                                        <button onclick="adminAction('grant_admin', <?= $u['user_id'] ?>, 'ต้องการมอบสิทธิ์ Admin ให้ผู้ใช้นี้ใช่หรือไม่?')" class="bg-yellow-100 hover:bg-yellow-200 active:scale-95 text-yellow-800 text-xs font-bold px-2.5 py-1.5 min-h-[34px] rounded-lg transition-all inline-flex items-center justify-center" title="ตั้งเป็น Admin">🛡️ ตั้งเป็น Admin</button>
                                     <?php else: ?>
-                                        <button onclick="adminAction('revoke_admin', <?= $u['user_id'] ?>, 'ต้องการถอนสิทธิ์ Admin ของผู้ใช้นี้ใช่หรือไม่?')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="ถอน Admin">ถอน Admin</button>
+                                        <button onclick="adminAction('revoke_admin', <?= $u['user_id'] ?>, 'ต้องการถอนสิทธิ์ Admin ของผู้ใช้นี้ใช่หรือไม่?')" class="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 text-xs font-bold px-2.5 py-1.5 min-h-[34px] rounded-lg transition-all inline-flex items-center justify-center" title="ถอน Admin">ถอน Admin</button>
                                     <?php endif; ?>
 
                                     <?php if ($u['status'] === 'active'): ?>
-                                        <button onclick="adminAction('suspend_user', <?= $u['user_id'] ?>, 'ต้องการระงับบัญชีนี้ใช่หรือไม่?')" class="bg-orange-100 hover:bg-orange-200 text-orange-800 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="ระงับบัญชี">🚫 ระงับบัญชี</button>
+                                        <button onclick="adminAction('suspend_user', <?= $u['user_id'] ?>, 'ต้องการระงับบัญชีนี้ใช่หรือไม่?')" class="bg-orange-100 hover:bg-orange-200 active:scale-95 text-orange-800 text-xs font-bold px-2.5 py-1.5 min-h-[34px] rounded-lg transition-all inline-flex items-center justify-center" title="ระงับบัญชี">🚫 ระงับบัญชี</button>
                                     <?php elseif ($u['status'] === 'suspended'): ?>
-                                        <button onclick="adminAction('unsuspend_user', <?= $u['user_id'] ?>)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded transition-colors" title="เปิดการใช้งาน">✅ เปิดการใช้งาน</button>
+                                        <button onclick="adminAction('unsuspend_user', <?= $u['user_id'] ?>)" class="bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 text-xs font-bold px-2.5 py-1.5 min-h-[34px] rounded-lg transition-all inline-flex items-center justify-center" title="เปิดการใช้งาน">✅ เปิดการใช้งาน</button>
                                     <?php endif; ?>
                                 </div>
                             <?php else: ?>
@@ -410,11 +412,11 @@ $csrf_token = generate_csrf_token();
                                 <span class="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 rounded font-bold">ปิดใช้งาน</span>
                             <?php endif; ?>
                         </td>
-                        <td class="py-3 px-6 text-right space-x-1">
-                            <button onclick="toggleInviteCode(<?= $ic['code_id'] ?>)" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded transition-colors">
+                        <td class="py-3 px-6 text-right space-x-1 whitespace-nowrap">
+                            <button onclick="toggleInviteCode(<?= $ic['code_id'] ?>)" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 px-3 py-1.5 min-h-[34px] rounded-lg transition-all inline-flex items-center justify-center">
                                 เปิด/ปิด
                             </button>
-                            <button onclick="deleteInviteCode(<?= $ic['code_id'] ?>)" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded transition-colors">
+                            <button onclick="deleteInviteCode(<?= $ic['code_id'] ?>)" class="text-xs font-semibold bg-red-50 hover:bg-red-100 active:scale-95 text-red-600 px-3 py-1.5 min-h-[34px] rounded-lg transition-all inline-flex items-center justify-center">
                                 ลบ
                             </button>
                         </td>

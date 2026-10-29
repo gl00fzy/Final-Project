@@ -34,3 +34,16 @@ __pycache__/
 
 skills-lock.json
 ~$*
+
+# Archives & Temporary Test Artifacts
+*.zip
+*.rar
+*.7z
+auc2_check.*
+test_header.docx
+test_open.*
+test_slide8_node.js
+capture_all_slides.js
+slide_checks/
+slide8_verified.png
+

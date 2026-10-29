@@ -1,0 +1,3165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSU Scoring — Senior Project Presentation</title>
+  
+  <!-- Google Fonts: Prompt (Headings), Sarabun (Body), Inter (Numbers & Code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       CSS RESET & DESIGN TOKENS
+       ========================================================================== */
+    :root {
+      --bg-dark: #090D16;
+      --bg-surface: #111827;
+      --bg-card: rgba(17, 24, 39, 0.75);
+      --bg-card-hover: rgba(31, 41, 55, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(234, 179, 8, 0.5);
+      
+      --msu-gold: #EAB308;
+      --msu-gold-hover: #CA8A04;
+      --msu-gold-light: #FEF08A;
+      --msu-gold-glow: rgba(234, 179, 8, 0.35);
+
+      --color-text-main: #F8FAFC;
+      --color-text-muted: #94A3B8;
+      --color-text-dim: #64748B;
+      
+      --semantic-success: #10B981;
+      --semantic-success-glow: rgba(16, 185, 129, 0.3);
+      --semantic-danger: #EF4444;
+      --semantic-info: #38BDF8;
+      --semantic-indigo: #818CF8;
+
+      --font-display: 'Prompt', 'Leelawadee UI', 'Tahoma', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-body: 'Sarabun', 'Leelawadee UI', 'Tahoma', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Inter', 'Consolas', 'Segoe UI Mono', SFMono-Regular, Menlo, Monaco, monospace;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--color-text-main);
+      font-family: var(--font-body);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 15% 15%, rgba(234, 179, 8, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.4) 0%, transparent 100%);
+    }
+
+    /* ==========================================================================
+       TOP PROGRESS BAR & HEADER HUD
+       ========================================================================== */
+    .top-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 0%;
+      background: linear-gradient(90deg, #CA8A04, #EAB308, #FDE047);
+      box-shadow: 0 0 12px var(--msu-gold-glow);
+      z-index: 1000;
+      transition: width var(--transition-normal);
+    }
+
+    .header-hud {
+      position: fixed;
+      top: 14px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 900;
+      pointer-events: none;
+    }
+
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .hud-logo-badge {
+      background: var(--msu-gold);
+      color: #0F172A;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 8px rgba(234, 179, 8, 0.3);
+    }
+
+    .hud-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .hud-pill {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-btn {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--color-text-muted);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      outline: none;
+    }
+
+    .hud-btn:hover {
+      background: rgba(31, 41, 55, 0.9);
+      color: var(--msu-gold);
+      border-color: var(--border-focus);
+      transform: translateY(-1px);
+    }
+
+    .hud-btn.active {
+      background: var(--msu-gold);
+      color: #0F172A;
+      border-color: var(--msu-gold);
+    }
+
+    /* ==========================================================================
+       SLIDE DECK CONTAINER
+       ========================================================================== */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: clamp(52px, 6.2vh, 68px) clamp(24px, 4vw, 56px) clamp(44px, 5.5vh, 62px);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.97) translateY(15px);
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Slide Header Area */
+    .slide-header {
+      margin-bottom: clamp(14px, 2.2vh, 22px);
+      flex-shrink: 0;
+    }
+
+    .slide-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--msu-gold);
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 2.3vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.25;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+
+    .slide-subtitle {
+      font-family: var(--font-body);
+      font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+      color: var(--color-text-muted);
+      margin-top: 3px;
+    }
+
+    /* Slide Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 2px 4px 10px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(234, 179, 8, 0.35) transparent;
+    }
+
+    .slide-content::-webkit-scrollbar {
+      width: 5px;
+    }
+    .slide-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .slide-content::-webkit-scrollbar-thumb {
+      background: rgba(234, 179, 8, 0.35);
+      border-radius: 9999px;
+    }
+    .slide-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(234, 179, 8, 0.7);
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      height: 100%;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      height: 100%;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      height: 100%;
+    }
+
+    .grid-sidebar {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      height: 100%;
+    }
+
+    .grid-reverse-sidebar {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 28px;
+      height: 100%;
+    }
+
+    /* Cards & Glassmorphism */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: rgba(234, 179, 8, 0.25);
+      background: var(--bg-card-hover);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-highlight {
+      border-color: var(--border-focus);
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .card-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .icon-gold {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--msu-gold);
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    .icon-blue {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--semantic-info);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .icon-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--semantic-success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .icon-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--semantic-danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .icon-purple {
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--semantic-indigo);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
+    /* List items in cards */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .feature-list li {
+      position: relative;
+      padding-left: 16px;
+      font-size: 0.92rem;
+      color: #E2E8F0;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .feature-list li .bullet-dot {
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--msu-gold);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #38BDF8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: inline;
+    }
+
+    /* Stat Callout Badge */
+    .stat-callout {
+      display: flex;
+      flex-direction: column;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .stat-val {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--msu-gold);
+      line-height: 1.1;
+    }
+
+    .stat-lbl {
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Screenshot Image Container with Zoomable Lightbox */
+    .screenshot-frame {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      cursor: zoom-in;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .screenshot-frame:hover {
+      border-color: var(--border-focus);
+      transform: scale(1.01);
+    }
+
+    .screenshot-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .screenshot-tag {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      pointer-events: none;
+      font-family: var(--font-mono);
+    }
+
+    /* Tag / Pill Labels */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .badge-gold {
+      background: rgba(234, 179, 8, 0.18);
+      color: var(--msu-gold-light);
+      border: 1px solid rgba(234, 179, 8, 0.35);
+    }
+
+    .badge-emerald {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-blue {
+      background: rgba(56, 189, 248, 0.18);
+      color: #BAE6FD;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    /* Fragments (Step-by-step element reveals) */
+    .fragment {
+      opacity: 0.25;
+      transform: translateY(6px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .fragment.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       BOTTOM CONTROLS HUD
+       ========================================================================== */
+    .bottom-hud {
+      position: fixed;
+      bottom: 16px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 900;
+      pointer-events: none;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .nav-btn {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--color-text-main);
+      padding: 8px 16px;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--msu-gold);
+      color: #0F172A;
+      border-color: var(--msu-gold);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--msu-gold);
+      pointer-events: auto;
+      letter-spacing: 0.05em;
+    }
+
+    .key-hint {
+      font-size: 0.78rem;
+      color: var(--color-text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+    }
+
+    .kbd {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.72rem;
+      color: #CBD5E1;
+    }
+
+    /* ==========================================================================
+       SLIDE 8: INTERACTIVE SCANNER SIMULATOR
+       ========================================================================== */
+    .scanner-sim-container {
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .camera-viewport {
+      background: #000000;
+      border-radius: var(--radius-lg);
+      border: 2px solid #1E293B;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Dark Camera Mask */
+    .camera-overlay-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 48%, rgba(0, 0, 0, 0.75) 85%);
+      z-index: 5;
+    }
+
+    /* Center Target Box */
+    .scanner-target-box {
+      width: 68%;
+      height: 82%;
+      position: relative;
+      border: 2px dashed rgba(234, 179, 8, 0.35);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 6;
+      transition: all 0.3s ease;
+    }
+
+    .scanner-target-box.locked {
+      border-color: rgba(16, 185, 129, 0.8);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Corner Fiducial Markers HUD */
+    .corner-bracket {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: var(--msu-gold);
+      border-style: solid;
+      transition: all 0.25s ease;
+    }
+
+    .corner-bracket.tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+    .corner-bracket.tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+    .corner-bracket.bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+    .corner-bracket.br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+    @keyframes markerPulse {
+      0%, 100% {
+        border-color: #10B981;
+        box-shadow: 0 0 14px #10B981, 0 0 26px rgba(16, 185, 129, 0.45);
+        opacity: 1;
+      }
+      50% {
+        border-color: #34D399;
+        box-shadow: 0 0 24px #34D399, 0 0 38px rgba(52, 211, 153, 0.7);
+        opacity: 0.75;
+      }
+    }
+
+    @keyframes sheetMarkerPulse {
+      0%, 100% {
+        background: #10B981;
+        box-shadow: 0 0 10px #10B981;
+      }
+      50% {
+        background: #34D399;
+        box-shadow: 0 0 18px #34D399;
+      }
+    }
+
+    .scanner-target-box.locked .corner-bracket {
+      border-color: var(--semantic-success);
+      transform: scale(1.18);
+      animation: markerPulse 0.55s ease-in-out infinite;
+    }
+
+    .scanner-target-box.locked .sheet-marker-box {
+      animation: sheetMarkerPulse 0.55s ease-in-out infinite;
+    }
+
+    /* Laser Scanning Line */
+    .laser-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #FACC15, #EAB308, #FACC15, transparent);
+      box-shadow: 0 0 14px #EAB308, 0 0 28px rgba(234, 179, 8, 0.5);
+      z-index: 8;
+      top: 10%;
+      animation: laserSweep 2.2s ease-in-out infinite alternate;
+    }
+
+    .laser-line.paused {
+      animation-play-state: paused;
+      background: linear-gradient(90deg, transparent, #10B981, #34D399, transparent);
+      box-shadow: 0 0 18px #10B981;
+    }
+
+    @keyframes laserSweep {
+      0% { top: 6%; opacity: 0.9; }
+      100% { top: 92%; opacity: 0.9; }
+    }
+
+    /* Simulated A4 Answer Sheet Graphic inside scanner */
+    .sim-sheet-card {
+      width: 92%;
+      height: 94%;
+      background: #FFFFFF;
+      border-radius: 4px;
+      padding: 8px 10px 6px 10px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+      color: #0F172A;
+      position: relative;
+      box-sizing: border-box;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .sheet-marker-box {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #000000;
+      z-index: 2;
+    }
+    .sheet-marker-box.tl { top: 5px; left: 5px; }
+    .sheet-marker-box.tr { top: 5px; right: 5px; }
+    .sheet-marker-box.bl { bottom: 5px; left: 5px; }
+    .sheet-marker-box.br { bottom: 5px; right: 5px; }
+
+    .sheet-header-mock {
+      border-bottom: 1.5px solid #0F172A;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sheet-title-text {
+      font-size: 0.58rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+      color: #0F172A;
+      letter-spacing: -0.01em;
+    }
+
+    /* Student ID & Key Header Block */
+    .sheet-meta-block {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1.5px dashed #CBD5E1;
+      gap: 10px;
+    }
+
+    .sheet-id-box {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sheet-id-title {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #334155;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+
+    .sheet-id-digits {
+      display: flex;
+      gap: 3.5px;
+      margin-top: 3px;
+    }
+
+    .id-digit-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .id-digit-val {
+      font-size: 0.58rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #0F172A;
+      width: 10px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .id-digit-bubble {
+      width: 8.5px;
+      height: 8.5px;
+      border-radius: 50%;
+      border: 1.2px solid #475569;
+      background: #FFFFFF;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .id-digit-bubble.filled {
+      background: #1E293B;
+      border-color: #0F172A;
+      box-shadow: inset 0 0 1px #000;
+    }
+
+    .scanner-target-box.locked .id-digit-bubble.filled {
+      background: #10B981;
+      border-color: #059669;
+      box-shadow: 0 0 3px rgba(16, 185, 129, 0.8);
+    }
+
+    .sheet-key-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .sheet-key-title {
+      font-size: 0.52rem;
+      font-weight: 700;
+      color: #475569;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+
+    .sheet-key-bubbles {
+      display: flex;
+      gap: 3px;
+      margin-top: 2px;
+    }
+
+    .key-bubble-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+
+    .key-bubble-label {
+      font-size: 0.48rem;
+      font-weight: 700;
+      color: #334155;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+
+    .key-bubble-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1.2px solid #475569;
+      background: #FFFFFF;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .key-bubble-dot.filled {
+      background: #1E293B;
+      border-color: #0F172A;
+      box-shadow: inset 0 0 1px #000;
+    }
+
+    .scanner-target-box.locked .key-bubble-dot.filled {
+      background: #10B981;
+      border-color: #059669;
+      box-shadow: 0 0 3px rgba(16, 185, 129, 0.8);
+    }
+
+    /* 5-Column 50-Question Answer Grid */
+    .sheet-answers-50-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      flex: 1;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+
+    .sheet-ans-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .sheet-col-header {
+      display: flex;
+      align-items: center;
+      padding-left: 14px;
+      gap: 3px;
+      margin-bottom: 4px;
+      border-bottom: 1.5px solid #CBD5E1;
+      padding-bottom: 2px;
+    }
+
+    .sheet-col-header span {
+      font-size: 0.52rem;
+      font-weight: 700;
+      color: #475569;
+      font-family: var(--font-mono);
+      width: 9px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .q-row-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .q-num-label {
+      font-size: 0.58rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #334155;
+      width: 12px;
+      text-align: right;
+      line-height: 1;
+    }
+
+    .bubble-dot-mock {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1.2px solid #475569;
+      background: #FFFFFF;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .bubble-dot-mock.filled {
+      background: #1E293B;
+      border-color: #0F172A;
+      box-shadow: inset 0 0 1px #000;
+    }
+
+    .scanner-target-box.locked .bubble-dot-mock.filled {
+      background: #10B981;
+      border-color: #059669;
+      box-shadow: 0 0 3px rgba(16, 185, 129, 0.7);
+    }
+
+    /* Scanner Result Overlay HUD */
+    .scanner-result-overlay {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--semantic-success);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.25);
+      transform: translateY(130%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .scanner-result-overlay.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .result-close-btn {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #94A3B8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 25;
+      line-height: 1;
+    }
+
+    .result-close-btn:hover {
+      background: rgba(239, 68, 68, 0.35);
+      border-color: #EF4444;
+      color: #FFFFFF;
+    }
+
+    /* Controls Panel for Simulator */
+    .sim-controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .btn-action-primary {
+      background: var(--msu-gold);
+      color: #0F172A;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px var(--msu-gold-glow);
+      transition: all var(--transition-fast);
+    }
+
+    .btn-action-primary:hover {
+      background: var(--msu-gold-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--msu-gold-glow);
+    }
+
+    .btn-action-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #E2E8F0;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-action-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       SLIDE OVERVIEW GRID MODAL
+       ========================================================================== */
+    .overview-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(9, 13, 22, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 50px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .overview-modal.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .overview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+
+    .overview-card {
+      background: #111827;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .overview-card:hover {
+      border-color: var(--msu-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(234, 179, 8, 0.2);
+    }
+
+    .overview-card.current {
+      border-color: var(--msu-gold);
+      background: #1E293B;
+      box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
+    }
+
+    .overview-card-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--msu-gold);
+    }
+
+    .overview-card-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      line-height: 1.35;
+    }
+
+    /* ==========================================================================
+       IMAGE LIGHTBOX
+       ========================================================================== */
+    .lightbox-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(20px);
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .lightbox-modal.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .lightbox-dialog {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 92vw;
+      max-height: 90vh;
+      background: #0F172A;
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .lightbox-bar {
+      width: 100%;
+      background: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lightbox-caption {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--msu-gold);
+    }
+
+    .lightbox-close-btn {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .lightbox-close-btn:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+    }
+
+    .lightbox-dialog img {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Help Modal */
+    .help-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: #111827;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      max-width: 520px;
+      width: 90%;
+      z-index: 2500;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    .help-modal.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Laser Pointer Simulation */
+    .laser-pointer {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #EF4444;
+      box-shadow: 0 0 15px #EF4444, 0 0 30px #EF4444;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+
+    .laser-pointer.active {
+      display: block;
+    }
+
+    /* Responsive Media Queries */
+    @media (max-height: 850px) {
+      .slide-header {
+        margin-bottom: 12px;
+      }
+      .slide-title {
+        font-size: 1.7rem;
+      }
+      .slide-subtitle {
+        font-size: 0.9rem;
+      }
+      .card {
+        padding: 16px;
+      }
+      .card-header-icon {
+        width: 36px;
+        height: 36px;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+      .card-title {
+        font-size: 1.02rem;
+      }
+      .card-desc {
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+      .feature-list {
+        gap: 6px;
+        margin-top: 8px;
+        font-size: 0.8rem;
+      }
+      .scanner-sim-container {
+        gap: 16px;
+      }
+      .sim-controls-panel {
+        padding: 16px;
+        gap: 12px;
+      }
+      .btn-action-primary {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+      }
+      .btn-action-secondary {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+      .screenshot-frame {
+        max-height: 200px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-hud {
+        top: 8px;
+        left: 12px;
+        right: 12px;
+      }
+      .hud-title {
+        display: none;
+      }
+      .key-hint {
+        display: none;
+      }
+      .grid-2, .grid-3, .grid-4, .grid-sidebar, .grid-reverse-sidebar {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .scanner-sim-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .camera-viewport {
+        min-height: 300px;
+      }
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+      .slide {
+        padding: 60px 16px 60px;
+      }
+    }
+
+    /* ==========================================================================
+       PRINT STYLES FOR Ctrl + P (PDF Handout Generation)
+       ========================================================================== */
+    @page {
+      size: landscape;
+      margin: 8mm;
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+      }
+      .ambient-glow, .top-progress-bar, .header-hud, .bottom-hud, .overview-modal, .lightbox-modal, .help-modal, .laser-pointer {
+        display: none !important;
+      }
+      .deck-container {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .slide {
+        position: relative !important;
+        width: 100% !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        padding: 20px 28px !important;
+        color: #0F172A !important;
+        background: #FFFFFF !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+      .slide-content {
+        overflow: visible !important;
+        height: auto !important;
+      }
+      .card {
+        background: #F8FAFC !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+      }
+      .slide-title, .card-title, h1, h2, h3, h4 {
+        color: #0F172A !important;
+      }
+      .slide-subtitle, .card-desc, .feature-list li {
+        color: #334155 !important;
+      }
+      .fragment {
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+      }
+      .faq-answer {
+        display: block !important;
+      }
+      .scanner-result-overlay {
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        margin-top: 12px !important;
+        background: #0F172A !important;
+        color: #FFFFFF !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow Background -->
+  <div class="ambient-glow"></div>
+
+  <!-- Top Progress Bar -->
+  <div class="top-progress-bar" id="progressBar"></div>
+
+  <!-- Digital Laser Pointer -->
+  <div class="laser-pointer" id="laserPointer"></div>
+
+  <!-- Top Header HUD -->
+  <header class="header-hud">
+    <div class="hud-brand">
+      <span class="hud-logo-badge">MSU</span>
+      <span class="hud-title">ระบบตรวจข้อสอบปรนัยอัตโนมัติและวิเคราะห์ข้อสอบเชิงสถิติ</span>
+    </div>
+    <div class="hud-actions">
+      <!-- Presentation Timer Pill -->
+      <div class="hud-pill" id="timerPill" title="คลิกเพื่อ เริ่ม/หยุด เวลาพรีเซนต์" style="cursor: pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span id="timerDisplay">00:00</span>
+      </div>
+
+      <!-- Laser Pointer Toggle Button -->
+      <button class="hud-btn" id="laserBtn" title="เปิด/ปิด Laser Pointer (กด L)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg>
+      </button>
+
+      <!-- Overview Grid Button -->
+      <button class="hud-btn" id="overviewBtn" title="ดูผังสไลด์ทั้งหมด (กด O หรือ Esc)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      </button>
+
+      <!-- Fullscreen Toggle Button -->
+      <button class="hud-btn" id="fullscreenBtn" title="เต็มจอ (กด F)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+      </button>
+
+      <!-- Keyboard Shortcuts Help -->
+      <button class="hud-btn" id="helpBtn" title="ปุ่มลัด (กด ?)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       SLIDE DECK (12 SLIDES)
+       ========================================================================== -->
+  <main class="deck-container" id="deckContainer">
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 1: COVER
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide active" id="slide-1" data-slide="1">
+      <div class="slide-content" style="justify-content: center; align-items: center; text-align: center;">
+        <div style="max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+          
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
+            <span class="badge-pill badge-gold">🎓 Senior Project Defense 2026</span>
+            <span class="badge-pill badge-blue">Mahasarakham University</span>
+          </div>
+
+          <h1 style="font-family: var(--font-display); font-size: 3.6rem; font-weight: 800; line-height: 1.15; color: #FFFFFF; letter-spacing: -0.02em;">
+            MSU <span style="color: var(--msu-gold);">Scoring</span>
+          </h1>
+
+          <p style="font-family: var(--font-display); font-size: 1.55rem; font-weight: 500; color: #E2E8F0; line-height: 1.4;">
+            ระบบตรวจข้อสอบปรนัยอัตโนมัติและวิเคราะห์ข้อสอบเชิงสถิติ
+          </p>
+
+          <p style="font-size: 1.05rem; color: var(--color-text-muted); font-family: var(--font-mono); max-width: 720px; line-height: 1.6;">
+            High-Performance Real-Time OMR Grading & Item Analysis System Powered by WebRTC & Client-Side Computer Vision
+          </p>
+
+          <div style="width: 80px; height: 3px; background: var(--msu-gold); border-radius: var(--radius-full); margin: 8px 0;"></div>
+
+          <!-- Presenter & Dept Info Cards -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 680px; margin-top: 10px;">
+            <div class="card" style="padding: 16px 20px; text-align: left; background: rgba(17, 24, 39, 0.6);">
+              <span style="font-size: 0.78rem; color: var(--msu-gold); font-weight: 600; text-transform: uppercase; font-family: var(--font-mono);">ผู้จัดทำโครงงาน</span>
+              <span style="font-size: 1.05rem; font-weight: 700; color: #FFFFFF; font-family: var(--font-display); margin-top: 2px;">นายสรอัฐ น้ำใส</span>
+              <span style="font-size: 0.85rem; color: var(--color-text-muted);">สำนักคอมพิวเตอร์ มหาวิทยาลัยมหาสารคาม</span>
+            </div>
+
+            <div class="card" style="padding: 16px 20px; text-align: left; background: rgba(17, 24, 39, 0.6);">
+              <span style="font-size: 0.78rem; color: var(--semantic-info); font-weight: 600; text-transform: uppercase; font-family: var(--font-mono);">ขอบเขตการนำเสนอ</span>
+              <span style="font-size: 1.05rem; font-weight: 700; color: #FFFFFF; font-family: var(--font-display); margin-top: 2px;">Senior Project Defense</span>
+              <span style="font-size: 0.85rem; color: var(--color-text-muted);">การสอบโครงงานวิจัยระดับปริญญาตรี</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 15px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--color-text-dim);">
+            <span>กดปุ่ม</span> <span class="kbd">Space</span> <span>หรือ</span> <span class="kbd">→</span> <span>เพื่อเริ่มการนำเสนอ</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 2: PROBLEM STATEMENT & MOTIVATION
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-2" data-slide="2">
+      <div class="slide-header">
+        <div class="slide-category">02 • Problem Statement & Motivation</div>
+        <h2 class="slide-title">ที่มาและความสำคัญของปัญหา</h2>
+        <p class="slide-subtitle">ข้อจำกัดและปัญหาที่พบบ่อยในการตรวจข้อสอบแบบปรนัยในระดับมหาวิทยาลัย</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          
+          <!-- Pain Point 1 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-red">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <h3 class="card-title">เครื่อง OMR ราคาสูง & บำรุงรักษายาก</h3>
+            <p class="card-desc">เครื่องอ่าน Optical Mark Reader แบบฮาร์ดแวร์เดิมมีราคาสูงถึง 100,000 - 300,000+ บาท</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> ต้องสั่งพิมพ์กระดาษคำตอบเฉพาะที่มีความหนาพิเศษและใช้หมึกดรอปเอาต์</li>
+              <li><span class="bullet-dot"></span> หัวอ่านเซนเซอร์สกปรกง่าย เสียค่าบำรุงรักษาต่อปีสูง</li>
+              <li><span class="bullet-dot"></span> มักรวมศูนย์อยู่ที่ส่วนกลาง อาจารย์แต่ละท่านเข้าถึงได้ยาก</li>
+            </ul>
+          </div>
+
+          <!-- Pain Point 2 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-gold">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <h3 class="card-title">การตรวจมือช้า & เสี่ยง Human Error</h3>
+            <p class="card-desc">อาจารย์ส่วนใหญ่ตรวจข้อสอบด้วยมือ (ทาบแผ่นเจาะรู) ซึ่งมีข้อจำกัดร้ายแรง</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> ใช้เวลาเฉลี่ย 1-2 นาที/แผ่น นิสิต 200 คนต้องใช้เวลากว่า 4-6 ชั่วโมง</li>
+              <li><span class="bullet-dot"></span> เกิดความเมื่อยล้า สายตาพร่ามัว ทำให้รวมคะแนนผิดพลาด</li>
+              <li><span class="bullet-dot"></span> เมื่อนิสิตขอตรวจทาน ต้องเสียเวลาค้นหากระดาษคำตอบทีละแผ่น</li>
+            </ul>
+          </div>
+
+          <!-- Pain Point 3 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <h3 class="card-title">ความยุ่งยากในการวิเคราะห์ข้อสอบ</h3>
+            <p class="card-desc">การวิเคราะห์คุณภาพข้อสอบ (Item Analysis) มักไม่เกิดขึ้นจริงในทางปฏิบัติ</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> การคำนวณค่า $p$ (ความยาก), $r$ (อำนาจจำแนก), KR-20 ต้องคีย์ข้อมูลเข้าระบบสถิติเอง</li>
+              <li><span class="bullet-dot"></span> ขาดการวิเคราะห์ตัวลวง (Distractor Analysis) เพื่อนำไปปรับปรุงข้อสอบ</li>
+              <li><span class="bullet-dot"></span> เสียโอกาสในการพัฒนาคลังข้อสอบมาตรฐานของมหาวิทยาลัย</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 3: OBJECTIVES & SCOPE
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-3" data-slide="3">
+      <div class="slide-header">
+        <div class="slide-category">03 • Project Objectives & Scope</div>
+        <h2 class="slide-title">วัตถุประสงค์และขอบเขตโครงงาน</h2>
+        <p class="slide-subtitle">เป้าหมายในการแก้ปัญหาและความสามารถของระบบ MSU Scoring</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-sidebar">
+          
+          <!-- Left Column: Core Objectives -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <span class="badge-pill badge-gold">วัตถุประสงค์ที่ 1</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">ตรวจข้อสอบ Real-Time ผ่าน Web Browser</h4>
+              </div>
+              <p class="card-desc">พัฒนาเว็บแอปพลิเคชันที่สามารถตรวจจับกระดาษคำตอบผ่านกล้องสมาร์ตโฟนหรือเว็บแคมได้ทันทีโดยไม่ต้องติดตั้งแอปพลิเคชันเพิ่มเติม</p>
+            </div>
+
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <span class="badge-pill badge-emerald">วัตถุประสงค์ที่ 2</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">ประหยัดต้นทุนด้วยกระดาษ A4 มาตรฐาน 100%</h4>
+              </div>
+              <p class="card-desc">สร้างเทมเพลตกระดาษคำตอบ A4 มาตรฐานที่สามารถสั่งพิมพ์จากเครื่องพิมพ์เลเซอร์หรืออิงก์เจ็ตทั่วไปได้ ไม่ต้องใช้กระดาษชนิดพิเศษ</p>
+            </div>
+
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <span class="badge-pill badge-blue">วัตถุประสงค์ที่ 3</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">วิเคราะห์คุณภาพข้อสอบเชิงสถิติทันที</h4>
+              </div>
+              <p class="card-desc">คำนวณค่าสถิติ Mean, S.D., ความยากง่าย ($p$), อำนาจจำแนก ($r$), และความเชื่อมั่น KR-20 พร้อมส่งออกรายงาน CSV/Excel อัตโนมัติ</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Scope Breakdown Card -->
+          <div class="card fragment" style="background: rgba(15, 23, 42, 0.85); border-color: rgba(234, 179, 8, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 class="card-title" style="color: var(--msu-gold);">ขอบเขตของระบบ (System Scope)</h3>
+              <span class="badge-pill badge-gold">Version 2.0</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div class="stat-callout">
+                <span class="stat-val">50 / 100 / 150</span>
+                <span class="stat-lbl">ขนาดข้อสอบที่รองรับ (ตัวเลือก 5 ช้อยส์ ก-จ / A-E)</span>
+              </div>
+
+              <div class="stat-callout">
+                <span class="stat-val">Set A - D (4 ชุด)</span>
+                <span class="stat-lbl">รองรับข้อสอบหลายชุดคู่ขนาน ตรวจพร้อมกันได้ในรอบเดียว</span>
+              </div>
+
+              <div class="stat-callout">
+                <span class="stat-val">11 หลัก (11-Digit ID)</span>
+                <span class="stat-lbl">รองรับรหัสนิสิตมหาวิทยาลัยมหาสารคามสมบูรณ์แบบ</span>
+              </div>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                <span class="badge-pill badge-blue">Chrome 90+</span>
+                <span class="badge-pill badge-blue">Edge / Safari</span>
+                <span class="badge-pill badge-emerald">iOS & Android</span>
+                <span class="badge-pill badge-gold">WebRTC HTTPS</span>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <button class="btn-action-secondary" style="padding: 6px 10px; font-size: 0.8rem; flex: 1;" onclick="openLightbox('manual_assets/03_dashboard.png', 'หน้าจอแดชบอร์ดจัดการข้อสอบ (Exam Dashboard)')">🔍 ดูหน้าแดชบอร์ด</button>
+                <button class="btn-action-secondary" style="padding: 6px 10px; font-size: 0.8rem; flex: 1;" onclick="openLightbox('manual_assets/04_create_exam_modal.png', 'การสร้างข้อสอบ 50/100/150 ข้อ และเลือกชุด A-D')">⚙️ ดูการสร้างข้อสอบ</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 4: SYSTEM ARCHITECTURE
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-4" data-slide="4">
+      <div class="slide-header">
+        <div class="slide-category">04 • Architecture & Tech Stack</div>
+        <h2 class="slide-title">สถาปัตยกรรมระบบ (System Architecture)</h2>
+        <p class="slide-subtitle">โครงสร้าง 3-Tier สถาปัตยกรรมแบบกระจายภาระประมวลผล (Edge Computing with WASM)</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          
+          <!-- Client Tier -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-pill badge-blue">Client Tier</span>
+              <span style="font-size: 0.75rem; color: var(--color-text-dim); font-family: var(--font-mono);">Browser / Edge</span>
+            </div>
+            <h3 class="card-title">Client-Side OMR Engine</h3>
+            <p class="card-desc">ประมวลผลวิดีโอสตรีมสดบนเครื่องผู้ใช้ ลดภาระเซิร์ฟเวอร์เป็นศูนย์ (Zero Server Processing)</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> <strong>WebRTC Video API:</strong> ดึงภาพสดจากกล้อง 60 FPS ความละเอียด 720p/1080p</li>
+              <li><span class="bullet-dot"></span> <strong>OpenCV.js (WASM):</strong> อัลกอริทึม Computer Vision Compiled เป็น WebAssembly ประมวลผลรวดเร็วระดับเนทีฟ</li>
+              <li><span class="bullet-dot"></span> <strong>Tailwind CSS 3.4:</strong> Responsive HUD Interface สไตล์ ZipGrade</li>
+              <li><span class="bullet-dot"></span> <strong>Chart.js 4.x:</strong> แผนภูมิฮิสโตแกรมและสถิติแบบอินเตอร์แอคทีฟ</li>
+            </ul>
+          </div>
+
+          <!-- Application Tier -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-gold">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-pill badge-gold">Application Tier</span>
+              <span style="font-size: 0.75rem; color: var(--color-text-dim); font-family: var(--font-mono);">Backend API</span>
+            </div>
+            <h3 class="card-title">PHP 8.2 MVC & RESTful API</h3>
+            <p class="card-desc">จัดการตรรกะการตรวจข้อสอบขั้นสูง การยืนยันสิทธิ์ และการสร้างไฟล์เอกสาร</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> <strong>Grading Engine:</strong> ตรวจคำตอบแบบ Multi-Set, OR/AND Logic, Penalty Score</li>
+              <li><span class="bullet-dot"></span> <strong>Auto-Regrade Engine:</strong> ปรับปรุงคะแนนใหม่อัตโนมัติเมื่อแก้เฉลย</li>
+              <li><span class="bullet-dot"></span> <strong>tFPDF Unicode Engine:</strong> สร้างกระดาษคำตอบ A4 PDF พร้อมภาษาไทยสมบูรณ์</li>
+              <li><span class="bullet-dot"></span> <strong>Google OAuth 2.0:</strong> ระบบยืนยันตัวตนผ่าน Google Workspace มมส.</li>
+            </ul>
+          </div>
+
+          <!-- Data Tier -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-emerald">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-pill badge-emerald">Data Tier</span>
+              <span style="font-size: 0.75rem; color: var(--color-text-dim); font-family: var(--font-mono);">Storage & Security</span>
+            </div>
+            <h3 class="card-title">MySQL 8.0 & File Storage</h3>
+            <p class="card-desc">จัดเก็บข้อมูลคะแนนและภาพถ่ายกระดาษคำตอบอย่างปลอดภัยและมีประสิทธิภาพ</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> <strong>Normalized Schema:</strong> ตาราง exams, exam_shares, students, student_scores</li>
+              <li><span class="bullet-dot"></span> <strong>Raw Answers JSON:</strong> จัดเก็บข้อมูลการฝนดิบ เพื่อใช้ในการ Regrade และ Item Analysis</li>
+              <li><span class="bullet-dot"></span> <strong>Evidence Archiving:</strong> บันทึกภาพถ่ายกระดาษคำตอบที่สแกนเป็นหลักฐานอ้างอิง</li>
+              <li><span class="bullet-dot"></span> <strong>Audit Logging:</strong> บันทึกประวัติการกระทำเพื่อความโปร่งใส ป้องกันการทุจริต</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 5: CORE SYSTEM WORKFLOW
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-5" data-slide="5">
+      <div class="slide-header">
+        <div class="slide-category">05 • System Workflow</div>
+        <h2 class="slide-title">กระบวนการทำงานหลัก 5 ขั้นตอน (Workflow)</h2>
+        <p class="slide-subtitle">ขั้นตอนการใช้งานระบบตั้งแต่ต้นจนจบ (End-to-End Workflow for Instructors)</p>
+      </div>
+      <div class="slide-content">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; height: 100%;">
+          
+          <!-- Step 1 -->
+          <div class="card fragment" style="padding: 18px 16px; cursor: pointer;" onclick="openLightbox('manual_assets/05_key_editor.png')" title="คลิกเพื่อดูหน้าจอ Key Editor จริง">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span class="badge-pill badge-gold">Step 1</span>
+              <span style="font-size: 1.2rem;">📝</span>
+            </div>
+            <h4 style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">สร้างข้อสอบ & เฉลย</h4>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;">สร้างชุดข้อสอบ กำหนดจำนวนข้อ (50/100/150) และบันทึกเฉลยชุด A-D ผ่านหน้า Key Editor หรือสแกนจากกระดาษเฉลย</p>
+            <div style="margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.78rem; color: var(--msu-gold); font-family: var(--font-mono);">Key Editor</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">🔍 ดูหน้าจอ</span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="card fragment" style="padding: 18px 16px; cursor: pointer;" onclick="openLightbox('manual_assets/06_answer_sheet.png')" title="คลิกเพื่อดูตัวอย่างกระดาษคำตอบ A4 จริง">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span class="badge-pill badge-blue">Step 2</span>
+              <span style="font-size: 1.2rem;">🖨️</span>
+            </div>
+            <h4 style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">พิมพ์กระดาษ A4</h4>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;">ดาวน์โหลดไฟล์ PDF กระดาษคำตอบมาตรฐาน พร้อมพิมพ์ด้วยเครื่องปริ้นเลเซอร์/อิงก์เจ็ตทั่วไป ให้นิสิตทำข้อสอบ</p>
+            <div style="margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.78rem; color: var(--semantic-info); font-family: var(--font-mono);">Standard A4</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">🔍 ดูหน้าจอ</span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="card fragment" style="padding: 18px 16px; cursor: pointer;" onclick="openLightbox('manual_assets/07_scanner.png')" title="คลิกเพื่อดูหน้าจอ OMR Scanner จริง">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span class="badge-pill badge-gold">Step 3</span>
+              <span style="font-size: 1.2rem;">📷</span>
+            </div>
+            <h4 style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">สแกนผ่านกล้องสด</h4>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;">เปิดหน้าระบบสแกนบนมือถือหรือเว็บแคม เล็งให้เห็นมาร์คเกอร์ 4 มุม ระบบตรวจจับภาพใน &lt; 1 วินาที/แผ่น</p>
+            <div style="margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.78rem; color: var(--msu-gold); font-family: var(--font-mono);">Camera HUD</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">🔍 ดูหน้าจอ</span>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="card fragment" style="padding: 18px 16px; cursor: pointer;" onclick="openLightbox('manual_assets/08c_student_list.png')" title="คลิกเพื่อดูตารางผลคะแนนจริง">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span class="badge-pill badge-emerald">Step 4</span>
+              <span style="font-size: 1.2rem;">⚡</span>
+            </div>
+            <h4 style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">ตรวจ & บันทึกผล</h4>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;">คำนวณคะแนนตามเฉลยของชุดนั้น บันทึกคะแนน รหัสนิสิต คำตอบดิบ และภาพถ่ายกระดาษคำตอบลงฐานข้อมูลทันที</p>
+            <div style="margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.78rem; color: var(--semantic-success); font-family: var(--font-mono);">Instant Grade</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">🔍 ดูหน้าจอ</span>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="card fragment" style="padding: 18px 16px; cursor: pointer;" onclick="openLightbox('manual_assets/08b_item_analysis.png')" title="คลิกเพื่อดูหน้ารายงาน Item Analysis จริง">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span class="badge-pill badge-blue">Step 5</span>
+              <span style="font-size: 1.2rem;">📊</span>
+            </div>
+            <h4 style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">วิเคราะห์ & Export</h4>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;">ดูรายงานสถิติข้อสอบ KR-20, p, r และตัวลวงรายข้อ และส่งออกผลคะแนนเป็น Excel / CSV พร้อมนำไปตัดเกรด</p>
+            <div style="margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.78rem; color: var(--semantic-info); font-family: var(--font-mono);">Item Analysis</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">🔍 ดูหน้าจอ</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 6: COMPUTER VISION & OMR PIPELINE
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-6" data-slide="6">
+      <div class="slide-header">
+        <div class="slide-category">06 • Computer Vision Deep-Dive</div>
+        <h2 class="slide-title">อัลกอริทึมการประมวลผลภาพ (OMR Pipeline)</h2>
+        <p class="slide-subtitle">4 ขั้นตอนการแปลงภาพถ่ายจากกล้องเป็นข้อมูลดิจิทัลด้วย OpenCV.js</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-4">
+          
+          <!-- Stage 1 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-gold">
+              <span style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem;">01</span>
+            </div>
+            <h3 class="card-title">Fiducial Markers Detection</h3>
+            <p class="card-desc">ตรวจจับจุดมาร์คเกอร์สี่เหลี่ยมสีดำ 4 มุมของกระดาษ</p>
+            <ul class="feature-list" style="margin-top: 12px;">
+              <li><span class="bullet-dot"></span> ค้นหา Contour ด้วย <code>cv.findContours</code></li>
+              <li><span class="bullet-dot"></span> ตรวจจับ 4 เหลี่ยมด้วย <code>approxPolyDP</code> (Aspect Ratio 0.4 - 2.5)</li>
+              <li><span class="bullet-dot"></span> คำนวณจุดกึ่งกลางมวล (Moments) 4 มุม (TL, TR, BL, BR)</li>
+            </ul>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-blue">
+              <span style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem;">02</span>
+            </div>
+            <h3 class="card-title">Perspective Transform</h3>
+            <p class="card-desc">ดัดและปรับภาพที่เอียงให้เป็นระนาบสี่เหลี่ยมสมบูรณ์</p>
+            <ul class="feature-list" style="margin-top: 12px;">
+              <li><span class="bullet-dot"></span> คำนวณเมทริกซ์ 3x3 ด้วย <code>cv.getPerspectiveTransform</code></li>
+              <li><span class="bullet-dot"></span> ดัดภาพระนาบตรงด้วย <code>cv.warpPerspective</code> คืนขนาด A4</li>
+              <li><span class="bullet-dot"></span> ชดเชยความเอียงจากการถือกล้องสมาร์ตโฟน</li>
+            </ul>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-emerald">
+              <span style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem;">03</span>
+            </div>
+            <h3 class="card-title">Adaptive Thresholding</h3>
+            <p class="card-desc">แปลงภาพเป็นไบนารีขาว-ดำและกำจัดเงาตกกระทบ</p>
+            <ul class="feature-list" style="margin-top: 12px;">
+              <li><span class="bullet-dot"></span> แปลงภาพเป็น Grayscale ด้วย <code>cv.cvtColor</code></li>
+              <li><span class="bullet-dot"></span> ตัดเงาด้วย <code>cv.adaptiveThreshold</code> (Gaussian / Mean)</li>
+              <li><span class="bullet-dot"></span> คำนวณเกณฑ์แยกบล็อกย่อย ชดเชยสภาพแสงไม่สม่ำเสมอ</li>
+            </ul>
+          </div>
+
+          <!-- Stage 4 -->
+          <div class="card fragment">
+            <div class="card-header-icon icon-purple">
+              <span style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem;">04</span>
+            </div>
+            <h3 class="card-title">Grid Mapping & Fill Density</h3>
+            <p class="card-desc">ตรวจจับตำแหน่งวงกลมและคำนวณความหนาแน่นการฝน</p>
+            <ul class="feature-list" style="margin-top: 12px;">
+              <li><span class="bullet-dot"></span> แมปตำแหน่งวงกลมคำตอบและรหัสนิสิตตามพิกัดสัมพัทธ์ (Relative Grid)</li>
+              <li><span class="bullet-dot"></span> คำนวณอัตราส่วนพิกเซลสีดำ <strong>Fill Fraction &gt; 35%</strong></li>
+              <li><span class="bullet-dot"></span> ระบุตัวเลข 11 หลัก และคำตอบ ก-จ ได้อย่างแม่นยำแม้ฝนด้วยดินสอ 2B จาง</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 7: ADVANCED GRADING LOGIC & AUTO-REGRADE
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-7" data-slide="7">
+      <div class="slide-header">
+        <div class="slide-category">07 • Grading Algorithms & Innovation</div>
+        <h2 class="slide-title">ตรรกะการให้คะแนนขั้นสูง & ระบบ Auto-Regrade</h2>
+        <p class="slide-subtitle">รองรับกติกาการสอบทุกรูปแบบ พร้อมนวัตกรรมตรวจคะแนนใหม่ทันทีโดยไม่ต้องสแกนซ้ำ</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          
+          <!-- Left: Advanced Key Logic -->
+          <div class="card fragment">
+            <h3 class="card-title" style="display: flex; align-items: center; gap: 10px;">
+              <span class="badge-pill badge-gold">Logic Rules</span>
+              <span>ตรรกะการตรวจคำตอบขั้นสูง</span>
+            </h3>
+            <p class="card-desc">ตอบสนองการสอบวัดผลหลากหลายสาขาวิชา</p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="font-family: var(--font-display); font-weight: 700; color: var(--msu-gold); font-size: 0.95rem;">• Multi-Set Parallel (ชุด A, B, C, D)</div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">ระบบตรวจจับวงกลมระบุชุดข้อสอบบนกระดาษ แล้วนำไปจับคู่เฉลยของชุดนั้นๆ โดยอัตโนมัติ</div>
+              </div>
+
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="font-family: var(--font-display); font-weight: 700; color: var(--semantic-info); font-size: 0.95rem;">• ตรรกะ OR Logic (ตอบถูกตัวเลือกใดตัวเลือกหนึ่ง)</div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">กรณีข้อสอบมีคำตอบถูกมากกว่า 1 ข้อ เช่น ตอบ ก หรือ ค ก็ได้คะแนนเต็ม</div>
+              </div>
+
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="font-family: var(--font-display); font-weight: 700; color: var(--semantic-indigo); font-size: 0.95rem;">• ตรรกะ AND Logic (ต้องตอบครบทุกตัวเลือก)</div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">สำหรับข้อสอบที่ต้องเลือกหลายคำตอบพร้อมกัน จึงจะได้คะแนนในข้อนั้น</div>
+              </div>
+
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="font-family: var(--font-display); font-weight: 700; color: var(--semantic-danger); font-size: 0.95rem;">• Penalty Score & Free Point (หักคะแนน / ยกประโยชน์)</div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">รองรับการกำหนดน้ำหนักคะแนนรายข้อ, หักคะแนนกรณีตอบผิดเพื่อป้องกันการเดา, และการให้ฟรี</div>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <button class="btn-action-secondary" style="padding: 6px 12px; font-size: 0.8rem; flex: 1;" onclick="openLightbox('manual_assets/05_key_editor.png')">🔍 ดูหน้า Key Editor</button>
+                <button class="btn-action-secondary" style="padding: 6px 12px; font-size: 0.8rem; flex: 1;" onclick="openLightbox('manual_assets/05b_key_advanced_settings.png')">⚙️ ดูการตั้งค่า OR/AND</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Auto-Regrade Killer Feature -->
+          <div class="card card-highlight fragment">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="badge-pill badge-emerald">Killer Feature</span>
+              <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--semantic-success);">Speed: &lt; 0.05s</span>
+            </div>
+            <h3 class="card-title" style="color: var(--msu-gold);">ระบบ Auto-Regrade (ตรวจคะแนนใหม่อัตโนมัติ)</h3>
+            <p class="card-desc">สถาปัตยกรรมจัดเก็บ <strong>Raw Answers JSON</strong> ซึ่งแยกชั้นระหว่างคำตอบดิบกับการคำนวณคะแนน</p>
+
+            <div style="background: #0B1120; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px; margin: 14px 0; font-family: var(--font-mono); font-size: 0.82rem; color: #94A3B8;">
+              <div style="color: var(--msu-gold); font-weight: 600; margin-bottom: 6px;">// ตัวอย่างการเก็บ Raw Answers ใน student_scores</div>
+              <div>{</div>
+              <div style="padding-left: 14px;">"1": ["A"], "2": ["B", "C"], "3": ["D"],</div>
+              <div style="padding-left: 14px;">"4": ["E"], "5": [] <span style="color: #64748B;">// เว้นว่างไม่ตอบ</span></div>
+              <div>}</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.95rem; color: #E2E8F0;">
+                <span style="color: var(--semantic-success); font-weight: 800;">✓</span>
+                <span><strong>แก้เฉลยทีหลังได้ตลอดเวลา:</strong> เมื่ออาจารย์แก้ไขเฉลย หรือสั่งยกประโยชน์ ระบบจะคำนวณคะแนนใหม่ให้นิสิตทุกคนทันที</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.95rem; color: #E2E8F0;">
+                <span style="color: var(--semantic-success); font-weight: 800;">✓</span>
+                <span><strong>ไม่ต้องนำกระดาษมาสแกนใหม่:</strong> ไม่รบกวนเวลาอาจารย์และนิสิต ป้องกันกระดาษคำตอบสูญหายหรือเสียหาย</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.95rem; color: #E2E8F0;">
+                <span style="color: var(--semantic-success); font-weight: 800;">✓</span>
+                <span><strong>ทำงานเสร็จในพริบตา:</strong> ประมวลผลนิสิต 500 คนเสร็จสิ้นภายในเสี้ยววินาที</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 14px; display: flex;">
+              <button class="btn-action-secondary" style="padding: 6px 12px; font-size: 0.8rem; border-color: rgba(16, 185, 129, 0.4); width: 100%;" onclick="openLightbox('manual_assets/scanned_sheet_full.jpg', 'ภาพถ่ายกระดาษคำตอบฉบับเต็มพร้อมผลการตรวจจับ OMR และรหัสนิสิต (Full A4 Sheet)')">📄 คลิกดูตัวอย่างภาพถ่ายกระดาษคำตอบฉบับเต็มที่บันทึกไว้ในระบบ (Full A4)</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 8: INTERACTIVE OMR SCANNER SIMULATOR (LIVE DEMO)
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-8" data-slide="8">
+      <div class="slide-header">
+        <div class="slide-category">08 • Live Interactive Demo</div>
+        <h2 class="slide-title">จำลองการทำงานระบบสแกนผ่านกล้อง (Scanner Simulator)</h2>
+        <p class="slide-subtitle">ทดสอบการตรวจจับ Fiducial Markers 4 มุม ระบบเลเซอร์ และเสียง Beep จาก Web Audio API</p>
+      </div>
+      <div class="slide-content">
+        <div class="scanner-sim-container">
+          
+          <!-- Camera Viewport Simulation -->
+          <div class="camera-viewport" id="cameraViewport">
+            <!-- Vignette & Camera Mask -->
+            <div class="camera-overlay-mask"></div>
+
+            <!-- Target Box with Corner Fiducial Markers -->
+            <div class="scanner-target-box" id="scannerTargetBox">
+              <!-- 4 Corner Brackets -->
+              <div class="corner-bracket tl"></div>
+              <div class="corner-bracket tr"></div>
+              <div class="corner-bracket bl"></div>
+              <div class="corner-bracket br"></div>
+
+              <!-- Animated Laser Scanning Line -->
+              <div class="laser-line" id="scannerLaserLine"></div>
+
+              <!-- Simulated A4 Answer Sheet Inside Camera -->
+              <div class="sim-sheet-card">
+                <!-- 4 Black Square Fiducials -->
+                <div class="sheet-marker-box tl"></div>
+                <div class="sheet-marker-box tr"></div>
+                <div class="sheet-marker-box bl"></div>
+                <div class="sheet-marker-box br"></div>
+
+                <!-- Sheet Header -->
+                <div class="sheet-header-mock">
+                  <span class="sheet-title-text">MAHASARAKHAM UNIVERSITY • ANSWER SHEET (50 ข้อ)</span>
+                  <span class="badge-pill badge-gold" id="simSetBadge" style="font-size: 0.62rem; padding: 1px 6px;">SET A</span>
+                </div>
+
+                <!-- Meta Header: Student ID Bubbles + Key Set Bubbles -->
+                <div class="sheet-meta-block">
+                  <div class="sheet-id-box">
+                    <span class="sheet-id-title">STUDENT ID (11 หลัก): <span id="simStudentIdText" style="color: #0F172A; font-weight: 800;">66011212345</span></span>
+                    <div class="sheet-id-digits" id="simIdDigitsContainer">
+                      <!-- Dynamically populated via renderSimAnswerSheet -->
+                    </div>
+                  </div>
+
+                  <div class="sheet-key-box">
+                    <span class="sheet-key-title">EXAM SET</span>
+                    <div class="sheet-key-bubbles" id="simKeySetContainer">
+                      <div class="key-bubble-wrap"><span class="key-bubble-label">A</span><div class="key-bubble-dot filled" data-key="A"></div></div>
+                      <div class="key-bubble-wrap"><span class="key-bubble-label">B</span><div class="key-bubble-dot" data-key="B"></div></div>
+                      <div class="key-bubble-wrap"><span class="key-bubble-label">C</span><div class="key-bubble-dot" data-key="C"></div></div>
+                      <div class="key-bubble-wrap"><span class="key-bubble-label">D</span><div class="key-bubble-dot" data-key="D"></div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Complete 50-Question Answer Grid (5 Columns of 10) -->
+                <div class="sheet-answers-50-grid" id="simAnswersGrid">
+                  <!-- Dynamically populated via renderSimAnswerSheet -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Instant Score Result Overlay HUD with Close Button -->
+            <div class="scanner-result-overlay" id="scannerResultOverlay">
+              <button class="result-close-btn" id="btnDismissOverlay" title="ปิดการ์ดผลคะแนน (Close)">✕</button>
+              <div style="display: flex; align-items: center; gap: 12px; padding-right: 18px;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); border: 2px solid var(--semantic-success); display: flex; align-items: center; justify-content: center; color: var(--semantic-success); font-size: 1.2rem; flex-shrink: 0;">
+                  ✓
+                </div>
+                <div>
+                  <div style="font-size: 0.74rem; color: #6EE7B7; font-family: var(--font-mono); font-weight: 600;">ตรวจจับสำเร็จ • OpenCV Warp Complete</div>
+                  <div style="font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: #FFFFFF; line-height: 1.2;" id="simStudentName">นายชนาธิป ภาคภูมิ</div>
+                  <div style="font-size: 0.78rem; color: var(--color-text-muted); font-family: var(--font-mono); margin-top: 2px;">รหัสนิสิต: <span id="simResultId" style="color: var(--msu-gold);">66011212345</span> | ชุดข้อสอบ: <span id="simResultSet">ชุด A</span></div>
+                </div>
+              </div>
+
+              <div style="text-align: right; flex-shrink: 0;">
+                <div style="font-size: 0.7rem; color: var(--color-text-muted); text-transform: uppercase; font-family: var(--font-mono);">คะแนนที่ได้</div>
+                <div style="font-family: var(--font-mono); font-size: 1.7rem; font-weight: 800; color: var(--msu-gold); line-height: 1.1;" id="simScoreCounter">
+                  0 / 50
+                </div>
+                <div style="font-size: 0.74rem; color: #6EE7B7; font-family: var(--font-mono);" id="simPercentCounter">0.0%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulator Control Panel -->
+          <div class="sim-controls-panel">
+            <div>
+              <span class="badge-pill badge-gold">Interactive Control</span>
+              <h3 class="card-title" style="margin-top: 8px;">แผงทดสอบการสแกน OMR</h3>
+              <p class="card-desc">คลิกปุ่มด้านล่างเพื่อจำลองกระบวนการตรวจจับภาพผ่านกล้องแบบเรียลไทม์</p>
+            </div>
+
+            <button class="btn-action-primary" id="btnSimulateScan">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              <span>📸 กดเพื่อจำลองการสแกน (Scan)</span>
+            </button>
+
+            <button class="btn-action-secondary" id="btnSwitchStudent">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+              <span>สลับกระดาษคำตอบแผ่นถัดไป</span>
+            </button>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+              <span style="font-size: 0.9rem; color: #E2E8F0;">เปิดเสียง Beep สังเคราะห์</span>
+              <input type="checkbox" id="chkAudioEnable" checked style="width: 18px; height: 18px; accent-color: var(--msu-gold); cursor: pointer;">
+            </div>
+
+            <button class="btn-action-secondary" style="font-size: 0.85rem; padding: 8px 12px;" onclick="openLightbox('manual_assets/scanned_sheet_full.jpg', 'ภาพถ่ายกระดาษคำตอบฉบับเต็มพร้อมผลการตรวจจับ OMR และรหัสนิสิต (Full A4 Sheet)')">
+              <span>📷 คลิกดูภาพถ่ายกระดาษคำตอบฉบับเต็มจริง (Full A4)</span>
+            </button>
+            <button class="btn-action-secondary" style="font-size: 0.85rem; padding: 8px 12px; margin-top: -6px;" onclick="openLightbox('manual_assets/07_scanner.png', 'ภาพหน้าจอระบบสแกนจริง OMR Scanner HUD')">
+              📷 ดูภาพหน้าจอจริงของ OMR Scanner HUD
+            </button>
+
+            <div style="font-size: 0.82rem; color: var(--color-text-dim); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 12px;">
+              💡 <strong>ความแม่นยำทางเทคนิค:</strong> สัญญาณเสียง Beep สังเคราะห์ด้วย Web Audio API ความถี่ 880Hz (Sine wave 0.3s) ตรงตามโค้ดจริงใน <code>scanner.js</code> ของระบบ
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 9: RESULTS & ITEM ANALYSIS
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-9" data-slide="9">
+      <div class="slide-header">
+        <div class="slide-category">09 • Statistical Engine & Analytics</div>
+        <h2 class="slide-title">การวิเคราะห์ผลคะแนนและคุณภาพข้อสอบ (Item Analysis)</h2>
+        <p class="slide-subtitle">คำนวณค่าสถิติเชิงลึกอัตโนมัติ ช่วยพัฒนาคุณภาพข้อสอบให้ได้มาตรฐานวิชาการ</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-sidebar">
+          
+          <!-- Left: 4 Statistical Dimensions -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            
+            <div class="card fragment" style="padding: 16px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-gold">Dimension 1</span>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-dim);">Descriptive Stats</span>
+              </div>
+              <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF; margin-top: 4px;">สถิติภาพรวม & แผนภูมิการกระจาย (Histogram)</h4>
+              <p class="card-desc">คำนวณคะแนนเฉลี่ย (X̄ - Mean), ส่วนเบี่ยงเบนมาตรฐาน (S.D.), คะแนนสูงสุด/ต่ำสุด และพลอตกราฟแท่งการกระจายตัวของคะแนน (Score Histogram) อัตโนมัติ</p>
+            </div>
+
+            <div class="card fragment" style="padding: 16px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-blue">Dimension 2</span>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-dim);">p = R / N</span>
+              </div>
+              <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF; margin-top: 4px;">ค่าความยากง่าย (p - Difficulty Index)</h4>
+              <p class="card-desc">สัดส่วนผู้ตอบถูกรายข้อ เกณฑ์มาตรฐาน 0.20 - 0.80 พร้อมป้ายเตือนอัตโนมัติ: <strong>ง่ายเกินไป (p > 0.80)</strong> หรือ <strong>ยากเกินไป (p < 0.20)</strong></p>
+            </div>
+
+            <div class="card fragment" style="padding: 16px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-emerald">Dimension 3</span>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-dim);">r = (R_H - R_L) / n</span>
+              </div>
+              <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF; margin-top: 4px;">ค่าอำนาจจำแนก (r - Discrimination Index)</h4>
+              <p class="card-desc">วัดความสามารถของข้อสอบในการแยกแยะนิสิตกลุ่มเก่ง (Upper 27%) และกลุ่มอ่อน (Lower 27%) ข้อสอบที่มีคุณภาพดีต้องมีค่า r ≥ 0.20</p>
+            </div>
+
+            <div class="card fragment" style="padding: 16px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-purple">Dimension 4</span>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-dim);">KR-20 & Distractors</span>
+              </div>
+              <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF; margin-top: 4px;">ความเชื่อมั่น KR-20 & การวิเคราะห์ตัวลวง</h4>
+              <p class="card-desc">วิเคราะห์สัดส่วนการเลือกตัวเลือก ก-จ ของทั้งกลุ่มสูงและกลุ่มต่ำ เพื่อตรวจหาตัวลวงที่ไม่ทำงาน (ไม่มีคนเลือก) หรือตัวลวงที่มีข้อบกพร่อง</p>
+            </div>
+
+          </div>
+
+          <!-- Right: Screenshot Asset Showcase -->
+          <div class="fragment" style="display: flex; flex-direction: column; gap: 14px; height: 100%;">
+            <div class="screenshot-frame" title="คลิกเพื่อขยายภาพหน้าจอเต็มจอ" onclick="openLightbox('manual_assets/08b_item_analysis.png')">
+              <img src="manual_assets/08b_item_analysis.png" alt="หน้าจอตารางวิเคราะห์ข้อสอบ Item Analysis" onerror="this.onerror=null; this.src='manual_assets_new/annotated/08b_item_analysis.png';">
+              <div class="screenshot-tag">08b_item_analysis.png 🔍</div>
+            </div>
+
+            <div class="screenshot-frame" style="height: 180px;" title="คลิกเพื่อขยายภาพ" onclick="openLightbox('manual_assets/08_view_results.png')">
+              <img src="manual_assets/08_view_results.png" alt="กราฟการกระจายคะแนน Histogram" onerror="this.onerror=null; this.src='manual_assets_new/annotated/08_view_results.png';">
+              <div class="screenshot-tag">08_view_results.png 🔍</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 10: SECURITY & USER MANAGEMENT
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-10" data-slide="10">
+      <div class="slide-header">
+        <div class="slide-category">10 • Security & Administration</div>
+        <h2 class="slide-title">ความปลอดภัยและการบริหารจัดการผู้ใช้งาน</h2>
+        <p class="slide-subtitle">มาตรฐานความปลอดภัยระดับสถาบัน การแบ่งสิทธิ์ และบันทึกประวัติการทำงาน (Audit Trail)</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          
+          <!-- Left: 4 Security Layers -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                <span class="badge-pill badge-gold">สิทธิ์ 2 ระดับ</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">Role-Based Access Control (RBAC)</h4>
+              </div>
+              <p class="card-desc">
+                • <strong>Teacher (อาจารย์):</strong> จัดการเฉพาะชุดข้อสอบของตนเอง ตรวจสแกน และดูผลคะแนน<br>
+                • <strong>Admin (ผู้ดูแลระบบ):</strong> ควบคุมภาพรวมทั้งมหาวิทยาลัย อนุมัติผู้ใช้ และตรวจสอบ System Logs
+              </p>
+            </div>
+
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                <span class="badge-pill badge-blue">Google Workspace</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">MSU Single Sign-On (@msu.ac.th)</h4>
+              </div>
+              <p class="card-desc">เชื่อมต่อระบบ Google Identity Services API ตรวจสอบความถูกต้องของโดเมนมหาวิทยาลัยมหาสารคาม ป้องกันบุคคลภายนอกเข้าสู่ระบบ</p>
+            </div>
+
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                <span class="badge-pill badge-emerald">Invite Codes</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">ระบบรหัสคำเชิญจำกัดโควตา</h4>
+              </div>
+              <p class="card-desc">Admin สามารถออกรหัส Invite Codes กำหนดสิทธิ์ที่ได้รับ จำนวนครั้งที่ใช้ได้สูงสุด และวันหมดอายุ ป้องกันการสมัครสมาชิกโดยไม่ได้รับอนุญาต</p>
+            </div>
+
+            <div class="card fragment">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                <span class="badge-pill badge-purple">Audit Trail</span>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">บันทึกกิจกรรมและภาพถ่ายกระดาษคำตอบ</h4>
+              </div>
+              <p class="card-desc">บันทึกทุก Action (การล็อกอิน, การสแกนตรวจ, การแก้ไขเฉลย) พร้อมจัดเก็บภาพถ่ายกระดาษคำตอบเป็นหลักฐานอ้างอิงยืนยันความโปร่งใส</p>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 2px;">
+              <button class="btn-action-secondary" style="padding: 6px 10px; font-size: 0.8rem; flex: 1;" onclick="openLightbox('manual_assets/01_login.png', 'หน้าจอล็อกอินผ่าน Google Workspace (@msu.ac.th)')">🔐 ดูหน้าล็อกอิน SSO</button>
+              <button class="btn-action-secondary" style="padding: 6px 10px; font-size: 0.8rem; flex: 1;" onclick="openLightbox('manual_assets/02_register.png', 'หน้าจอลงทะเบียนด้วยรหัสคำเชิญ (Invite Code)')">🎫 ดูการสมัครด้วย Invite Code</button>
+            </div>
+
+          </div>
+
+          <!-- Right: Admin Dashboard Screenshot -->
+          <div class="fragment" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+            <div class="screenshot-frame" title="คลิกเพื่อขยายภาพ Admin Dashboard" onclick="openLightbox('manual_assets/09_admin_dashboard.png')">
+              <img src="manual_assets/09_admin_dashboard.png" alt="หน้าจอแผงควบคุมระบบ Admin Dashboard" onerror="this.onerror=null; this.src='manual_assets_new/annotated/09_admin_dashboard.png';">
+              <div class="screenshot-tag">09_admin_dashboard.png 🔍</div>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--color-text-muted); text-align: center;">
+              ภาพหน้าจอแผงควบคุมผู้ดูแลระบบ (Admin Dashboard) แสดงสถิติและบันทึกประวัติการทำงาน (System Logs)
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 11: SUMMARY & SYSTEM BENEFITS
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-11" data-slide="11">
+      <div class="slide-header">
+        <div class="slide-category">11 • Summary & Future Scope</div>
+        <h2 class="slide-title">สรุปผลประโยชน์ของระบบและการพัฒนาต่อยอด</h2>
+        <p class="slide-subtitle">การเปรียบเทียบประสิทธิภาพก่อน-หลังการใช้งาน (Before vs After) และก้าวต่อไป</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-sidebar">
+          
+          <!-- Left: Comparison Matrix Table -->
+          <div class="card fragment" style="padding: 20px;">
+            <h3 class="card-title" style="margin-bottom: 16px; color: var(--msu-gold);">เปรียบเทียบประสิทธิภาพ (Comparison Matrix)</h3>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              
+              <!-- Metric 1 -->
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">ค่าใช้จ่ายฮาร์ดแวร์</span>
+                <span style="color: #F87171; font-size: 0.85rem; font-family: var(--font-mono);">150,000 - 300,000 ฿</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem; font-family: var(--font-mono);">0 บาท (เว็บฟรี)</span>
+              </div>
+
+              <!-- Metric 2 -->
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">กระดาษคำตอบ</span>
+                <span style="color: #F87171; font-size: 0.85rem;">กระดาษหนาพิมพ์เฉพาะ</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem;">A4 ธรรมดา พิมพ์ทั่วไป</span>
+              </div>
+
+              <!-- Metric 3 -->
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">ความเร็วในการตรวจ</span>
+                <span style="color: #F87171; font-size: 0.85rem;">ตรวจมือ 1-2 นาที/แผ่น</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem; font-family: var(--font-mono);">&lt; 1 วินาที / แผ่น</span>
+              </div>
+
+              <!-- Metric 4 -->
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">การวิเคราะห์ข้อสอบ</span>
+                <span style="color: #F87171; font-size: 0.85rem;">ต้องคีย์มือ เสียเวลามาก</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem;">คำนวณอัตโนมัติทันที</span>
+              </div>
+
+              <!-- Metric 5 -->
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">กรณีเฉลยข้อสอบผิด</span>
+                <span style="color: #F87171; font-size: 0.85rem;">ต้องนำกระดาษมาตรวจใหม่</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem;">Auto-Regrade 0.05s</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Right: Future Enhancements -->
+          <div class="card fragment" style="border-color: rgba(56, 189, 248, 0.3);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <span class="badge-pill badge-blue">Roadmap</span>
+              <h3 class="card-title" style="color: var(--semantic-info);">การพัฒนาต่อยอดในอนาคต</h3>
+            </div>
+            
+            <ul class="feature-list" style="margin-top: 12px; gap: 14px;">
+              <li>
+                <span class="bullet-dot" style="background: var(--semantic-info);"></span>
+                <div>
+                  <strong style="color: #FFFFFF;">เชื่อมต่อระบบทะเบียนมหาวิทยาลัย (MSU Registrar API):</strong>
+                  <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 2px;">ส่งผลคะแนนเข้าสู่ระบบเกรดของมหาวิทยาลัยได้โดยตรงไม่ต้องดาวน์โหลดไฟล์ CSV</div>
+                </div>
+              </li>
+              <li>
+                <span class="bullet-dot" style="background: var(--semantic-info);"></span>
+                <div>
+                  <strong style="color: #FFFFFF;">รองรับข้อสอบอัตนัยด้วย Handwritten AI OCR:</strong>
+                  <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 2px;">นำโมเดล AI มาช่วยตรวจลายมือเขียนคำตอบตัวเลขหรือคำสั้นๆ</div>
+                </div>
+              </li>
+              <li>
+                <span class="bullet-dot" style="background: var(--semantic-info);"></span>
+                <div>
+                  <strong style="color: #FFFFFF;">ระบบสแกนไฟล์ภาพแบบเป็นชุด (Batch Upload PDF):</strong>
+                  <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 2px;">รองรับการอัปโหลดไฟล์ PDF จากเครื่องสแกนความเร็วสูงในกรณีมีกระดาษหลายพันแผ่น</div>
+                  <button class="btn-action-secondary" style="padding: 4px 10px; font-size: 0.78rem; margin-top: 6px;" onclick="openLightbox('manual_assets/07b_scanner_pdf_modal.png', 'หน้าต่างสแกนตรวจจากไฟล์ PDF / ภาพถ่ายแบบกลุ่ม (Batch PDF Scanner)')">📑 ดูตัวอย่าง Batch Scanner Modal</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         SLIDE 12: Q&A & BACKUP FAQS
+         ───────────────────────────────────────────────────────────── -->
+    <section class="slide" id="slide-12" data-slide="12">
+      <div class="slide-header">
+        <div class="slide-category">12 • Q&A Session & Committee FAQs</div>
+        <h2 class="slide-title">ช่วงถาม-ตอบ (Q&A) & ข้อมูลเชิงเทคนิคเพิ่มเติม</h2>
+        <p class="slide-subtitle">แนวทางการตอบคำถามที่คาดว่าคณะกรรมการจะซักถาม</p>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          
+          <!-- Left: Big Q&A Thank You Banner -->
+          <div class="card fragment" style="align-items: center; justify-content: center; text-align: center; background: radial-gradient(circle at center, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);">
+            <span style="font-size: 3.5rem; margin-bottom: 10px;">💬</span>
+            <h2 style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 800; color: #FFFFFF;">
+              Q & <span style="color: var(--msu-gold);">A</span>
+            </h2>
+            <p style="font-family: var(--font-display); font-size: 1.25rem; color: #E2E8F0; margin-top: 6px;">
+              ขอขอบพระคุณคณะกรรมการทุกท่าน
+            </p>
+            <p style="font-size: 0.95rem; color: var(--color-text-muted); margin-top: 10px; max-width: 420px; line-height: 1.6;">
+              ยินดีรับฟังข้อเสนอแนะและตอบข้อซักถามเชิงลึกเกี่ยวกับระบบ MSU Scoring
+            </p>
+
+            <div style="width: 50px; height: 3px; background: var(--msu-gold); margin: 18px 0; border-radius: var(--radius-full);"></div>
+
+            <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--msu-gold);">
+              github.com/gl00fzy/Final-Project
+            </div>
+          </div>
+
+          <!-- Right: Interactive Accordion FAQs -->
+          <div style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 6px;">
+            
+            <div class="card fragment" style="padding: 14px 18px; cursor: pointer;" onclick="toggleFaq(this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: var(--font-display); font-size: 0.98rem; color: #FFFFFF;">❓ ถ้านิสิตฝนจาง หรือกระดาษยับ ระบบจะตรวจจับได้ไหม?</h4>
+                <span class="faq-arrow" style="color: var(--msu-gold); font-size: 0.8rem;">▼</span>
+              </div>
+              <div class="faq-answer" style="display: none; margin-top: 10px; font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 8px;">
+                ระบบใช้ <code>cv.adaptiveThreshold</code> ชดเชยเงาและแสงสะท้อน และตั้งค่า Fill Fraction ไว้ที่ 35% หากนิสิตฝนจางมากจริงๆ อาจารย์สามารถกดปุ่ม <strong>"กรอกด้วยตนเอง (Manual Entry)"</strong> บนหน้าจอเพื่อบันทึกคะแนนได้ทันทีโดยไม่ต้องทิ้งกระดาษ
+                <div style="margin-top: 8px;">
+                  <button class="btn-action-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="event.stopPropagation(); openLightbox('manual_assets/07c_scanner_manual_modal.png', 'หน้าต่างกรอกคะแนนด้วยตนเอง (Manual Score Entry Modal)')">🔍 ดูหน้าต่าง Manual Score Entry</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card fragment" style="padding: 14px 18px; cursor: pointer;" onclick="toggleFaq(this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: var(--font-display); font-size: 0.98rem; color: #FFFFFF;">❓ ทำไมถึงเลือกประมวลผลบนเบราว์เซอร์ด้วย OpenCV.js?</h4>
+                <span class="faq-arrow" style="color: var(--msu-gold); font-size: 0.8rem;">▼</span>
+              </div>
+              <div class="faq-answer" style="display: none; margin-top: 10px; font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 8px;">
+                การรันบน WebAssembly (WASM) ในเครื่องผู้ใช้งานทำให้ได้ความเร็ว 30-60 FPS แบบเรียลไทม์ และลดภาระประมวลผลบนเซิร์ฟเวอร์เป็นศูนย์ (Zero Server CPU load) แม้อาจารย์จะตรวจข้อสอบพร้อมกัน 50 ท่าน เซิร์ฟเวอร์ก็ไม่ล่ม
+              </div>
+            </div>
+
+            <div class="card fragment" style="padding: 14px 18px; cursor: pointer;" onclick="toggleFaq(this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: var(--font-display); font-size: 0.98rem; color: #FFFFFF;">❓ ความปลอดภัยของข้อมูลและภาพถ่ายกระดาษคำตอบ?</h4>
+                <span class="faq-arrow" style="color: var(--msu-gold); font-size: 0.8rem;">▼</span>
+              </div>
+              <div class="faq-answer" style="display: none; margin-top: 10px; font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 8px;">
+                ระบบบังคับใช้ HTTPS เพื่อความปลอดภัยของกล้อง, ควบคุมสิทธิ์ด้วย RBAC, แยกโฟลเดอร์จัดเก็บภาพตาม Hash ของ Exam ID, ป้องกัน Directory Listing, และมี Audit Logs บันทึกทุกกิจกรรม
+              </div>
+            </div>
+
+            <div class="card fragment" style="padding: 14px 18px; cursor: pointer;" onclick="toggleFaq(this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: var(--font-display); font-size: 0.98rem; color: #FFFFFF;">❓ ถ้านิสิตลืมฝนชุดข้อสอบ (Set) ระบบจัดการอย่างไร?</h4>
+                <span class="faq-arrow" style="color: var(--msu-gold); font-size: 0.8rem;">▼</span>
+              </div>
+              <div class="faq-answer" style="display: none; margin-top: 10px; font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 8px;">
+                ระบบจะใช้ค่า Default Set จากตัวเลือกบนแถบ HUD ของอาจารย์ (เช่น ชุด A) และอาจารย์สามารถคลิกที่ประวัติคะแนนเพื่อสลับชุดและให้ระบบ Auto-Regrade คำนวณใหม่ได้ทันที
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       BOTTOM HUD NAVIGATION
+       ========================================================================== -->
+  <footer class="bottom-hud">
+    <div class="key-hint">
+      <span>นำทาง:</span>
+      <span class="kbd">←</span> <span class="kbd">→</span>
+      <span class="kbd">Space</span>
+      <span style="margin-left: 8px;">ผังสไลด์:</span> <span class="kbd">O</span>
+      <span style="margin-left: 8px;">เต็มจอ:</span> <span class="kbd">F</span>
+      <span style="margin-left: 8px;">เลเซอร์:</span> <span class="kbd">L</span>
+    </div>
+
+    <div class="nav-controls">
+      <button class="nav-btn" id="btnPrevSlide" title="สไลด์ก่อนหน้า (Left Arrow)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span>ก่อนหน้า</span>
+      </button>
+
+      <div class="slide-counter" id="slideCounterDisplay">01 / 12</div>
+
+      <button class="nav-btn" id="btnNextSlide" title="สไลด์ถัดไป (Right Arrow หรือ Space)">
+        <span>ถัดไป</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODALS: OVERVIEW GRID, LIGHTBOX, HELP
+       ========================================================================== -->
+  
+  <!-- Slide Overview Grid Modal -->
+  <div class="overview-modal" id="overviewModal">
+    <div class="overview-header">
+      <div>
+        <h3 style="font-family: var(--font-display); font-size: 1.4rem; color: #FFFFFF;">ผังสไลด์ทั้งหมด (Slide Overview)</h3>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted);">คลิกเลือกสไลด์ที่ต้องการกระโดดไป หรือกด Esc เพื่อปิด</p>
+      </div>
+      <button class="hud-btn" onclick="toggleOverview()" style="width: 40px; height: 40px; border-radius: 50%;">✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox(event)">
+    <div class="lightbox-dialog" onclick="event.stopPropagation()">
+      <div class="lightbox-bar">
+        <span class="lightbox-caption" id="lightboxCaption">หน้าจอระบบ MSU Scoring</span>
+        <button class="lightbox-close-btn" onclick="closeLightbox()" title="ปิด (Esc)">✕ ปิด (Esc)</button>
+      </div>
+      <img id="lightboxImg" src="" alt="Enlarged screenshot">
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Help Modal -->
+  <div class="help-modal" id="helpModal">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: #FFFFFF;">คีย์ลัดสำหรับการนำเสนอ (Keyboard Shortcuts)</h3>
+      <button class="hud-btn" onclick="toggleHelp()" style="width: 32px; height: 32px;">✕</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem;">
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">สไลด์ถัดไป / แสดงเนื้อหาขั้นถัดไป:</span> <span><span class="kbd">→</span> <span class="kbd">Space</span> <span class="kbd">PageDown</span></span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">สไลด์ก่อนหน้า:</span> <span><span class="kbd">←</span> <span class="kbd">PageUp</span></span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">สไลด์แรก / สไลด์สุดท้าย:</span> <span><span class="kbd">Home</span> <span class="kbd">End</span></span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">เปิด/ปิด ผังสไลด์ (Overview):</span> <span><span class="kbd">O</span> หรือ <span class="kbd">Esc</span></span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">เปิด/ปิด โหมดเต็มจอ (Fullscreen):</span> <span><span class="kbd">F</span></span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">เปิด/ปิด เลเซอร์พอยต์เตอร์ (Laser):</span> <span><span class="kbd">L</span></span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #CBD5E1;">พิมพ์เอกสาร / ส่งออกเป็น PDF:</span> <span><span class="kbd">Ctrl</span> + <span class="kbd">P</span></span></div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       PRESENTATION CONTROLLER JAVASCRIPT
+       ========================================================================== -->
+  <script>
+    // ── Slide Metadata ──────────────────────────────────────────
+    const SLIDES_META = [
+      { num: 1, title: "หน้าปก (Cover & Project Overview)", cat: "Overview" },
+      { num: 2, title: "ที่มาและความสำคัญของปัญหา (Problem Statement)", cat: "Problem" },
+      { num: 3, title: "วัตถุประสงค์และขอบเขตโครงงาน (Objectives & Scope)", cat: "Scope" },
+      { num: 4, title: "สถาปัตยกรรมระบบ (System Architecture)", cat: "Architecture" },
+      { num: 5, title: "กระบวนการทำงานหลัก 5 ขั้นตอน (System Workflow)", cat: "Workflow" },
+      { num: 6, title: "อัลกอริทึม OMR & Computer Vision Pipeline", cat: "Algorithms" },
+      { num: 7, title: "ตรรกะการให้คะแนนขั้นสูง & ระบบ Auto-Regrade", cat: "Grading Engine" },
+      { num: 8, title: "จำลองการทำงานระบบสแกนผ่านกล้อง (Live Demo)", cat: "Interactive Demo" },
+      { num: 9, title: "การวิเคราะห์ผลคะแนนและคุณภาพข้อสอบ (Item Analysis)", cat: "Item Analysis" },
+      { num: 10, title: "ความปลอดภัยและการบริหารจัดการผู้ใช้งาน", cat: "Security" },
+      { num: 11, title: "สรุปผลประโยชน์ของระบบ & แผนพัฒนาต่อยอด", cat: "Summary" },
+      { num: 12, title: "ช่วงถาม-ตอบ (Q&A) & ข้อมูลเชิงเทคนิคเพิ่มเติม", cat: "Q&A" }
+    ];
+
+    let currentSlide = 1;
+    const totalSlides = SLIDES_META.length;
+    const slides = document.querySelectorAll('.slide');
+
+    // ── Web Audio API Synthesizer (Exact 880Hz Sine Wave Beep) ──
+    const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playBeepSound() {
+      const chk = document.getElementById('chkAudioEnable');
+      if (chk && !chk.checked) return;
+      try {
+        if (!audioCtx) audioCtx = new AudioCtxClass();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // 880 Hz standard scanner tone
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.3);
+      } catch (err) {
+        console.warn('Audio playback error:', err);
+      }
+    }
+
+    // ── Presentation Timer ──────────────────────────────────────
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timerSeconds++;
+        const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+        const secs = String(timerSeconds % 60).padStart(2, '0');
+        document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+      }, 1000);
+      isTimerRunning = true;
+    }
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+      } else {
+        startTimer();
+      }
+    }
+
+    document.getElementById('timerPill').addEventListener('click', toggleTimer);
+
+    // ── Navigation & Fragment Logic ─────────────────────────────
+    function updateSlideUI() {
+      slides.forEach((s, idx) => {
+        const slideNum = idx + 1;
+        if (slideNum === currentSlide) {
+          s.classList.add('active');
+        } else {
+          s.classList.remove('active');
+        }
+      });
+
+      // Update counter and progress bar
+      document.getElementById('slideCounterDisplay').textContent = 
+        `${String(currentSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+      
+      const pct = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+      document.getElementById('progressBar').style.width = `${pct}%`;
+
+      document.getElementById('btnPrevSlide').disabled = (currentSlide === 1);
+      document.getElementById('btnNextSlide').disabled = (currentSlide === totalSlides);
+
+      // Highlight active overview card
+      document.querySelectorAll('.overview-card').forEach((c, idx) => {
+        c.classList.toggle('current', (idx + 1) === currentSlide);
+      });
+    }
+
+    function goToSlide(target, revealAll = false) {
+      if (target < 1 || target > totalSlides) return;
+      currentSlide = target;
+      
+      const curSlideEl = document.getElementById(`slide-${currentSlide}`);
+      if (curSlideEl) {
+        const frags = curSlideEl.querySelectorAll('.fragment');
+        frags.forEach(f => {
+          if (revealAll) {
+            f.classList.add('visible');
+          } else {
+            f.classList.remove('visible');
+          }
+        });
+      }
+
+      updateSlideUI();
+    }
+
+    function nextStep() {
+      const activeSlideEl = document.getElementById(`slide-${currentSlide}`);
+      const unrevealedFrags = activeSlideEl ? activeSlideEl.querySelectorAll('.fragment:not(.visible)') : [];
+      
+      if (unrevealedFrags.length > 0) {
+        unrevealedFrags[0].classList.add('visible');
+      } else {
+        if (currentSlide < totalSlides) {
+          goToSlide(currentSlide + 1, false);
+        }
+      }
+    }
+
+    function prevStep() {
+      const activeSlideEl = document.getElementById(`slide-${currentSlide}`);
+      const visibleFrags = activeSlideEl ? activeSlideEl.querySelectorAll('.fragment.visible') : [];
+      
+      if (visibleFrags.length > 0) {
+        visibleFrags[visibleFrags.length - 1].classList.remove('visible');
+      } else {
+        if (currentSlide > 1) {
+          goToSlide(currentSlide - 1, true);
+        }
+      }
+    }
+
+    document.getElementById('btnNextSlide').addEventListener('click', nextStep);
+    document.getElementById('btnPrevSlide').addEventListener('click', prevStep);
+
+    // ── Keyboard Navigation ─────────────────────────────────────
+    window.addEventListener('keydown', (e) => {
+      // Don't capture keys if typing in an input
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+      // Direct number jump (1 to 9)
+      if (e.key >= '1' && e.key <= '9') {
+        goToSlide(parseInt(e.key, 10), true);
+        return;
+      }
+
+      switch (e.key) {
+        case 'ArrowRight':
+        case ' ':
+        case 'PageDown':
+          e.preventDefault();
+          nextStep();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevStep();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(1, true);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides, true);
+          break;
+        case 'Escape':
+          e.preventDefault();
+          if (lightboxModal.classList.contains('show')) {
+            closeLightbox();
+          } else if (helpModal.classList.contains('show')) {
+            toggleHelp();
+          } else if (overviewModal.classList.contains('show')) {
+            toggleOverview(false);
+          } else {
+            toggleOverview(true);
+          }
+          break;
+        case 'o':
+        case 'O':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'l':
+        case 'L':
+          e.preventDefault();
+          toggleLaser();
+          break;
+        case '?':
+        case 'h':
+        case 'H':
+          e.preventDefault();
+          toggleHelp();
+          break;
+      }
+    });
+
+    // ── Touch & Swipe Gestures for Tablets / Mobile ────────────
+    let touchStartX = 0;
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const diffX = e.changedTouches[0].clientX - touchStartX;
+        const diffY = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(diffX) > 60 && Math.abs(diffY) < 100) {
+          if (diffX < 0) {
+            nextStep();
+          } else {
+            prevStep();
+          }
+        }
+      }
+    }, { passive: true });
+
+    // ── Fullscreen Toggle ───────────────────────────────────────
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        document.getElementById('fullscreenBtn').classList.add('active');
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        document.getElementById('fullscreenBtn').classList.remove('active');
+      }
+    }
+    document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+
+    // ── Laser Pointer Simulation ────────────────────────────────
+    let laserActive = false;
+    const laserEl = document.getElementById('laserPointer');
+    const laserBtn = document.getElementById('laserBtn');
+
+    function toggleLaser() {
+      laserActive = !laserActive;
+      laserEl.classList.toggle('active', laserActive);
+      laserBtn.classList.toggle('active', laserActive);
+      document.body.style.cursor = laserActive ? 'none' : 'default';
+    }
+
+    laserBtn.addEventListener('click', toggleLaser);
+
+    window.addEventListener('mousemove', (e) => {
+      if (!laserActive) return;
+      laserEl.style.left = `${e.clientX}px`;
+      laserEl.style.top = `${e.clientY}px`;
+    });
+
+    // ── Slide Overview Grid ─────────────────────────────────────
+    const overviewModal = document.getElementById('overviewModal');
+    const overviewGrid = document.getElementById('overviewGrid');
+
+    function initOverviewGrid() {
+      overviewGrid.innerHTML = '';
+      SLIDES_META.forEach((s) => {
+        const card = document.createElement('div');
+        card.className = `overview-card ${s.num === currentSlide ? 'current' : ''}`;
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="overview-card-num">Slide ${String(s.num).padStart(2, '0')}</span>
+            <span class="badge-pill badge-gold" style="font-size: 0.65rem; padding: 2px 6px;">${s.cat}</span>
+          </div>
+          <div class="overview-card-title">${s.title}</div>
+        `;
+        card.addEventListener('click', () => {
+          goToSlide(s.num, true);
+          toggleOverview(false);
+        });
+        overviewGrid.appendChild(card);
+      });
+    }
+
+    function toggleOverview(force) {
+      const show = (force !== undefined) ? force : !overviewModal.classList.contains('show');
+      overviewModal.classList.toggle('show', show);
+      document.getElementById('overviewBtn').classList.toggle('active', show);
+      if (show) initOverviewGrid();
+    }
+
+    document.getElementById('overviewBtn').addEventListener('click', () => toggleOverview());
+
+    // ── Lightbox Zoom for Screenshots ───────────────────────────
+    const lightboxModal = document.getElementById('lightboxModal');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    function openLightbox(src, title) {
+      lightboxImg.src = src;
+      const cap = document.getElementById('lightboxCaption');
+      if (cap) {
+        cap.textContent = title || src.split('/').pop();
+      }
+      lightboxModal.classList.add('show');
+    }
+
+    function closeLightbox(e) {
+      if (e && e.target && e.target.closest && e.target.closest('.lightbox-dialog') && !e.target.closest('.lightbox-close-btn')) {
+        return;
+      }
+      lightboxModal.classList.remove('show');
+    }
+
+    // ── Help Modal ──────────────────────────────────────────────
+    const helpModal = document.getElementById('helpModal');
+    function toggleHelp() {
+      helpModal.classList.toggle('show');
+    }
+    document.getElementById('helpBtn').addEventListener('click', toggleHelp);
+
+    // ── FAQ Accordion ───────────────────────────────────────────
+    function toggleFaq(cardEl) {
+      const ans = cardEl.querySelector('.faq-answer');
+      const arrow = cardEl.querySelector('.faq-arrow');
+      if (ans.style.display === 'block') {
+        ans.style.display = 'none';
+        arrow.textContent = '▼';
+      } else {
+        ans.style.display = 'block';
+        arrow.textContent = '▲';
+      }
+    }
+
+    // ── Interactive Scanner Simulator Logic (Slide 8) ───────────
+    // Answer Keys (0=A, 1=B, 2=C, 3=D, 4=E)
+    const setAKey = [
+      0, 1, 2, 3, 4, 1, 2, 3, 0, 4,
+      2, 1, 0, 3, 4, 1, 2, 0, 3, 4,
+      0, 2, 1, 3, 4, 0, 2, 1, 4, 3,
+      1, 0, 2, 4, 3, 1, 0, 3, 2, 4,
+      0, 1, 3, 2, 4, 0, 2, 1, 4, 3
+    ];
+    const setBKey = [
+      1, 2, 3, 4, 0, 2, 3, 0, 1, 4,
+      0, 3, 1, 2, 4, 2, 0, 1, 4, 3,
+      1, 0, 2, 4, 3, 1, 3, 2, 0, 4,
+      2, 1, 0, 3, 4, 0, 2, 1, 4, 3,
+      1, 2, 0, 4, 3, 1, 0, 2, 3, 4
+    ];
+
+    const studentSamples = [
+      {
+        id: "66011212345",
+        name: "นายชนาธิป ภาคภูมิ",
+        set: "ชุด A",
+        score: 44,
+        total: 50,
+        // 44 correct out of 50
+        answers: setAKey.map((ans, i) => (i % 8 === 3 ? (ans + 1) % 5 : ans))
+      },
+      {
+        id: "66011214789",
+        name: "นางสาวศิริพร บุญเสริม",
+        set: "ชุด B",
+        score: 48,
+        total: 50,
+        // 48 correct out of 50
+        answers: setBKey.map((ans, i) => (i === 14 || i === 39 ? (ans + 1) % 5 : ans))
+      },
+      {
+        id: "66011218520",
+        name: "นายธนวัฒน์ พรหมวิชัย",
+        set: "ชุด A",
+        score: 39,
+        total: 50,
+        // 39 correct out of 50
+        answers: setAKey.map((ans, i) => (i % 5 === 2 ? (ans + 2) % 5 : ans))
+      }
+    ];
+    let currentStudentIdx = 0;
+
+    const btnSimulateScan = document.getElementById('btnSimulateScan');
+    const btnSwitchStudent = document.getElementById('btnSwitchStudent');
+    const btnDismissOverlay = document.getElementById('btnDismissOverlay');
+    const scannerTargetBox = document.getElementById('scannerTargetBox');
+    const scannerLaserLine = document.getElementById('scannerLaserLine');
+    const scannerResultOverlay = document.getElementById('scannerResultOverlay');
+
+    let simCounterInterval = null;
+    let simDelayTimeout = null;
+    let simDismissTimeout = null;
+
+    // Render fully filled 50 questions & student ID bubbles
+    function renderSimAnswerSheet(data) {
+      // 1. Render Student ID columns
+      const idContainer = document.getElementById('simIdDigitsContainer');
+      if (idContainer) {
+        idContainer.innerHTML = '';
+        const idStr = data.id;
+        for (let i = 0; i < idStr.length; i++) {
+          const digit = parseInt(idStr[i], 10);
+          const col = document.createElement('div');
+          col.className = 'id-digit-col';
+          col.innerHTML = `
+            <span class="id-digit-val">${digit}</span>
+            <div class="id-digit-bubble filled" title="หลักที่ ${i+1}: เลข ${digit}"></div>
+          `;
+          idContainer.appendChild(col);
+        }
+      }
+
+      // 2. Render Key Set bubbles
+      const targetLetter = data.set.includes('B') ? 'B' : (data.set.includes('C') ? 'C' : (data.set.includes('D') ? 'D' : 'A'));
+      document.querySelectorAll('.key-bubble-dot').forEach(dot => {
+        if (dot.dataset.key === targetLetter) {
+          dot.classList.add('filled');
+        } else {
+          dot.classList.remove('filled');
+        }
+      });
+
+      // 3. Render complete 50-Question Answer Grid (5 columns of 10)
+      const gridContainer = document.getElementById('simAnswersGrid');
+      if (gridContainer) {
+        gridContainer.innerHTML = '';
+        for (let c = 0; c < 5; c++) {
+          const colDiv = document.createElement('div');
+          colDiv.className = 'sheet-ans-col';
+          
+          let colHtml = `
+            <div class="sheet-col-header">
+              <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+            </div>
+          `;
+
+          for (let r = 0; r < 10; r++) {
+            const qNum = c * 10 + r + 1;
+            const chosen = data.answers[qNum - 1]; // 0=A, 1=B, 2=C, 3=D, 4=E
+
+            colHtml += `<div class="q-row-item"><span class="q-num-label">${qNum}</span>`;
+            for (let opt = 0; opt < 5; opt++) {
+              const isFilled = (opt === chosen) ? 'filled' : '';
+              colHtml += `<div class="bubble-dot-mock ${isFilled}"></div>`;
+            }
+            colHtml += `</div>`;
+          }
+
+          colDiv.innerHTML = colHtml;
+          gridContainer.appendChild(colDiv);
+        }
+      }
+    }
+
+    function dismissResultOverlay() {
+      if (simDismissTimeout) {
+        clearTimeout(simDismissTimeout);
+        simDismissTimeout = null;
+      }
+      scannerResultOverlay.classList.remove('show');
+      scannerLaserLine.classList.remove('paused');
+      scannerTargetBox.classList.remove('locked');
+    }
+
+    function resetSimulation() {
+      if (simCounterInterval) {
+        clearInterval(simCounterInterval);
+        simCounterInterval = null;
+      }
+      if (simDelayTimeout) {
+        clearTimeout(simDelayTimeout);
+        simDelayTimeout = null;
+      }
+      if (simDismissTimeout) {
+        clearTimeout(simDismissTimeout);
+        simDismissTimeout = null;
+      }
+      scannerLaserLine.classList.remove('paused');
+      scannerTargetBox.classList.remove('locked');
+      scannerResultOverlay.classList.remove('show');
+    }
+
+    function runSimulationScan() {
+      resetSimulation();
+      const curData = studentSamples[currentStudentIdx];
+
+      // 1. Pause laser line at center
+      scannerLaserLine.classList.add('paused');
+
+      // 2. Lock corner brackets (flashing green) & pulse bubbles
+      scannerTargetBox.classList.add('locked');
+
+      // 3. Play Web Audio API Sine wave Beep
+      playBeepSound();
+
+      // 4. Update texts
+      document.getElementById('simStudentName').textContent = curData.name;
+      document.getElementById('simResultId').textContent = curData.id;
+      document.getElementById('simResultSet').textContent = curData.set;
+
+      // 5. Show results overlay
+      scannerResultOverlay.classList.add('show');
+
+      // 6. Animate score counter smoothly
+      let count = 0;
+      const targetScore = curData.score;
+      const stepTime = Math.max(10, Math.floor(600 / targetScore));
+
+      document.getElementById('simScoreCounter').textContent = `0 / ${curData.total}`;
+      document.getElementById('simPercentCounter').textContent = `0.0%`;
+
+      simCounterInterval = setInterval(() => {
+        count++;
+        document.getElementById('simScoreCounter').textContent = `${count} / ${curData.total}`;
+        document.getElementById('simPercentCounter').textContent = `${((count / curData.total) * 100).toFixed(1)}%`;
+        if (count >= targetScore) {
+          clearInterval(simCounterInterval);
+          simCounterInterval = null;
+        }
+      }, stepTime);
+
+      // 7. Auto-dismiss after 3.5 seconds (as requested)
+      simDismissTimeout = setTimeout(() => {
+        dismissResultOverlay();
+      }, 3500);
+    }
+
+    if (btnDismissOverlay) {
+      btnDismissOverlay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dismissResultOverlay();
+      });
+    }
+
+    btnSimulateScan.addEventListener('click', () => {
+      resetSimulation();
+      simDelayTimeout = setTimeout(runSimulationScan, 150);
+    });
+
+    btnSwitchStudent.addEventListener('click', () => {
+      currentStudentIdx = (currentStudentIdx + 1) % studentSamples.length;
+      const st = studentSamples[currentStudentIdx];
+      
+      document.getElementById('simStudentIdText').textContent = st.id;
+      document.getElementById('simSetBadge').textContent = st.set.toUpperCase();
+
+      renderSimAnswerSheet(st);
+      resetSimulation();
+      simDelayTimeout = setTimeout(runSimulationScan, 200);
+    });
+
+    // Initial render on load
+    renderSimAnswerSheet(studentSamples[0]);
+    // ── Auto Reveal First Fragment On Load ──────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      goToSlide(1);
+      startTimer();
+      initOverviewGrid();
+    });
+  </script>
+</body>
+</html>

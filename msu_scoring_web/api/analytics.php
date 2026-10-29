@@ -145,7 +145,8 @@ try {
                     $is_correct = in_array($key_data, $chosen);
                 } elseif (is_array($key_data)) {
                     if (!empty($key_data['ignore'])) {
-                        continue; // skip ignored question
+                        $item_data[$q]['correct']++;
+                        continue; // free point for all students
                     }
                     $correct_answers = $key_data['answers'] ?? [];
                     $logic           = strtoupper($key_data['logic'] ?? 'OR');
@@ -194,14 +195,20 @@ try {
         $correct_ans_label = null;
         if (is_string($key_data)) {
             $correct_ans_label = $key_data;
-        } elseif (is_array($key_data) && !empty($key_data['answers'])) {
-            $correct_ans_label = implode('+', $key_data['answers']);
+        } elseif (is_array($key_data)) {
+            if (!empty($key_data['ignore'])) {
+                $correct_ans_label = 'ฟรีคะแนน (Bonus)';
+            } elseif (!empty($key_data['answers'])) {
+                $correct_ans_label = implode('+', $key_data['answers']);
+            }
         }
 
         // Quality badges
         $quality_flag = null;
         if ($correct_ans_label !== null) {  // only flag if key is set
-            if ($p_value > 0.8) {
+            if (!empty($key_data['ignore'])) {
+                $quality_flag = 'bonus';
+            } elseif ($p_value > 0.8) {
                 $quality_flag = 'easy';   // ข้อสอบง่ายมาก
             } elseif ($p_value < 0.2) {
                 $quality_flag = 'hard';   // ข้อสอบยากเกินไป
@@ -242,5 +249,5 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    safe_db_error($e);
 }

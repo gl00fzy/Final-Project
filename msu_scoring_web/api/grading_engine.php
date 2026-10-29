@@ -42,7 +42,7 @@ if (!function_exists('normalize_choice_array')) {
 }
 
 function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $fallback_score = 0) {
-    if (!$raw_answers_json) {
+    if ($raw_answers_json === null || $raw_answers_json === '' || $raw_answers_json === false) {
         return (float)$fallback_score;
     }
 
@@ -51,7 +51,7 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
     } else {
         $raw_arr = json_decode($raw_answers_json, true);
     }
-    if (!is_array($raw_arr) || empty($raw_arr)) {
+    if (!is_array($raw_arr)) {
         return (float)$fallback_score;
     }
 
@@ -94,16 +94,24 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
         return (float)$fallback_score;
     }
 
-    foreach ($raw_arr as $q => $ans) {
+    // Evaluate each question from the answer key:
+    // If a question is marked as 'ignore' (ฟรีคะแนน), grant full points to all students.
+    foreach ($answer_key as $q => $key_data) {
         $q_key = (string)$q;
-        $student_answers = normalize_choice_array($ans);
-        if (empty($student_answers)) {
+        if ($key_data === null) {
             continue;
         }
 
-        // Match question key by string or integer
-        $key_data = $answer_key[$q_key] ?? ($answer_key[(int)$q] ?? null);
-        if ($key_data === null) {
+        // Free credit / Ignore question: grant points to every student
+        if (is_array($key_data) && !empty($key_data['ignore'])) {
+            $points = isset($key_data['points']) ? (float)$key_data['points'] : 1.0;
+            $actual_score += $points;
+            continue;
+        }
+
+        $student_raw = $raw_arr[$q_key] ?? ($raw_arr[(int)$q] ?? null);
+        $student_answers = normalize_choice_array($student_raw);
+        if (empty($student_answers)) {
             continue;
         }
 
@@ -124,12 +132,8 @@ function calculate_score($raw_answers_json, $answer_key_json, $exam_set = 'A', $
                     $actual_score += 1;
                 }
             } 
-            // Case 2b: Advanced format with settings (answers, logic, points, penalty, ignore)
+            // Case 2b: Advanced format with settings (answers, logic, points, penalty)
             else {
-                if (!empty($key_data['ignore'])) {
-                    continue; // Skip ignored questions
-                }
-
                 $correct_answers = normalize_choice_array($key_data['answers'] ?? []);
                 if (empty($correct_answers)) {
                     continue;

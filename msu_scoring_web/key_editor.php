@@ -223,7 +223,7 @@ $csrf_token = generate_csrf_token();
                             </div>
                             
                             <!-- Settings Gear Button -->
-                            <button type="button" title="ตั้งค่าคะแนนและเงื่อนไขข้อนี้" class="ml-2 p-1.5 text-slate-400 hover:text-amber-600 active:scale-90 transition-all focus:outline-none gear-btn rounded-lg hover:bg-slate-100" data-q="<?= $i ?>" aria-label="ตั้งค่าข้อที่ <?= $i ?>">
+                            <button type="button" title="ตั้งค่าคะแนนและเงื่อนไขข้อนี้" class="ml-2 w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center text-slate-400 hover:text-amber-600 active:scale-90 transition-all focus:outline-none gear-btn rounded-lg hover:bg-slate-100 flex-shrink-0" data-q="<?= $i ?>" aria-label="ตั้งค่าข้อที่ <?= $i ?>">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </button>
                         </div>
@@ -233,22 +233,22 @@ $csrf_token = generate_csrf_token();
                             <div class="grid grid-cols-2 gap-2 text-xs bg-slate-100/70 p-2.5 rounded-xl border border-slate-200/80">
                                 <div>
                                     <label class="block font-semibold text-slate-600 mb-1">คะแนน (Points)</label>
-                                    <input type="number" step="0.5" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-yellow-500 focus:outline-none setting-points text-xs font-mono" data-q="<?= $i ?>" value="1">
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-yellow-500 focus:outline-none setting-points text-base sm:text-xs font-mono" data-q="<?= $i ?>" value="1">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-slate-600 mb-1">หักคะแนน (Penalty)</label>
-                                    <input type="number" step="0.5" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-red-500 focus:outline-none setting-penalty text-xs font-mono" data-q="<?= $i ?>" value="0">
+                                    <input type="number" step="0.5" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-red-500 focus:outline-none setting-penalty text-base sm:text-xs font-mono" data-q="<?= $i ?>" value="0">
                                 </div>
                                 <div class="col-span-2 mt-1">
                                     <label class="block font-semibold text-slate-600 mb-1">เงื่อนไขคำตอบ (Logic)</label>
-                                    <select class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-yellow-500 focus:outline-none setting-logic text-xs" data-q="<?= $i ?>">
+                                    <select class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-yellow-500 focus:outline-none setting-logic text-base sm:text-xs" data-q="<?= $i ?>">
                                         <option value="OR">OR (ตอบถูกข้อใดข้อหนึ่งในตัวเลือก)</option>
                                         <option value="AND">AND (ต้องตอบถูกครบทุกตัวเลือก)</option>
                                     </select>
                                 </div>
                                 <div class="col-span-2 mt-1 flex items-center gap-2 bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200">
-                                    <input type="checkbox" id="ignore_<?= $i ?>" class="w-3.5 h-3.5 text-rose-600 rounded focus:ring-rose-500 setting-ignore" data-q="<?= $i ?>">
-                                    <label for="ignore_<?= $i ?>" class="text-[11px] text-rose-800 cursor-pointer font-bold select-none">Ignore (ข้าม / ฟรีคะแนนข้อนี้)</label>
+                                    <input type="checkbox" id="ignore_<?= $i ?>" class="w-4 h-4 text-rose-600 rounded focus:ring-rose-500 setting-ignore" data-q="<?= $i ?>">
+                                    <label for="ignore_<?= $i ?>" class="text-xs sm:text-[11px] text-rose-800 cursor-pointer font-bold select-none">ฟรีคะแนนข้อนี้ (ได้คะแนนเต็มทุกคน / Bonus)</label>
                                 </div>
                             </div>
                         </div>

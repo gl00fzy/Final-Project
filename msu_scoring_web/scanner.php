@@ -183,7 +183,7 @@ $csrf_token = generate_csrf_token();
             <div class="relative">
                 <select id="examSetScanner"
                         class="appearance-none bg-slate-900/80 backdrop-blur-md border border-yellow-500/60
-                               text-yellow-400 font-extrabold text-xs sm:text-sm pl-3.5 pr-8 py-2 rounded-xl shadow-lg
+                               text-yellow-400 font-extrabold text-base sm:text-sm pl-3.5 pr-8 py-2 rounded-xl shadow-lg
                                focus:outline-none focus:ring-2 focus:ring-yellow-500 cursor-pointer">
                     <option value="A" class="bg-slate-900 text-white">ชุดข้อสอบ A</option>
                     <option value="B" class="bg-slate-900 text-white">ชุดข้อสอบ B</option>
@@ -203,12 +203,12 @@ $csrf_token = generate_csrf_token();
                     bg-slate-900/90 backdrop-blur-md rounded-full p-1 flex shadow-2xl border border-slate-700/80">
             <button id="modeStudentBtn"
                     onclick="setScanMode('student')"
-                    class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold whitespace-nowrap bg-yellow-400 text-slate-950 shadow-md active:scale-95 transition-all">
+                    class="px-4 py-2 min-h-[38px] flex items-center justify-center rounded-full text-xs sm:text-sm font-extrabold whitespace-nowrap bg-yellow-400 text-slate-950 shadow-md active:scale-95 transition-all">
                 สแกนนิสิต
             </button>
             <button id="modeKeyBtn"
                     onclick="setScanMode('key')"
-                    class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold whitespace-nowrap text-slate-300 hover:text-white active:scale-95 transition-all">
+                    class="px-4 py-2 min-h-[38px] flex items-center justify-center rounded-full text-xs sm:text-sm font-extrabold whitespace-nowrap text-slate-300 hover:text-white active:scale-95 transition-all">
                 สแกนเฉลย
             </button>
         </div>

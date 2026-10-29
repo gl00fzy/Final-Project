@@ -45,10 +45,22 @@ $has_field = function($f) use ($selected_fields) {
 // ── Fetch exam info ───────────────────────────────────────────────────────
 $exam = ['exam_title' => 'ข้อสอบ', 'exam_code' => '', 'question_count' => $q_count];
 if ($exam_id > 0) {
-    $stmt = $pdo->prepare("SELECT exam_title, exam_code, question_count FROM exams WHERE exam_id = ?");
-    $stmt->execute([$exam_id]);
+    $user_id = $_SESSION['user_id'];
+    $stmt = $pdo->prepare("
+        SELECT exam_title, exam_code, question_count FROM exams 
+        WHERE exam_id = ? AND (
+            owner_id = ? 
+            OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+        )
+    ");
+    $stmt->execute([$exam_id, $user_id, $exam_id, $user_id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) { $exam = $row; }
+    if ($row) { 
+        $exam = $row; 
+    } else {
+        http_response_code(403);
+        die("Access Denied: You do not have permission to access this exam sheet.");
+    }
 }
 
 // ════════════════════════════════════════════════════════════════════════

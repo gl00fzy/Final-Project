@@ -42,8 +42,8 @@ $csrf_token = generate_csrf_token();
                         <svg class="w-4 h-4 text-slate-950 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
-                        <span class="hidden md:inline">คู่มือการใช้งาน</span>
-                        <span class="md:hidden">คู่มือ</span>
+                        <span class="hidden lg:inline">คู่มือการใช้งาน</span>
+                        <span class="lg:hidden">คู่มือ</span>
                     </button>
 
                     <button type="button" onclick="openSurveyModal()"
@@ -52,8 +52,8 @@ $csrf_token = generate_csrf_token();
                         <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
-                        <span class="hidden md:inline">แบบประเมินระบบ</span>
-                        <span class="md:hidden">ประเมิน</span>
+                        <span class="hidden lg:inline">แบบประเมินระบบ</span>
+                        <span class="lg:hidden">ประเมิน</span>
                     </button>
 
                     <?php if (($_SESSION['role'] ?? 'user') === 'admin'): ?>
@@ -63,14 +63,14 @@ $csrf_token = generate_csrf_token();
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
-                        <span class="hidden sm:inline">แผงควบคุม Admin</span>
-                        <span class="sm:hidden">Admin</span>
+                        <span class="hidden lg:inline">แผงควบคุม Admin</span>
+                        <span class="lg:hidden">Admin</span>
                     </a>
                     <?php endif; ?>
                     
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-200 text-xs font-medium">
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        <span><?= htmlspecialchars($_SESSION['name']) ?></span>
+                        <span class="max-w-[110px] md:max-w-[130px] lg:max-w-[180px] truncate"><?= htmlspecialchars($_SESSION['name']) ?></span>
                     </div>
 
                     <a href="api/auth.php?logout=1" class="bg-slate-800 hover:bg-red-600/90 active:scale-95 text-slate-200 hover:text-white px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-700/80 whitespace-nowrap">
@@ -102,7 +102,7 @@ $csrf_token = generate_csrf_token();
             
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                 <div class="relative w-full sm:w-72">
-                    <input type="text" id="examSearchInput" placeholder="ค้นหาชื่อวิชา หรือ รหัสวิชา..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all shadow-sm">
+                    <input type="text" id="examSearchInput" placeholder="ค้นหาชื่อวิชา หรือ รหัสวิชา..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-base sm:text-sm bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all shadow-sm">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>
                 <button id="btnCreateExam" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] text-slate-950 font-bold py-2.5 px-5 rounded-xl shadow-md shadow-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/30 transition-all flex justify-center items-center gap-2 whitespace-nowrap text-sm sm:text-base">
@@ -209,7 +209,7 @@ $csrf_token = generate_csrf_token();
                     </span>
                 </div>
                 <div class="relative flex items-center">
-                    <input type="text" id="examCodeInput" name="exam_code" autocomplete="off" placeholder="พิมพ์รหัสวิชา เช่น 0904 หรือ 0900" class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all font-mono">
+                    <input type="text" id="examCodeInput" name="exam_code" autocomplete="off" placeholder="พิมพ์รหัสวิชา เช่น 0904 หรือ 0900" class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all font-mono">
                     <button type="button" id="btnClearCode" class="hidden absolute right-2.5 inset-y-0 my-auto w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
@@ -224,7 +224,7 @@ $csrf_token = generate_csrf_token();
             <!-- Course Title -->
             <div class="relative z-10">
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ชื่อวิชา / รายวิชา</label>
-                <input type="text" id="examTitleInput" name="exam_title" required autocomplete="off" placeholder="เช่น การเขียนโปรแกรมคอมพิวเตอร์" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all">
+                <input type="text" id="examTitleInput" name="exam_title" required autocomplete="off" placeholder="เช่น การเขียนโปรแกรมคอมพิวเตอร์" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all">
             </div>
 
             <!-- Selected Course Badge / Feedback -->
@@ -251,7 +251,7 @@ $csrf_token = generate_csrf_token();
             <!-- Question Count -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">จำนวนข้อสอบ</label>
-                <select name="question_count" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white transition-all">
+                <select name="question_count" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white transition-all">
                     <option value="50">50 ข้อ (1 แผ่นมาตรฐาน)</option>
                     <option value="100">100 ข้อ (2 คอลัมน์)</option>
                     <option value="150">150 ข้อ (3 คอลัมน์)</option>

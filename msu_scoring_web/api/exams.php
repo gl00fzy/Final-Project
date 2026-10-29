@@ -60,9 +60,15 @@ try {
             exit;
         }
 
-        // Verify ownership
-        $stmt = $pdo->prepare("SELECT exam_id FROM exams WHERE exam_id = ? AND owner_id = ?");
-        $stmt->execute([$exam_id, $user_id]);
+        // Verify ownership or shared access
+        $stmt = $pdo->prepare("
+            SELECT exam_id FROM exams 
+            WHERE exam_id = ? AND (
+                owner_id = ? 
+                OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
+            )
+        ");
+        $stmt->execute([$exam_id, $user_id, $exam_id, $user_id]);
         if (!$stmt->fetch()) {
             echo json_encode(['status' => 'error', 'message' => 'ไม่พบชุดข้อสอบหรือคุณไม่มีสิทธิ์แก้ไข']);
             exit;

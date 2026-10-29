@@ -13,6 +13,15 @@ button, a, input, select {
   font-family: var(--font-ui);
 }
 
+/* ── iOS Safari Auto-Zoom Prevention on Mobile (< 768px) ───────── */
+@media screen and (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* ── Toast Notification System ───────────────────────────────── */
 #toastContainer {
   position: fixed;

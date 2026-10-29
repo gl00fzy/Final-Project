@@ -223,9 +223,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 let pClass = 'bg-emerald-50 text-emerald-800 border border-emerald-200';
                 if (item.quality_flag === 'easy') pClass = 'bg-yellow-50 text-yellow-800 border border-yellow-300';
                 if (item.quality_flag === 'hard') pClass = 'bg-red-50 text-red-700 border border-red-200';
+                if (item.quality_flag === 'bonus') pClass = 'bg-amber-50 text-amber-800 border border-amber-300';
 
                 let statusBadge = '';
-                if (item.quality_flag === 'easy') {
+                if (item.quality_flag === 'bonus') {
+                    statusBadge = `<span class="text-xs bg-amber-100 text-amber-800 border border-amber-300 font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">🎁 ฟรีคะแนน (Bonus)</span>`;
+                } else if (item.quality_flag === 'easy') {
                     statusBadge = `<span class="text-xs bg-yellow-100 text-yellow-800 border border-yellow-300 font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">ง่ายมาก</span>`;
                 } else if (item.quality_flag === 'hard') {
                     statusBadge = `<span class="text-xs bg-red-100 text-red-700 border border-red-300 font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">⚠️ ควรทบทวน</span>`;
@@ -235,7 +238,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     statusBadge = `<span class="text-xs bg-slate-100 text-slate-400 border border-slate-200 px-2.5 py-0.5 rounded-full whitespace-nowrap">ยังไม่มีเฉลย</span>`;
                 }
 
-                const rowBg = item.quality_flag === 'easy' ? 'bg-yellow-50/30' :
+                const rowBg = item.quality_flag === 'bonus' ? 'bg-amber-50/40' :
+                              item.quality_flag === 'easy' ? 'bg-yellow-50/30' :
                               item.quality_flag === 'hard' ? 'bg-red-50/30' : '';
 
                 return `
