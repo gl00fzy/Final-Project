@@ -8,34 +8,53 @@ import argparse
 class OMRScanner:
     """
     Python OMR Scanner Engine for MSU Scoring System.
-    Mirrors generate_pdf.php layout parameters accurately with Macro-Block grid tolerance
-    and Auto-Snap circle alignment.
+    Mirrors generate_pdf.php layout parameters with exact mathematical geometry,
+    perspective warp normalization, and Auto-Snap circle alignment.
+    Supports 50, 100, and 150 question sheets.
     """
 
     # Destination dimensions for Perspective Warp (A4 aspect ratio ~ 1:1.414)
     OUT_W = 1200
     OUT_H = 1697
 
-    # Scaling ratios: mm -> px
-    PX = OUT_W / 210.0
-    PY = OUT_H / 297.0
-
-    # Layout constants matching generate_pdf.php (in mm)
+    # PDF Layout constants matching generate_pdf.php (in mm)
+    PW = 210.0
+    PH = 297.0
     MARG = 12.0
     MK_SIZE = 8.0
     MK_OFF = 5.0
     BUB_R_MM = 2.0
-    BUB_DX_MM = 5.5
+    BUB_DX_MM = 5.2
     SEC_MK_MM = 3.0
+
+    # Fiducial marker center offsets in mm from page origin (0, 0)
+    # TL marker is at (MK_OFF, MK_OFF) with size MK_SIZE -> center at (9.0, 9.0) mm
+    # BR marker is at (PW - MK_OFF - MK_SIZE, PH - MK_OFF - MK_SIZE) -> center at (201.0, 288.0) mm
+    MK_CENTER_OFF_X = 9.0   # MK_OFF + MK_SIZE / 2
+    MK_CENTER_OFF_Y = 9.0   # MK_OFF + MK_SIZE / 2
+    MK_SPAN_X = 192.0       # (PW - 2 * MK_OFF - MK_SIZE) = 201.0 - 9.0 = 192.0
+    MK_SPAN_Y = 279.0       # (PH - 2 * MK_OFF - MK_SIZE) = 288.0 - 9.0 = 279.0
 
     def __init__(self, q_count=50):
         self.q_count = q_count if q_count in [50, 100, 150] else 50
-        self.sid_dy_mm = 6 if self.q_count <= 100 else 6
-        self.ans_dy_mm = 5.9 if self.q_count <= 100 else 6
-        self.section_gap_mm = 5.0 if self.q_count <= 100 else 4.0
+        # Dynamic spacing matching generate_pdf.php
+        self.sid_dy_mm = 5.0 if self.q_count == 150 else 5.5
+        self.ans_dy_mm = 4.8 if self.q_count == 150 else 5.5
+        self.section_gap_mm = 4.0 if self.q_count == 150 else 5.0
 
-    def mm2px(self, mm, axis='x'):
-        return mm * (self.PX if axis == 'x' else self.PY)
+        # Scaling factors: mapped warped coordinate space (from TL center to BR center)
+        self.scale_x = (self.OUT_W - 1) / self.MK_SPAN_X
+        self.scale_y = (self.OUT_H - 1) / self.MK_SPAN_Y
+
+    def mm2px(self, mm_val, axis='x'):
+        """Converts page millimeter coordinate to pixel in warped space."""
+        if axis == 'x':
+            return (mm_val - self.MK_CENTER_OFF_X) * self.scale_x
+        return (mm_val - self.MK_CENTER_OFF_Y) * self.scale_y
+
+    def len2px(self, mm_val):
+        """Converts millimeter distance/radius to pixels in warped space."""
+        return mm_val * self.scale_x
 
     def detect_corners(self, image):
         """Detects the 4 black square fiducial markers near paper corners with aspect & solidity filters."""
@@ -51,7 +70,7 @@ class OMRScanner:
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         closed = cv2.morphologyEx(combined, cv2.MORPH_CLOSE, kernel)
 
-        contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(closed, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         
         h, w = image.shape[:2]
         min_area = (w * h) * 0.0001
@@ -111,7 +130,7 @@ class OMRScanner:
         return None
 
     def warp_perspective(self, image, corners):
-        """Applies 4-point perspective transform to obtain normalized top-down view."""
+        """Applies 4-point perspective transform mapping fiducial marker centers to image corners."""
         dst = np.array([
             [0, 0],
             [self.OUT_W - 1, 0],
@@ -146,7 +165,6 @@ class OMRScanner:
         if not contours:
             return cx_px, cy_px
 
-        # Expected bubble area range
         min_area = max(15, (r_px * 0.4) ** 2 * np.pi)
         max_area = (r_px * 2.2) ** 2 * np.pi
 
@@ -160,7 +178,7 @@ class OMRScanner:
             if min_area <= area <= max_area:
                 x, y, bw, bh = cv2.boundingRect(c)
                 ar = bw / float(bh) if bh > 0 else 0
-                if 0.6 <= ar <= 1.6:  # roughly circular / square bounding box
+                if 0.6 <= ar <= 1.6:  # roughly circular
                     M = cv2.moments(c)
                     if M["m00"] > 0:
                         local_cx = M["m10"] / M["m00"]
@@ -170,7 +188,6 @@ class OMRScanner:
                             best_dist = dist
                             best_center = (x1 + local_cx, y1 + local_cy)
 
-        # Only snap if the detected center is within search_margin range
         if best_center is not None and best_dist <= (search_margin * 1.5) ** 2:
             return best_center[0], best_center[1]
 
@@ -192,44 +209,32 @@ class OMRScanner:
         return fill_ratio
 
     def scan_student_id(self, bin_mat, debug_img=None):
-        """Scans 11-digit Student ID grid with auto-snap."""
-        # Calculate Y coordinates
-        header_top = self.MK_OFF + self.MK_SIZE + 3
-        row2_y = header_top + 10 + 1
-        info_y = row2_y + 10 + 2
-        y_div1 = info_y + 6
-        sid_top = y_div1 + 3
-        sid_y_start = sid_top + 8
+        """Scans 11-digit Student ID grid with exact geometric alignment and auto-snap."""
+        sid_base_x_mm = 22.0    # MARG + 10 mm in generate_pdf.php
+        sid_y_start_mm = 61.0   # sid_top + 13 mm in generate_pdf.php
 
-        sid_base_x_mm = self.MARG + 3.5
-        r_px = self.mm2px(self.BUB_R_MM * 1.1, 'x')
-        r_px_int = int(r_px)
+        r_px = self.len2px(self.BUB_R_MM * 1.05)
+        r_px_int = max(2, int(r_px))
 
         student_id = ""
         digits = 11
         digit_rows = 10
 
-        # Optional: draw big red bounding box around the whole student ID block
+        # Draw red bounding box around student ID block for debug
         if debug_img is not None:
-            x_min = int(self.mm2px(sid_base_x_mm, 'x') - r_px - 10)
-            y_min = int(self.mm2px(sid_y_start, 'y') - r_px - 4)
-            x_max = int(self.mm2px(sid_base_x_mm + (digits - 1) * self.BUB_DX_MM, 'x') + r_px + 7)
-            y_max = int(self.mm2px(sid_y_start + (digit_rows - 1) * self.sid_dy_mm, 'y') + r_px + -5)
+            x_min = int(self.mm2px(sid_base_x_mm, 'x') - r_px - 8)
+            y_min = int(self.mm2px(sid_y_start_mm, 'y') - r_px - 8)
+            x_max = int(self.mm2px(sid_base_x_mm + (digits - 1) * self.BUB_DX_MM, 'x') + r_px + 8)
+            y_max = int(self.mm2px(sid_y_start_mm + (digit_rows - 1) * self.sid_dy_mm, 'y') + r_px + 8)
             cv2.rectangle(debug_img, (x_min, y_min), (x_max, y_max), (0, 0, 255), 2)
 
-        # Base column/row adjustments
-        sid_col_adjust_x = [-1, -1, -0.7, -0.7, -0.3, 0.0, 0.0, 0.0, 0.0, 0.5, 0.7]
-        sid_row_adjust_y = [-0.5, -0.5, -0.75, -0.75, -0.85, -1, -1.3, -1.3, -1.7, -1.9]
-
         for col in range(digits):
-            col_adj_x = sid_col_adjust_x[col] if col < len(sid_col_adjust_x) else 0.0
-            cx_mm = sid_base_x_mm + col * self.BUB_DX_MM + col_adj_x
+            cx_mm = sid_base_x_mm + col * self.BUB_DX_MM
 
             fills = []
             row_coords = []
             for row in range(digit_rows):
-                row_adj_y = sid_row_adjust_y[row] if row < len(sid_row_adjust_y) else 0.0
-                cy_mm = sid_y_start + row * self.sid_dy_mm + row_adj_y
+                cy_mm = sid_y_start_mm + row * self.sid_dy_mm
 
                 cx_px = self.mm2px(cx_mm, 'x')
                 cy_px = self.mm2px(cy_mm, 'y')
@@ -238,7 +243,6 @@ class OMRScanner:
                 cx_px, cy_px = self.snap_to_circle(bin_mat, cx_px, cy_px, r_px)
                 row_coords.append((cx_px, cy_px))
 
-                # Draw individual red bounding box around every bubble
                 if debug_img is not None:
                     cv2.rectangle(debug_img, 
                                   (int(cx_px - r_px_int), int(cy_px - r_px_int)), 
@@ -250,16 +254,13 @@ class OMRScanner:
 
             best_row = int(np.argmax(fills))
             best_fill = fills[best_row]
-            
             sorted_fills = sorted(fills, reverse=True)
             second_best = sorted_fills[1] if len(sorted_fills) > 1 else 0.0
 
-            # Threshold check: dominant fill
             if best_fill >= 0.35 and (second_best < 0.01 or (best_fill / max(0.001, second_best)) >= 1.6):
                 student_id += str(best_row)
                 if debug_img is not None:
                     best_cx_px, best_cy_px = row_coords[best_row]
-                    # Draw a solid green box over the detected bubble
                     cv2.rectangle(debug_img, 
                                   (int(best_cx_px - r_px_int + 1), int(best_cy_px - r_px_int + 1)), 
                                   (int(best_cx_px + r_px_int - 1), int(best_cy_px + r_px_int - 1)), 
@@ -270,37 +271,31 @@ class OMRScanner:
         return student_id
 
     def scan_key_set(self, bin_mat, debug_img=None):
-        """Scans Exam Set (A, B, C, D) bubble with auto-snap."""
-        header_top = self.MK_OFF + self.MK_SIZE + 3
-        row2_y = header_top + 10 + 1
-        info_y = row2_y + 10 + 2
-        y_div1 = info_y + 6
-        sid_top = y_div1 + 3
-        sid_y_start = sid_top + 9.5
-
+        """Scans Exam Set (A, B, C, D) bubble with exact geometric alignment and auto-snap."""
+        sid_base_x_mm = 22.0
+        sid_y_start_mm = 61.0
         digits = 11
-        sid_base_x = self.MARG + 10.0
-        key_x = sid_base_x + digits * self.BUB_DX_MM + 8.0
-        key_bub_x = key_x + -1.5
-        key_start_y = sid_y_start + 1.0
-        key_dy = 7.5
+
+        key_x_mm = sid_base_x_mm + digits * self.BUB_DX_MM + 8.0  # 87.2 mm
+        key_bub_x_mm = key_x_mm + 3.0                             # 90.2 mm
+        key_start_y_mm = sid_y_start_mm + 3.0                     # 64.0 mm
+        key_dy_mm = 7.0
 
         options = ['A', 'B', 'C', 'D']
-        r_px = self.mm2px(self.BUB_R_MM * 1.1, 'x')
-        r_px_int = int(r_px)
+        r_px = self.len2px(self.BUB_R_MM * 1.05)
+        r_px_int = max(2, int(r_px))
         fills = []
         opt_coords = []
 
         for ki, opt in enumerate(options):
-            ky_mm = key_start_y + ki * key_dy
-            cx_px = self.mm2px(key_bub_x, 'x')
+            ky_mm = key_start_y_mm + ki * key_dy_mm
+            cx_px = self.mm2px(key_bub_x_mm, 'x')
             cy_px = self.mm2px(ky_mm, 'y')
 
             # Auto-snap to real circle
             cx_px, cy_px = self.snap_to_circle(bin_mat, cx_px, cy_px, r_px)
             opt_coords.append((cx_px, cy_px))
 
-            # Draw individual red bounding box around every Exam Set option
             if debug_img is not None:
                 cv2.rectangle(debug_img, 
                               (int(cx_px - r_px_int), int(cy_px - r_px_int)), 
@@ -318,27 +313,21 @@ class OMRScanner:
         if best_fill >= 0.35 and (second_best < 0.01 or (best_fill / max(0.001, second_best)) >= 1.6):
             if debug_img is not None:
                 best_cx_px, best_cy_px = opt_coords[best_idx]
-                # Draw a solid green box over the detected option
                 cv2.rectangle(debug_img, 
                               (int(best_cx_px - r_px_int + 1), int(best_cy_px - r_px_int + 1)), 
                               (int(best_cx_px + r_px_int - 1), int(best_cy_px + r_px_int - 1)), 
                               (0, 255, 0), -1)
             return options[best_idx]
         
-        return '' # Return empty string if unspecified
+        return ''
 
     def scan_answers(self, bin_mat, debug_img=None):
-        """Scans answer bubbles (50, 100, or 150 questions) with auto-snap."""
-        header_top = self.MK_OFF + self.MK_SIZE + 3
-        row2_y = header_top + 10 + 1
-        info_y = row2_y + 10 + 2
-        y_div1 = info_y + 6
-        sid_top = y_div1 + 3
-        sid_y_start = sid_top + 13
+        """Scans answer bubbles (50, 100, or 150 questions) with exact layout math and auto-snap."""
+        sid_y_start_mm = 61.0
         digit_rows = 10
-        sid_block_bottom = sid_y_start + (digit_rows - 1) * self.sid_dy_mm + self.BUB_R_MM + 2
-        y_divider2 = sid_block_bottom + 2
-        ans_start_y = y_divider2 + -3
+        sid_block_bottom_mm = sid_y_start_mm + (digit_rows - 1) * self.sid_dy_mm + self.BUB_R_MM + 2.0
+        y_divider2_mm = sid_block_bottom_mm + 2.0
+        ans_start_y_mm = y_divider2_mm + 3.0
 
         if self.q_count == 50:
             sections = [{'cols': 5, 'rows': 10, 'start': 1}]
@@ -355,59 +344,46 @@ class OMRScanner:
 
         opts = ['A', 'B', 'C', 'D', 'E']
         n_opts = len(opts)
-        usable_w = 210.0 - self.MARG * 2
-        r_px = self.mm2px(self.BUB_R_MM * 1.1, 'x')
-        r_px_int = int(r_px)
+        usable_w = self.PW - self.MARG * 2.0  # 186.0 mm
+        r_px = self.len2px(self.BUB_R_MM * 1.05)
+        r_px_int = max(2, int(r_px))
 
-        current_y = ans_start_y
+        current_y_mm = ans_start_y_mm
         answers = {}
 
         for sec in sections:
             n_cols = sec['cols']
             rows = sec['rows']
             q_start = sec['start']
-            col_w = (usable_w / n_cols) + 2
+            col_w = usable_w / float(n_cols)
             q_label_w = 9.0
             content_w = q_label_w + (n_opts - 1) * self.BUB_DX_MM
             offset_x = (col_w - content_w) / 2.0
 
-            first_row_y = current_y + self.SEC_MK_MM + 3.0
+            header_y_mm = current_y_mm
+            first_row_y_mm = header_y_mm + self.SEC_MK_MM + 3.0
             q = q_start
 
             for c in range(n_cols):
-                # กำหนดระยะขยับเริ่มต้นแยกตามคอลัมน์ (หน่วยมิลลิเมตร)
-                adjust_x_list = [
-                    -7.5,  # คอลัมน์ที่ 1 (ข้อ 1-10)
-                    -6.5,  # คอลัมน์ที่ 2 (ข้อ 11-20)
-                    -5.0,  # คอลัมน์ที่ 3 (ข้อ 21-30)
-                    -3.5,  # คอลัมน์ที่ 4 (ข้อ 31-40)
-                    -2.0   # คอลัมน์ที่ 5 (ข้อ 41-50)
-                ]
-                
-                adjust_x = adjust_x_list[c] if c < len(adjust_x_list) else 0.0
-                base_x = self.MARG + c * col_w + offset_x + adjust_x
+                base_x_mm = self.MARG + c * col_w + offset_x
 
-                # Draw section bounding box around the column options if debug is enabled
                 if debug_img is not None:
-                    bx_min = int(self.mm2px(base_x + q_label_w, 'x') - r_px - 2)
-                    by_min = int(self.mm2px(first_row_y, 'y') - r_px - 2)
-                    bx_max = int(self.mm2px(base_x + q_label_w + (n_opts - 1) * self.BUB_DX_MM, 'x') + r_px + 5.5)
-                    by_max = int(self.mm2px(first_row_y + (rows - 1) * self.ans_dy_mm, 'y') + r_px + 2)
+                    bx_min = int(self.mm2px(base_x_mm + q_label_w, 'x') - r_px - 2)
+                    by_min = int(self.mm2px(first_row_y_mm, 'y') - r_px - 2)
+                    bx_max = int(self.mm2px(base_x_mm + q_label_w + (n_opts - 1) * self.BUB_DX_MM, 'x') + r_px + 2)
+                    by_max = int(self.mm2px(first_row_y_mm + (rows - 1) * self.ans_dy_mm, 'y') + r_px + 2)
                     cv2.rectangle(debug_img, (bx_min, by_min), (bx_max, by_max), (0, 0, 255), 1)
 
                 for r in range(rows):
                     if q > self.q_count:
                         break
 
-                    qy_mm = first_row_y + r * self.ans_dy_mm
+                    qy_mm = first_row_y_mm + r * self.ans_dy_mm
                     fills = []
                     choice_coords = []
 
-                    choice_adjustments = [0.0, 0.5, 0.5, 0.5, 0.5]
-
                     for oi, opt in enumerate(opts):
-                        adjust_choice = choice_adjustments[oi] if oi < len(choice_adjustments) else 0.0
-                        bx_mm = base_x + q_label_w + oi * self.BUB_DX_MM + adjust_choice
+                        bx_mm = base_x_mm + q_label_w + oi * self.BUB_DX_MM
                         cx_px = self.mm2px(bx_mm, 'x')
                         cy_px = self.mm2px(qy_mm, 'y')
 
@@ -415,7 +391,6 @@ class OMRScanner:
                         cx_px, cy_px = self.snap_to_circle(bin_mat, cx_px, cy_px, r_px)
                         choice_coords.append((cx_px, cy_px))
 
-                        # Draw individual red bounding box around every bubble
                         if debug_img is not None:
                             cv2.rectangle(debug_img, 
                                           (int(cx_px - r_px_int), int(cy_px - r_px_int)), 
@@ -434,7 +409,6 @@ class OMRScanner:
                         answers[str(q)] = opts[best_idx]
                         if debug_img is not None:
                             best_cx_px, best_cy_px = choice_coords[best_idx]
-                            # Draw a solid green box over the detected option
                             cv2.rectangle(debug_img, 
                                           (int(best_cx_px - r_px_int + 1), int(best_cy_px - r_px_int + 1)), 
                                           (int(best_cx_px + r_px_int - 1), int(best_cy_px + r_px_int - 1)), 
@@ -442,8 +416,8 @@ class OMRScanner:
 
                     q += 1
 
-            last_row_y = first_row_y + (rows - 1) * self.ans_dy_mm
-            current_y = last_row_y + self.BUB_R_MM + self.section_gap_mm
+            last_row_y_mm = first_row_y_mm + (rows - 1) * self.ans_dy_mm
+            current_y_mm = last_row_y_mm + self.BUB_R_MM + self.section_gap_mm
 
         return answers
 

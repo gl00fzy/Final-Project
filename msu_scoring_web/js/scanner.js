@@ -411,9 +411,24 @@ function processSheet(corners, W, H, frameMat) {
 // BUBBLE LAYOUT — mirrors generate_pdf.php constants exactly
 // outW=600 outH=848  =>  PX=600/210  PY=848/297
 // ═══════════════════════════════════════════════════════════════
-const PX = 600 / 210;
-const PY = 848 / 297;
-function mm2px(mm, axis) { return mm * (axis === 'x' ? PX : PY); }
+// Scale factors: warped space has outW = 600, outH = 848
+// The 4 corner marker centers:
+// TL at (9.0, 9.0) mm -> (0, 0) px
+// BR at (201.0, 288.0) mm -> (599, 847) px
+const _MK_SPAN_X = 192.0;
+const _MK_SPAN_Y = 279.0;
+const _OUT_W     = 600;
+const _OUT_H     = 848;
+
+function mm2px(mm, axis) {
+    if (axis === 'x') {
+        return (mm - 9.0) * (_OUT_W - 1) / _MK_SPAN_X;
+    }
+    return (mm - 9.0) * (_OUT_H - 1) / _MK_SPAN_Y;
+}
+function len2px(mm) {
+    return mm * (_OUT_W - 1) / _MK_SPAN_X;
+}
 
 // Dynamic question count from PHP hidden input
 function getQCount() {
@@ -427,30 +442,18 @@ function getSections(q_count) {
     if (q_count === 100) return [{cols:5, rows:10, start:1}, {cols:5, rows:10, start:51}];
     return [{cols:5, rows:10, start:1}]; // 50
 }
-function getAnsDy(q_count) { return q_count <= 100 ? 5.9 : 6; }
-function getSectionGap(q_count) { return q_count <= 100 ? 5 : 4; }
+function getSidDy(q_count) { return q_count === 150 ? 5.0 : 5.5; }
+function getAnsDy(q_count) { return q_count === 150 ? 4.8 : 5.5; }
+function getSectionGap(q_count) { return q_count === 150 ? 4.0 : 5.0; }
 
-const _MARG      = 12;
-const _MK_SIZE   = 8;
-const _MK_OFF    = 5;
+const _MARG      = 12.0;
 const _BUB_R_MM  = 2.0;
-const _BUB_DX_MM = 5.5;
+const _BUB_DX_MM = 5.2;
 const _SEC_MK_MM = 3.0;
-const _BUB_PX    = mm2px(_BUB_R_MM * 1.1, 'x');
+const _BUB_PX    = len2px(_BUB_R_MM * 1.05);
 
-const _header_top    = _MK_OFF + _MK_SIZE + 3;
-const _row2_y        = _header_top + 10 + 1;
-const _info_y        = _row2_y + 10 + 2;
-const _y_div1        = _info_y + 6;
-const _sid_top       = _y_div1 + 3;
-const _sid_y_start   = _sid_top + 13;          // For answer-section base calculation (Python scan_answers)
-const _sid_y_start_id = _sid_top + 8;          // For Student ID grid Y start (Python scan_student_id: sid_top + 8)
-const _sid_base_x_id  = _MARG + 3.5;          // Student ID base X (Python: MARG + 3.5 = 15.5)
-const _sid_dy        = 6;                       // Student ID row spacing in mm (Python: 6)
-const _digit_rows    = 10;
-const _sid_block_bot = _sid_y_start + (_digit_rows - 1) * _sid_dy + _BUB_R_MM + 2;
-const _y_div2        = _sid_block_bot + 2;
-const _ans_start_y   = _y_div2 - 3;           // Python uses y_divider2 + (-3)
+const _sid_base_x_id  = 22.0;
+const _sid_y_start_id = 61.0;
 
 function snapToCircle(binMat, cx_px, cy_px, r_px, searchMargin) {
     if (!searchMargin) searchMargin = Math.max(5, Math.round(r_px * 0.8));
@@ -515,37 +518,34 @@ function snapToCircle(binMat, cx_px, cy_px, r_px, searchMargin) {
 function readAllBubbles(binMat, W, H, warpedMat) {
     const q_count = getQCount();
     const sections = getSections(q_count);
+    const sid_dy = getSidDy(q_count);
     const ans_dy = getAnsDy(q_count);
     const sec_gap = getSectionGap(q_count);
     const opts = ['A','B','C','D','E'], n_opts = 5;
-    const usable_w = 210 - _MARG * 2;
-    const q_label_w = 9;
+    const usable_w = 210.0 - _MARG * 2.0;
+    const q_label_w = 9.0;
     let answers = {};
-    let current_y = _ans_start_y;
 
-    // Per-column X adjustments from Python omr_scanner.py (mm)
-    const adjust_x_list = [-7.5, -6.5, -5.0, -3.5, -2.0];
-    // Per-choice X adjustments from Python omr_scanner.py (mm)
-    const choice_adjustments = [0.0, 0.5, 0.5, 0.5, 0.5];
+    const sid_block_bot = _sid_y_start_id + 9 * sid_dy + _BUB_R_MM + 2.0;
+    const y_div2 = sid_block_bot + 2.0;
+    let current_y = y_div2 + 3.0;
 
     for (let si = 0; si < sections.length; si++) {
         let sec = sections[si];
         let n_cols = sec.cols, rows = sec.rows, q_start = sec.start;
-        let col_w_mm = (usable_w / n_cols) + 2;  // Python: (usable_w / n_cols) + 2
+        let col_w_mm = usable_w / n_cols;
         let content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
-        let offset_x = (col_w_mm - content_w) / 2;
-        let first_row_y = current_y + _SEC_MK_MM + 3;
+        let offset_x = (col_w_mm - content_w) / 2.0;
+        let first_row_y = current_y + _SEC_MK_MM + 3.0;
         let q = q_start;
 
         for (let c = 0; c < n_cols && q <= q_count; c++) {
-            let adjust_x = c < adjust_x_list.length ? adjust_x_list[c] : 0.0;
-            let base_x_mm = _MARG + c * col_w_mm + offset_x + adjust_x;
+            let base_x_mm = _MARG + c * col_w_mm + offset_x;
             for (let r = 0; r < rows && q <= q_count; r++) {
                 let qy_mm = first_row_y + r * ans_dy;
                 let fills = [];
                 for (let oi = 0; oi < n_opts; oi++) {
-                    let adj_choice = oi < choice_adjustments.length ? choice_adjustments[oi] : 0.0;
-                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM + adj_choice;
+                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
                     let bx_px = Math.round(mm2px(bx_mm, 'x'));
                     let by_px = Math.round(mm2px(qy_mm,  'y'));
                     let r_px  = Math.round(_BUB_PX);
@@ -585,21 +585,18 @@ function readAllBubbles(binMat, W, H, warpedMat) {
 }
 
 function readStudentId(binMat, W, H, warpedMat) {
+    const q_count = getQCount();
+    const sid_dy = getSidDy(q_count);
     const digits = 11, digit_rows = 10;
-    const sid_base_x_mm = _sid_base_x_id;  // Python: MARG + 3.5 = 15.5
-
-    // Fine-tune adjustments from Python omr_scanner.py (mm)
-    const sid_col_adjust_x = [-1, -1, -0.7, -0.7, -0.3, 0.0, 0.0, 0.0, 0.0, 0.5, 0.7];
-    const sid_row_adjust_y = [-0.5, -0.5, -0.75, -0.75, -0.85, -1, -1.3, -1.3, -1.7, -1.9];
+    const sid_base_x_mm = _sid_base_x_id;
+    const sid_y_start_mm = _sid_y_start_id;
 
     let studentId = '';
     for (let col = 0; col < digits; col++) {
-        let col_adj_x = col < sid_col_adjust_x.length ? sid_col_adjust_x[col] : 0.0;
-        let cx_mm = sid_base_x_mm + col * _BUB_DX_MM + col_adj_x;
+        let cx_mm = sid_base_x_mm + col * _BUB_DX_MM;
         let fills = [];
         for (let row = 0; row < digit_rows; row++) {
-            let row_adj_y = row < sid_row_adjust_y.length ? sid_row_adjust_y[row] : 0.0;
-            let cy_mm = _sid_y_start_id + row * _sid_dy + row_adj_y;
+            let cy_mm = sid_y_start_mm + row * sid_dy;
             let bx_px = Math.round(mm2px(cx_mm, 'x'));
             let by_px = Math.round(mm2px(cy_mm,  'y'));
             let r_px  = Math.round(_BUB_PX);
@@ -639,34 +636,32 @@ function readStudentId(binMat, W, H, warpedMat) {
 function drawBubbleDebugOverlay(dbgCtx, answers, W, H) {
     const q_count = getQCount();
     const sections = getSections(q_count);
+    const sid_dy = getSidDy(q_count);
     const ans_dy = getAnsDy(q_count);
     const sec_gap = getSectionGap(q_count);
     const opts = ['A','B','C','D','E'], n_opts = 5;
-    const usable_w = 210 - _MARG * 2;
-    const q_label_w = 9;
-    let current_y = _ans_start_y;
+    const usable_w = 210.0 - _MARG * 2.0;
+    const q_label_w = 9.0;
 
-    // Same adjustments as readAllBubbles (from Python omr_scanner.py)
-    const adjust_x_list = [-7.5, -6.5, -5.0, -3.5, -2.0];
-    const choice_adjustments = [0.0, 0.5, 0.5, 0.5, 0.5];
+    const sid_block_bot = _sid_y_start_id + 9 * sid_dy + _BUB_R_MM + 2.0;
+    const y_div2 = sid_block_bot + 2.0;
+    let current_y = y_div2 + 3.0;
 
     for (let si = 0; si < sections.length; si++) {
         let sec = sections[si];
         let n_cols = sec.cols, rows = sec.rows, q_start = sec.start;
-        let col_w_mm = (usable_w / n_cols) + 2;  // Python: (usable_w / n_cols) + 2
+        let col_w_mm = usable_w / n_cols;
         let content_w = q_label_w + (n_opts - 1) * _BUB_DX_MM;
-        let offset_x = (col_w_mm - content_w) / 2;
-        let first_row_y = current_y + _SEC_MK_MM + 3;
+        let offset_x = (col_w_mm - content_w) / 2.0;
+        let first_row_y = current_y + _SEC_MK_MM + 3.0;
         let q = q_start;
 
         for (let c = 0; c < n_cols && q <= q_count; c++) {
-            let adjust_x = c < adjust_x_list.length ? adjust_x_list[c] : 0.0;
-            let base_x_mm = _MARG + c * col_w_mm + offset_x + adjust_x;
+            let base_x_mm = _MARG + c * col_w_mm + offset_x;
             for (let r = 0; r < rows && q <= q_count; r++) {
                 let qy_mm = first_row_y + r * ans_dy;
                 for (let oi = 0; oi < n_opts; oi++) {
-                    let adj_choice = oi < choice_adjustments.length ? choice_adjustments[oi] : 0.0;
-                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM + adj_choice;
+                    let bx_mm = base_x_mm + q_label_w + oi * _BUB_DX_MM;
                     let bx_px = Math.round(mm2px(bx_mm, 'x'));
                     let by_px = Math.round(mm2px(qy_mm,  'y'));
                     let isSelected = answers[q] === opts[oi];
