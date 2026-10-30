@@ -1608,50 +1608,53 @@
       <div class="slide-header">
         <div class="slide-category">02 • Problem Statement & Motivation</div>
         <h2 class="slide-title">ที่มาและความสำคัญของปัญหา</h2>
-        <p class="slide-subtitle">ข้อจำกัดและปัญหาที่พบบ่อยในการตรวจข้อสอบแบบปรนัยในระดับมหาวิทยาลัย</p>
+        <p class="slide-subtitle">จากปัญหาภาระค่า Subscription ของแอปพลิเคชัน สู่ความต้องการระบบ OMR สถาบันที่ใช้งานได้ฟรีและยั่งยืน</p>
       </div>
       <div class="slide-content">
         <div class="grid-3">
           
-          <!-- Pain Point 1 -->
+          <!-- Pain Point 1: ZipGrade Subscription & Quota -->
+          <div class="card fragment" style="border-color: rgba(234, 179, 8, 0.4); background: rgba(17, 24, 39, 0.85);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="card-header-icon icon-gold" style="margin-bottom: 0;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              </div>
+              <span class="badge-pill badge-gold" style="font-size: 0.72rem;">ปัญหาหลัก (Core Motivator)</span>
+            </div>
+            <h3 class="card-title" style="color: var(--msu-gold);">กำแพงค่าสมาชิก ZipGrade & ข้อจำกัดโควตา</h3>
+            <p class="card-desc">แอปเชิงพาณิชย์สร้างภาระงบประมาณรายปี และจำกัดการใช้งานจริงในมหาวิทยาลัย</p>
+            <ul class="feature-list">
+              <li><span class="bullet-dot"></span> <strong>ภาระค่า Subscription รายปี ($6.99/คน/ปี):</strong> มหาวิทยาลัยไม่มีงบจัดสรรให้บัญชีรายบุคคล อาจารย์ต้องควักเงินส่วนตัวจ่ายซ้ำซ้อนทุกปี (Out-of-pocket expenses)</li>
+              <li><span class="bullet-dot"></span> <strong>โควตาฟรีจำกัดเพียง 100 แผ่น/เดือน:</strong> ไม่เพียงพอกับรายวิชาใน มมส. ที่มีนิสิต 200–500 คน/วิชา หากโควตาหมดระบบจะระงับการตรวจทันที</li>
+              <li><span class="bullet-dot"></span> <strong>บัญชีเดี่ยว ผูกขาดอุปกรณ์ (Single-User):</strong> ไม่สามารถแบ่งงานตรวจร่วมกับอาจารย์ร่วมสอน (Co-teachers) หรือผู้ช่วยสอน (TAs) ได้</li>
+            </ul>
+          </div>
+
+          <!-- Pain Point 2: Hardware OMR & Manual Labor -->
           <div class="card fragment">
             <div class="card-header-icon icon-red">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             </div>
-            <h3 class="card-title">เครื่อง OMR ราคาสูง & บำรุงรักษายาก</h3>
-            <p class="card-desc">เครื่องอ่าน Optical Mark Reader แบบฮาร์ดแวร์เดิมมีราคาสูงถึง 100,000 - 300,000+ บาท</p>
+            <h3 class="card-title">เครื่อง OMR ราคาสูง & การตรวจมือช้า</h3>
+            <p class="card-desc">ทางเลือกดั้งเดิมของสถาบันมีต้นทุนแฝงสูงและเสี่ยงต่อความผิดพลาด</p>
             <ul class="feature-list">
-              <li><span class="bullet-dot"></span> ต้องสั่งพิมพ์กระดาษคำตอบเฉพาะที่มีความหนาพิเศษและใช้หมึกดรอปเอาต์</li>
-              <li><span class="bullet-dot"></span> หัวอ่านเซนเซอร์สกปรกง่าย เสียค่าบำรุงรักษาต่อปีสูง</li>
-              <li><span class="bullet-dot"></span> มักรวมศูนย์อยู่ที่ส่วนกลาง อาจารย์แต่ละท่านเข้าถึงได้ยาก</li>
+              <li><span class="bullet-dot"></span> <strong>เครื่อง OMR ราคาสูง 50,000–200,000+ บาท:</strong> รวมศูนย์อยู่ที่ส่วนกลาง ต้องรอคิวตรวจ และต้องสั่งพิมพ์กระดาษหนาพิเศษ</li>
+              <li><span class="bullet-dot"></span> <strong>การตรวจมือ (ทาบแผ่นเจาะรู) เสี่ยง Human Error:</strong> เสียเวลา 1-2 นาที/แผ่น เกิดความเมื่อยล้า สายตาพร่ามัว ทำให้รวมคะแนนผิดพลาด</li>
+              <li><span class="bullet-dot"></span> <strong>การค้นหาหลักฐานยุ่งยาก:</strong> เมื่อนิสิตขอตรวจทาน ต้องเสียเวลาค้นหากระดาษคำตอบทีละแผ่นจากกล่องเอกสาร</li>
             </ul>
           </div>
 
-          <!-- Pain Point 2 -->
-          <div class="card fragment">
-            <div class="card-header-icon icon-gold">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
-            <h3 class="card-title">การตรวจมือช้า & เสี่ยง Human Error</h3>
-            <p class="card-desc">อาจารย์ส่วนใหญ่ตรวจข้อสอบด้วยมือ (ทาบแผ่นเจาะรู) ซึ่งมีข้อจำกัดร้ายแรง</p>
-            <ul class="feature-list">
-              <li><span class="bullet-dot"></span> ใช้เวลาเฉลี่ย 1-2 นาที/แผ่น นิสิต 200 คนต้องใช้เวลากว่า 4-6 ชั่วโมง</li>
-              <li><span class="bullet-dot"></span> เกิดความเมื่อยล้า สายตาพร่ามัว ทำให้รวมคะแนนผิดพลาด</li>
-              <li><span class="bullet-dot"></span> เมื่อนิสิตขอตรวจทาน ต้องเสียเวลาค้นหากระดาษคำตอบทีละแผ่น</li>
-            </ul>
-          </div>
-
-          <!-- Pain Point 3 -->
+          <!-- Pain Point 3: Data Privacy & Missing Psychometrics -->
           <div class="card fragment">
             <div class="card-header-icon icon-blue">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             </div>
-            <h3 class="card-title">ความยุ่งยากในการวิเคราะห์ข้อสอบ</h3>
-            <p class="card-desc">การวิเคราะห์คุณภาพข้อสอบ (Item Analysis) มักไม่เกิดขึ้นจริงในทางปฏิบัติ</p>
+            <h3 class="card-title">ความปลอดภัยข้อมูล (PDPA) & ขาดสถิติลึก</h3>
+            <p class="card-desc">แอปภายนอกไม่ตอบโจทย์ระเบียบสถาบันและการประกันคุณภาพการศึกษา (มคอ.)</p>
             <ul class="feature-list">
-              <li><span class="bullet-dot"></span> การคำนวณค่า $p$ (ความยาก), $r$ (อำนาจจำแนก), KR-20 ต้องคีย์ข้อมูลเข้าระบบสถิติเอง</li>
-              <li><span class="bullet-dot"></span> ขาดการวิเคราะห์ตัวลวง (Distractor Analysis) เพื่อนำไปปรับปรุงข้อสอบ</li>
-              <li><span class="bullet-dot"></span> เสียโอกาสในการพัฒนาคลังข้อสอบมาตรฐานของมหาวิทยาลัย</li>
+              <li><span class="bullet-dot"></span> <strong>ความเสี่ยงด้านข้อมูลส่วนบุคคล (PDPA):</strong> การส่งภาพกระดาษคำตอบและคะแนนนิสิตขึ้นเซิร์ฟเวอร์ต่างประเทศของ ZipGrade เสี่ยงขัดต่อระเบียบสถาบัน</li>
+              <li><span class="bullet-dot"></span> <strong>ขาดการวิเคราะห์จิตมิติ (Psychometrics):</strong> แอปทั่วไปไม่คำนวณ KR-20, ค่าความยาก (<i>p</i>), อำนาจจำแนก (<i>r</i>), และการวิเคราะห์ตัวลวง</li>
+              <li><span class="bullet-dot"></span> <strong>ไม่เชื่อมต่อระบบมหาวิทยาลัย:</strong> ต้อง Export หลายขั้นตอน ไม่ผูกกับ Google Workspace (@msu.ac.th) ของ มมส.</li>
             </ul>
           </div>
 
@@ -1684,9 +1687,9 @@
             <div class="card fragment">
               <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
                 <span class="badge-pill badge-emerald">วัตถุประสงค์ที่ 2</span>
-                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">ประหยัดต้นทุนด้วยกระดาษ A4 มาตรฐาน 100%</h4>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">ไร้ค่าบริการสมาชิก (Zero-Subscription Cost)</h4>
               </div>
-              <p class="card-desc">สร้างเทมเพลตกระดาษคำตอบ A4 มาตรฐานที่สามารถสั่งพิมพ์จากเครื่องพิมพ์เลเซอร์หรืออิงก์เจ็ตทั่วไปได้ ไม่ต้องใช้กระดาษชนิดพิเศษ</p>
+              <p class="card-desc">ทลายกำแพงค่าสมาชิกรายปีและโควตาสแกนของแอปพลิเคชันเชิงพาณิชย์ พร้อมลดต้นทุนกระดาษโดยใช้ A4 มาตรฐาน 100% ที่สั่งพิมพ์ได้เอง</p>
             </div>
 
             <div class="card fragment">
@@ -1694,7 +1697,7 @@
                 <span class="badge-pill badge-blue">วัตถุประสงค์ที่ 3</span>
                 <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #FFFFFF;">วิเคราะห์คุณภาพข้อสอบเชิงสถิติทันที</h4>
               </div>
-              <p class="card-desc">คำนวณค่าสถิติ Mean, S.D., ความยากง่าย ($p$), อำนาจจำแนก ($r$), และความเชื่อมั่น KR-20 พร้อมส่งออกรายงาน CSV/Excel อัตโนมัติ</p>
+              <p class="card-desc">คำนวณค่าสถิติ Mean, S.D., ความยากง่าย (<i>p</i>), อำนาจจำแนก (<i>r</i>), และความเชื่อมั่น KR-20 พร้อมส่งออกรายงาน CSV/Excel อัตโนมัติ</p>
             </div>
           </div>
 
@@ -1765,7 +1768,7 @@
             <ul class="feature-list">
               <li><span class="bullet-dot"></span> <strong>WebRTC Video API:</strong> ดึงภาพสดจากกล้อง 60 FPS ความละเอียด 720p/1080p</li>
               <li><span class="bullet-dot"></span> <strong>OpenCV.js (WASM):</strong> อัลกอริทึม Computer Vision Compiled เป็น WebAssembly ประมวลผลรวดเร็วระดับเนทีฟ</li>
-              <li><span class="bullet-dot"></span> <strong>Tailwind CSS 3.4:</strong> Responsive HUD Interface สไตล์ ZipGrade</li>
+              <li><span class="bullet-dot"></span> <strong>Tailwind CSS 3.4:</strong> Responsive Scanner HUD ออกแบบเป็นมิตร ใช้งานง่ายบนมือถือและคอมพิวเตอร์</li>
               <li><span class="bullet-dot"></span> <strong>Chart.js 4.x:</strong> แผนภูมิฮิสโตแกรมและสถิติแบบอินเตอร์แอคทีฟ</li>
             </ul>
           </div>
@@ -2346,44 +2349,61 @@
         <div class="grid-sidebar">
           
           <!-- Left: Comparison Matrix Table -->
-          <div class="card fragment" style="padding: 20px;">
-            <h3 class="card-title" style="margin-bottom: 16px; color: var(--msu-gold);">เปรียบเทียบประสิทธิภาพ (Comparison Matrix)</h3>
+          <div class="card fragment" style="padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 class="card-title" style="color: var(--msu-gold); margin-bottom: 0;">เปรียบเทียบประสิทธิภาพ (Comparison Matrix)</h3>
+              <span class="badge-pill badge-emerald" style="font-size: 0.72rem;">Zero-Subscription Model</span>
+            </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
               
-              <!-- Metric 1 -->
-              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
-                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">ค่าใช้จ่ายฮาร์ดแวร์</span>
-                <span style="color: #F87171; font-size: 0.85rem; font-family: var(--font-mono);">150,000 - 300,000 ฿</span>
-                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem; font-family: var(--font-mono);">0 บาท (เว็บฟรี)</span>
+              <!-- Table Header -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 4px 10px; font-size: 0.75rem; font-weight: 700; color: var(--color-text-dim); text-transform: uppercase; font-family: var(--font-mono);">
+                <span>มิติการเปรียบเทียบ</span>
+                <span>เครื่อง OMR / ZipGrade</span>
+                <span style="color: var(--msu-gold);">MSU Scoring (นวัตกรรมใหม่)</span>
               </div>
 
-              <!-- Metric 2 -->
-              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
-                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">กระดาษคำตอบ</span>
-                <span style="color: #F87171; font-size: 0.85rem;">กระดาษหนาพิมพ์เฉพาะ</span>
-                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem;">A4 ธรรมดา พิมพ์ทั่วไป</span>
+              <!-- Metric 1: Subscription Cost -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.86rem; color: #FFFFFF;">ค่าสมาชิก & สิทธิ์การใช้</span>
+                <span style="color: #F87171; font-size: 0.8rem; font-family: var(--font-mono);">$6.99/ปี (ฟรีแค่ 100 แผ่น/ด.)</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.86rem;">ฟรี 100% (Zero-Subscription)</span>
               </div>
 
-              <!-- Metric 3 -->
-              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
-                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">ความเร็วในการตรวจ</span>
-                <span style="color: #F87171; font-size: 0.85rem;">ตรวจมือ 1-2 นาที/แผ่น</span>
-                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem; font-family: var(--font-mono);">&lt; 1 วินาที / แผ่น</span>
+              <!-- Metric 2: Paper Type -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.86rem; color: #FFFFFF;">ต้นทุนกระดาษคำตอบ</span>
+                <span style="color: #F87171; font-size: 0.8rem;">กระดาษหนาเฉพาะ 2-5 บาท/แผ่น</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.86rem;">A4 ธรรมดา พิมพ์เลเซอร์ทั่วไป</span>
               </div>
 
-              <!-- Metric 4 -->
-              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
-                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">การวิเคราะห์ข้อสอบ</span>
-                <span style="color: #F87171; font-size: 0.85rem;">ต้องคีย์มือ เสียเวลามาก</span>
-                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem;">คำนวณอัตโนมัติทันที</span>
+              <!-- Metric 3: Collaboration -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.86rem; color: #FFFFFF;">การทำงานร่วมกัน</span>
+                <span style="color: #F87171; font-size: 0.8rem;">บัญชีเดี่ยว ผูกขาดเครื่องมือถือ</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.86rem;">Cloud สถาบัน ตรวจร่วมกับ TA ได้</span>
               </div>
 
-              <!-- Metric 5 -->
-              <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
-                <span style="font-weight: 600; font-size: 0.9rem; color: #FFFFFF;">กรณีเฉลยข้อสอบผิด</span>
-                <span style="color: #F87171; font-size: 0.85rem;">ต้องนำกระดาษมาตรวจใหม่</span>
-                <span style="color: #34D399; font-weight: 700; font-size: 0.9rem;">Auto-Regrade 0.05s</span>
+              <!-- Metric 4: PDPA & Privacy -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.86rem; color: #FFFFFF;">ความปลอดภัยข้อมูล (PDPA)</span>
+                <span style="color: #F87171; font-size: 0.8rem;">Cloud เอกชนต่างประเทศ</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.86rem;">Self-Hosted ในเซิร์ฟเวอร์ มมส.</span>
+              </div>
+
+              <!-- Metric 5: Psychometrics -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.86rem; color: #FFFFFF;">การวิเคราะห์จิตมิติ (มคอ.)</span>
+                <span style="color: #F87171; font-size: 0.8rem;">ขาด KR-20 และสถิติ มคอ.</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.86rem;">คำนวณ KR-20, p, r อัตโนมัติ</span>
+              </div>
+
+              <!-- Metric 6: Regrading -->
+              <div style="display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr; gap: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); align-items: center;">
+                <span style="font-weight: 600; font-size: 0.86rem; color: #FFFFFF;">กรณีเฉลยข้อสอบผิด</span>
+                <span style="color: #F87171; font-size: 0.8rem;">ต้องนำกระดาษมาตรวจใหม่</span>
+                <span style="color: #34D399; font-weight: 700; font-size: 0.86rem;">Auto-Regrade 0.05s ในคลิกเดียว</span>
               </div>
 
             </div>
@@ -2461,6 +2481,20 @@
           <!-- Right: Interactive Accordion FAQs -->
           <div style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 6px;">
             
+            <!-- FAQ 1: Why not ZipGrade? -->
+            <div class="card fragment" style="padding: 14px 18px; cursor: pointer; border-color: rgba(234, 179, 8, 0.4); background: rgba(17, 24, 39, 0.85);" onclick="toggleFaq(this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: var(--font-display); font-size: 0.98rem; color: var(--msu-gold);">❓ ทำไมไม่ใช้แอป ZipGrade? ทำไมต้องสร้าง MSU Scoring ขึ้นมาใหม่?</h4>
+                <span class="faq-arrow" style="color: var(--msu-gold); font-size: 0.8rem;">▼</span>
+              </div>
+              <div class="faq-answer" style="display: none; margin-top: 10px; font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 8px;">
+                <strong>1) ทลายกำแพงค่าสมาชิก (Zero-Subscription):</strong> ZipGrade คิดค่าบริการ $6.99/คน/ปี และโควตาฟรีจำกัดเพียง 100 แผ่น/เดือน ซึ่งไม่พอกับวิชาทั่วไปใน มมส. ที่มีนิสิต 200–500 คน MSU Scoring เปิดให้สแกนฟรีไม่จำกัดจำนวนแผ่น ช่วยประหยัดงบให้อาจารย์และสถาบัน 100%<br>
+                <strong>2) ทำงานร่วมกันในระดับสถาบัน:</strong> MSU Scoring เป็น Web Cloud รองรับให้อาจารย์ร่วมสอนและ TA ช่วยกันตรวจได้ ต่างจาก ZipGrade ที่ผูกติดกับมือถือเครื่องเดียว<br>
+                <strong>3) ความปลอดภัยข้อมูลตาม PDPA:</strong> คะแนนและภาพถ่ายจัดเก็บในเซิร์ฟเวอร์มหาวิทยาลัย ไม่ส่งออกไปยังคลาวด์เอกชนต่างประเทศ<br>
+                <strong>4) วิเคราะห์ข้อสอบจิตมิติครบถ้วน:</strong> คำนวณ KR-20, ค่าความยาก (<i>p</i>), อำนาจจำแนก (<i>r</i>), และสรุปผลตัดเกรดตรงตามมาตรฐาน มคอ. ทันที
+              </div>
+            </div>
+
             <div class="card fragment" style="padding: 14px 18px; cursor: pointer;" onclick="toggleFaq(this)">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h4 style="font-family: var(--font-display); font-size: 0.98rem; color: #FFFFFF;">❓ ถ้านิสิตฝนจาง หรือกระดาษยับ ระบบจะตรวจจับได้ไหม?</h4>

@@ -334,7 +334,7 @@ $csrf_token = generate_csrf_token();
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">จำนวนข้อ</label>
-                    <select id="printQCount" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans">
+                    <select id="printQCount" onchange="updatePrintFilenamePreview()" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans">
                         <option value="50">50 ข้อ</option>
                         <option value="100">100 ข้อ</option>
                         <option value="150">150 ข้อ</option>
@@ -342,7 +342,7 @@ $csrf_token = generate_csrf_token();
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ชุดข้อสอบ</label>
-                    <select id="printExamSet" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans">
+                    <select id="printExamSet" onchange="updatePrintFilenamePreview()" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-sans">
                         <option value="A">ชุด A</option>
                         <option value="B">ชุด B</option>
                         <option value="C">ชุด C</option>
@@ -403,12 +403,32 @@ $csrf_token = generate_csrf_token();
                 </div>
             </div>
 
-            <div class="flex gap-2.5 mt-1">
-                <button onclick="closePrintModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition-all text-sm">ยกเลิก</button>
-                <button onclick="submitPrint()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    <span>สร้างไฟล์ PDF</span>
-                </button>
+            <!-- Filename Preview Badge -->
+            <div class="bg-emerald-50/80 border border-emerald-200/80 rounded-xl p-3 flex flex-col gap-1">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-emerald-900 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        ชื่อไฟล์ที่จะบันทึก (File Name)
+                    </span>
+                    <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-100/90 px-1.5 py-0.5 rounded">English Format</span>
+                </div>
+                <div id="printFilenamePreview" class="text-xs font-mono font-medium text-slate-800 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200/80 break-all select-all shadow-xs">
+                    AnswerSheet_...pdf
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2 mt-1">
+                <button type="button" onclick="closePrintModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm font-semibold transition-all">ยกเลิก</button>
+                <div class="flex-1 flex gap-2">
+                    <button type="button" onclick="submitPrint('inline')" class="flex-1 bg-white hover:bg-emerald-50 border border-emerald-600 text-emerald-700 font-bold py-2.5 px-3 rounded-xl transition-all text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-xs" title="เปิดหน้าใหม่สำหรับสั่งพิมพ์หรือบันทึกผ่านเบราว์เซอร์">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>เปิดพิมพ์ / ดูตัวอย่าง</span>
+                    </button>
+                    <button type="button" onclick="submitPrint('download')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold py-2.5 px-3 rounded-xl transition-all text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20" title="ดาวน์โหลดไฟล์ PDF เก็บลงเครื่องทันที">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>ดาวน์โหลด PDF</span>
+                    </button>
+                </div>
             </div>
         </div>
     </dialog>
@@ -876,6 +896,94 @@ $csrf_token = generate_csrf_token();
             }
         }
 
+        function getExamSubjectSlug(exam) {
+            if (!exam) return 'Subject';
+            const code = (exam.exam_code || '').trim();
+            const title = (exam.exam_title || '').trim();
+
+            const thaiToEn = {
+                'คณิตศาสตร์': 'Mathematics',
+                'คณิต': 'Math',
+                'วิทยาศาสตร์': 'Science',
+                'วิทย์': 'Science',
+                'ฟิสิกส์': 'Physics',
+                'เคมี': 'Chemistry',
+                'ชีววิทยา': 'Biology',
+                'ชีวะ': 'Biology',
+                'ภาษาไทย': 'Thai',
+                'ภาษาอังกฤษ': 'English',
+                'อังกฤษ': 'English',
+                'สังคมศึกษา': 'SocialStudies',
+                'สังคม': 'SocialStudies',
+                'ประวัติศาสตร์': 'History',
+                'คอมพิวเตอร์': 'Computer',
+                'การเขียนโปรแกรม': 'Programming',
+                'โปรแกรม': 'Programming',
+                'การบัญชี': 'Accounting',
+                'บัญชี': 'Accounting',
+                'การตลาด': 'Marketing',
+                'การจัดการ': 'Management',
+                'เศรษฐศาสตร์': 'Economics',
+                'การเงิน': 'Finance',
+                'สถิติ': 'Statistics'
+            };
+
+            let matchedEn = '';
+            if (window.allCoursesList && window.allCoursesList.length > 0) {
+                const cleanCode = code.replace(/\s+/g, '').toLowerCase();
+                const found = window.allCoursesList.find(c => {
+                    const cCode = (c.course_code || c.code || '').replace(/\s+/g, '').toLowerCase();
+                    return (cleanCode && cCode === cleanCode) || (c.name_th && c.name_th === title);
+                });
+                if (found && found.name_en) matchedEn = found.name_en;
+            }
+
+            let englishTitle = '';
+            if (matchedEn) {
+                englishTitle = matchedEn.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+            } else if (/[A-Za-z]/.test(title)) {
+                const words = title.match(/[A-Za-z][A-Za-z0-9]*/g);
+                if (words && words.length > 0) {
+                    englishTitle = words.join('_');
+                }
+            } else {
+                for (const [th, en] of Object.entries(thaiToEn)) {
+                    if (title.includes(th)) {
+                        englishTitle = en;
+                        break;
+                    }
+                }
+            }
+
+            const cleanCode = code.replace(/[^A-Za-z0-9]/g, '');
+            const parts = [];
+            if (cleanCode) parts.push(cleanCode);
+            if (englishTitle && (!cleanCode || !englishTitle.toLowerCase().includes(cleanCode.toLowerCase()))) {
+                parts.push(englishTitle);
+            }
+            if (parts.length === 0) {
+                parts.push(exam.exam_id ? `Exam_${exam.exam_id}` : 'Subject');
+            }
+
+            let slug = parts.join('_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+            if (slug.length > 35) slug = slug.substring(0, 35).replace(/_+$/g, '');
+            return slug;
+        }
+
+        function updatePrintFilenamePreview() {
+            const qCountEl = document.getElementById('printQCount');
+            const examSetEl = document.getElementById('printExamSet');
+            if (!qCountEl || !examSetEl) return;
+            const qCount = qCountEl.value;
+            const examSet = examSetEl.value;
+            const exam = (allExamsData || []).find(e => e.exam_id == _printExamId) || {};
+            const slug = getExamSubjectSlug(exam);
+            const previewEl = document.getElementById('printFilenamePreview');
+            if (previewEl) {
+                previewEl.textContent = `AnswerSheet_${slug}_Set${examSet}_${qCount}Questions.pdf`;
+            }
+        }
+
         function openPrintModal(examId, defaultQCount) {
             _printExamId = examId;
             const sel = document.getElementById('printQCount');
@@ -883,6 +991,7 @@ $csrf_token = generate_csrf_token();
             const closest = opts.reduce((a, b) => Math.abs(b - defaultQCount) < Math.abs(a - defaultQCount) ? b : a);
             sel.value = String(closest);
             loadPrintHeaderPreferences();
+            updatePrintFilenamePreview();
             const modal = document.getElementById('printModal');
             modal.showModal();
         }
@@ -892,7 +1001,7 @@ $csrf_token = generate_csrf_token();
             modal.close();
         }
 
-        function submitPrint() {
+        function submitPrint(mode = 'inline') {
             const qCount  = document.getElementById('printQCount').value;
             const examSet = document.getElementById('printExamSet').value;
 
@@ -905,7 +1014,8 @@ $csrf_token = generate_csrf_token();
             localStorage.setItem('msu_omr_header_fields', JSON.stringify(selectedFields));
 
             const fieldsParam = encodeURIComponent(selectedFields.join(','));
-            window.open(`generate_pdf.php?exam_id=${_printExamId}&q_count=${qCount}&exam_set=${examSet}&fields=${fieldsParam}`, '_blank');
+            const downloadParam = (mode === 'download') ? '&download=1' : '';
+            window.open(`generate_pdf.php?exam_id=${_printExamId}&q_count=${qCount}&exam_set=${examSet}&fields=${fieldsParam}${downloadParam}`, '_blank');
             closePrintModal();
         }
 

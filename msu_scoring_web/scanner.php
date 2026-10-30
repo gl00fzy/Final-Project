@@ -134,8 +134,8 @@ $csrf_token = generate_csrf_token();
                 <span class="absolute bottom-[-2px] left-[-2px]  w-12 h-12 border-b-[4px] border-l-[4px] border-yellow-400 rounded-bl-3xl shadow-[0_0_20px_rgba(250,204,21,0.6)]"></span>
                 <span class="absolute bottom-[-2px] right-[-2px] w-12 h-12 border-b-[4px] border-r-[4px] border-yellow-400 rounded-br-3xl shadow-[0_0_20px_rgba(250,204,21,0.6)]"></span>
 
-                <!-- Helper Text Beneath Viewfinder -->
-                <div class="absolute bottom-[-3.5rem] w-full flex justify-center animate-pulse">
+                <!-- Helper Text Beneath Viewfinder (Hidden on mobile to avoid overlapping buttons) -->
+                <div class="hidden md:flex absolute bottom-[-3.5rem] w-full justify-center animate-pulse">
                     <span class="bg-slate-900/80 backdrop-blur-md text-yellow-400 text-xs font-bold px-4 py-2 rounded-full border border-yellow-500/40 flex items-center gap-2 shadow-xl">
                         <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         <span>วางกระดาษคำตอบให้อยู่ในกรอบ 4 มุม</span>

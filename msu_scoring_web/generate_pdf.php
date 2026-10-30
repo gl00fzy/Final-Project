@@ -48,12 +48,134 @@ $has_field = function($f) use ($selected_fields) {
     return in_array($f, $selected_fields, true);
 };
 
+// ── Helper: English Subject Slug for Filename ─────────────────────────────
+/**
+ * Generate a clean, English subject slug for PDF filenames.
+ * Format: AnswerSheet_{Subject}_{Set}_{Questions}Questions.pdf
+ * Example: "0904102_Computer_Programming", "Math", "Science", "Physics"
+ */
+if (!function_exists('get_english_subject_slug')) {
+function get_english_subject_slug(array $exam, ?PDO $pdo = null): string {
+    $title = trim($exam['exam_title'] ?? '');
+    $code  = trim($exam['exam_code'] ?? '');
+    $id    = (int)($exam['exam_id'] ?? 0);
+
+    // Common Thai subject translation dictionary for accurate English naming
+    $thai_to_en = [
+        'คณิตศาสตร์'      => 'Mathematics',
+        'คณิต'           => 'Math',
+        'วิทยาศาสตร์'     => 'Science',
+        'วิทย์'           => 'Science',
+        'ฟิสิกส์'         => 'Physics',
+        'เคมี'           => 'Chemistry',
+        'ชีววิทยา'       => 'Biology',
+        'ชีวะ'           => 'Biology',
+        'ภาษาไทย'        => 'Thai',
+        'ภาษาอังกฤษ'     => 'English',
+        'อังกฤษ'         => 'English',
+        'สังคมศึกษา'     => 'SocialStudies',
+        'สังคม'          => 'SocialStudies',
+        'ประวัติศาสตร์'   => 'History',
+        'คอมพิวเตอร์'    => 'Computer',
+        'การเขียนโปรแกรม' => 'Programming',
+        'โปรแกรม'        => 'Programming',
+        'การบัญชี'       => 'Accounting',
+        'บัญชี'          => 'Accounting',
+        'การตลาด'        => 'Marketing',
+        'การจัดการ'      => 'Management',
+        'เศรษฐศาสตร์'    => 'Economics',
+        'การเงิน'        => 'Finance',
+        'สถิติ'          => 'Statistics',
+    ];
+
+    $matched_en_name = '';
+
+    // 1. Check official course catalog in database
+    if ($pdo) {
+        try {
+            if (!empty($code)) {
+                $cleanCode = str_replace(' ', '', $code);
+                $stmt = $pdo->prepare("SELECT name_en FROM courses WHERE REPLACE(course_code, ' ', '') = ? AND name_en IS NOT NULL AND name_en != '' LIMIT 1");
+                $stmt->execute([$cleanCode]);
+                $c = $stmt->fetchColumn();
+                if ($c) $matched_en_name = $c;
+            }
+            if (empty($matched_en_name) && !empty($title)) {
+                $stmt = $pdo->prepare("SELECT name_en FROM courses WHERE (name_th = ? OR name_en = ?) AND name_en IS NOT NULL AND name_en != '' LIMIT 1");
+                $stmt->execute([$title, $title]);
+                $c = $stmt->fetchColumn();
+                if ($c) $matched_en_name = $c;
+            }
+        } catch (Exception $e) {
+            // Ignore DB lookup error and continue
+        }
+    }
+
+    $english_title = '';
+    if (!empty($matched_en_name)) {
+        $english_title = preg_replace('/[^A-Za-z0-9]+/', '_', trim($matched_en_name));
+        $english_title = trim($english_title, '_');
+    }
+
+    // 2. Extract English words directly from exam_title if present
+    if (empty($english_title) && !empty($title)) {
+        if (preg_match('/[A-Za-z]/', $title)) {
+            preg_match_all('/[A-Za-z][A-Za-z0-9]*/', $title, $matches);
+            if (!empty($matches[0])) {
+                $english_title = implode('_', $matches[0]);
+            }
+        }
+    }
+
+    // 3. Fallback to common Thai subject dictionary
+    if (empty($english_title) && !empty($title)) {
+        foreach ($thai_to_en as $thai_kw => $en_word) {
+            if (mb_strpos($title, $thai_kw) !== false) {
+                $english_title = $en_word;
+                break;
+            }
+        }
+    }
+
+    $clean_code = '';
+    if (!empty($code)) {
+        $clean_code = preg_replace('/[^A-Za-z0-9]/', '', $code);
+    }
+
+    // 4. Combine course code and English title
+    $slug_parts = [];
+    if (!empty($clean_code)) {
+        $slug_parts[] = $clean_code;
+    }
+    if (!empty($english_title)) {
+        if (empty($clean_code) || stripos($english_title, $clean_code) === false) {
+            $slug_parts[] = $english_title;
+        }
+    }
+
+    // Fallback if completely blank
+    if (empty($slug_parts)) {
+        $slug_parts[] = ($id > 0) ? "Exam_{$id}" : 'Subject';
+    }
+
+    $final_slug = implode('_', $slug_parts);
+    $final_slug = preg_replace('/_+/', '_', $final_slug);
+    $final_slug = trim($final_slug, '_');
+    if (strlen($final_slug) > 35) {
+        $final_slug = substr($final_slug, 0, 35);
+        $final_slug = rtrim($final_slug, '_');
+    }
+
+    return $final_slug;
+}
+}
+
 // ── Fetch exam info ───────────────────────────────────────────────────────
-$exam = ['exam_title' => 'ข้อสอบ', 'exam_code' => '', 'question_count' => $q_count];
+$exam = ['exam_id' => $exam_id, 'exam_title' => 'ข้อสอบ', 'exam_code' => '', 'question_count' => $q_count];
 if ($exam_id > 0) {
     $user_id = $_SESSION['user_id'];
     $stmt = $pdo->prepare("
-        SELECT exam_title, exam_code, question_count FROM exams 
+        SELECT exam_id, exam_title, exam_code, question_count FROM exams 
         WHERE exam_id = ? AND (
             owner_id = ? 
             OR EXISTS (SELECT 1 FROM exam_shares WHERE exam_id = ? AND shared_to_user_id = ?)
@@ -527,5 +649,11 @@ $pdf->Cell(PW - MARG * 2, 4,
 // ════════════════════════════════════════════════════════════════════════
 // OUTPUT
 // ════════════════════════════════════════════════════════════════════════
-$safe_title = preg_replace('/[^A-Za-z0-9_\-]/', '_', $exam['exam_title']);
-$pdf->Output('I', "AnswerSheet_{$safe_title}_Set{$exam_set}.pdf");
+$subject_slug = get_english_subject_slug($exam, $pdo);
+$filename = "AnswerSheet_{$subject_slug}_Set{$exam_set}_{$q_count}Questions.pdf";
+
+// Set PDF Document metadata Title so browser tab and print dialog display the exact filename
+$pdf->SetTitle(pathinfo($filename, PATHINFO_FILENAME), true);
+
+$dest = (isset($_GET['download']) && $_GET['download'] === '1') ? 'D' : 'I';
+$pdf->Output($dest, $filename);
